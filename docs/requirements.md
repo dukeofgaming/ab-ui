@@ -33,53 +33,66 @@ seamless, satisfying user experience.
 Your challenge is to build a working prototype that aligns with our new company-wide design system, target-state
 architecture, and overarching vision. It must address the following engineering requirements:
 
-1. **Configurable Design System**
+### 1. **Configurable Design System**
 
-    1. Accommodate multiple color palettes for logical application grouping.
+#### 1.1
+Accommodate multiple color palettes for logical application grouping.
 
-    2. Allow theming or restyling without altering core component logic (see [[ADR-1]], [[ADR-2]]).
+#### 1.2
+Allow theming or restyling without altering core component logic (see [[ADR-1]], [[ADR-2]]).
 
-2. **Version-Controlled Components**
+### 2. **Version-Controlled Components**
 
-    1. Maintain a single source of truth for design assets (Figma, Sketch, etc.) mapped to frontend component versions (see [[ADR-2]]).
+#### 2.1
+Maintain a single source of truth for design assets (Figma, Sketch, etc.) mapped to frontend component versions (see [[ADR-2]]).
 
-    2. Provide clear lineage between design revisions, code commits, and semantic releases.
+#### 2.2
+Provide clear lineage between design revisions, code commits, and semantic releases.
 
-3. **Version-Controlled Application Blueprints**
+### 3. **Version-Controlled Application Blueprints**
 
-    1. Keep application designs fully tracked and linked to corresponding codebase updates.
+#### 3.1
+Keep application designs fully tracked and linked to corresponding codebase updates.
 
-    2. Tie feature branches and releases directly to specific design documents (see [[ADR-3]]).
+#### 3.2
+Tie feature branches and releases directly to specific design documents (see [[ADR-3]]).
 
-4. **Independent Library Versioning**
+### 4. **Independent Library Versioning**
 
-    1. Use a mechanism (e.g., semantic versioning) to facilitate controlled, incremental upgrades of shared components (see [[ADR-1]],[[ADR-2]]).
+#### 4.1
+Use a mechanism (e.g., semantic versioning) to facilitate controlled, incremental upgrades of shared components (see [[ADR-1]],[[ADR-2]]).
 
-    2. Allow multiple component library versions to coexist without breaking existing applications (see [[ADR-1#Consequences]]).
+#### 4.2
+Allow multiple component library versions to coexist without breaking existing applications (see [[ADR-1#Consequences]]).
 
-5. **Repository Strategy**
+### 5. **Repository Strategy**
 
-    1. Minimize the total number of repos while avoiding a monolithic structure.
+#### 5.1
+Minimize the total number of repos while avoiding a monolithic structure.
 
-    2. Consider a monorepo for shared libraries and micro-repos/packages for individual apps.
+#### 5.2
+Consider a monorepo for shared libraries and micro-repos/packages for individual apps.
 
-6. **Collaboration and Contributions**
+### 6. **Collaboration and Contributions**
+#### 6.1
+Streamline contributions from a large developer community through local dev setups, peer-review workflows, and automated checks.
 
-    1. Streamline contributions from a large developer community through local dev setups, peer-review workflows, and automated checks.
+#### 6.2
+Prevent design drift by enforcing consistency between component implementation and design specifications (see [[ADR-2]]).
 
-    2. Prevent design drift by enforcing consistency between component implementation and design specifications (see [[ADR-2]]).
+### 7. **Release Notes and Documentation**
+#### 7.1
+Automatically generate release notes, highlighting changes, deprecations, and upgrade paths.
 
-7. **Release Notes and Documentation**
+#### 7.2
+Keep documentation synchronized with each component and its version (see [[ADR-3]])
 
-    1. Automatically generate release notes, highlighting changes, deprecations, and upgrade paths.
+### 8. **Large-Scale Application Management**
+#### 8.1
+Provide a simple mechanism for teams to independently maintain, upgrade, or retire applications.
 
-    2. Keep documentation synchronized with each component and its version (see [[ADR-3]])
-
-8. **Large-Scale Application Management**
-
-    1. Provide a simple mechanism for teams to independently maintain, upgrade, or retire applications.
-
-    2. Preserve consistent UX and unified design standards across all apps.
+#### 8.2
+Preserve consistent UX and unified design standards across all apps.
 
 Your prototype should demonstrate tangible workflows, tools, and architectural decisions (see [[ADR-0]]) that pave the way for a resilient, future-proof frontend environment.
 
