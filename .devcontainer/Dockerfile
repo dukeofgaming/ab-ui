@@ -14,9 +14,12 @@ RUN apt-get install -y \
         zip \
     && rm -rf /var/lib/apt/lists/*
 
+ENV JAVA_HOME="/usr/lib/jvm/default-java"
+
 # Install NVM and Node.js
 ENV HOME="/root"
 ENV NVM_DIR="$HOME/.nvm"
+
 RUN export NVM_DIR="$HOME/.nvm" \
     && curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash \
     && . "$NVM_DIR/nvm.sh" \
