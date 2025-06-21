@@ -5,6 +5,15 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "NPM install",
+            "type": "shell",
+            "command": "npm install",
+            "isBackground": true,
+            "runOptions": {
+                "runOn": "folderOpen",
+            }
+        },
+        {
             "label": "Vite",
             "type": "shell",
             "command": "npm run dev",
@@ -17,7 +26,8 @@
             },
             "runOptions": {
                 "runOn": "folderOpen",
-            }
+            },
+            "dependsOn": "NPM install"
         },
         {
             "label": "Storybook",
@@ -31,7 +41,8 @@
             },
             "runOptions": {
                 "runOn": "folderOpen",
-            }
-        },
+            },
+            "dependsOn": "NPM install"
+        }
     ]
 }

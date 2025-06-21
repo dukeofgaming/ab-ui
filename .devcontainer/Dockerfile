@@ -15,6 +15,7 @@ RUN apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Install NVM and Node.js
+ENV HOME="/root"
 ENV NVM_DIR="$HOME/.nvm"
 RUN export NVM_DIR="$HOME/.nvm" \
     && curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash \
@@ -27,17 +28,3 @@ RUN export NVM_DIR="$HOME/.nvm" \
         typescript \
     && npx playwright install \
     && npx playwright install-deps 
-
-
-
-# # Install npm and Typescript
-# RUN apt-get install -y \
-#         npm \
-#         && npm install -g \
-#                 typescript
-
-# # Install Playwright & OS dependencies
-# RUN npx playwright install \
-#         && npx playwright install-deps
-
-# RUN npm install
