@@ -1,0 +1,37 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558 
+    // See https://code.visualstudio.com/docs/editor/tasks-appendix
+    // https://stackoverflow.com/questions/72817555/devcontainer-how-to-open-terminal-with-custom-commands-when-opening-the-contain
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Vite",
+            "type": "shell",
+            "command": "npm run dev",
+            "isBackground": true, 
+            "problemMatcher": [],
+            "presentation": {
+                "group": "development",
+                "reveal": "always",
+                "panel": "new",
+            },
+            "runOptions": {
+                "runOn": "folderOpen",
+            }
+        },
+        {
+            "label": "Storybook",
+            "type": "shell",
+            "command": "npm run storybook",
+            "isBackground": true,
+            "presentation": {
+                "group": "development",
+                "reveal": "always",
+                "panel": "new",
+            },
+            "runOptions": {
+                "runOn": "folderOpen",
+            }
+        },
+    ]
+}
