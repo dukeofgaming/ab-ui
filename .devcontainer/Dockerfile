@@ -1,7 +1,9 @@
-ARG DEVCONTAINER_UBUNTU_VERSION=noble-20241118.1
-ARG NODEJS_VERSION=24
+ARG UBUNTU_VERSION=noble-20241118.1
 
-FROM ubuntu:${DEVCONTAINER_UBUNTU_VERSION}
+FROM ubuntu:${UBUNTU_VERSION}
+
+ARG NODEJS_VERSION=24
+ARG NVM_VERSION=0.40.3
 
 # Install core dependencies
 RUN apt-get update 
@@ -21,11 +23,10 @@ ENV JAVA_HOME="/usr/lib/jvm/default-java"
 ENV HOME="/root"
 ENV NVM_DIR="$HOME/.nvm"
 
-RUN export NVM_DIR="$HOME/.nvm" \
-    && curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash \
+RUN curl -o- "https://raw.githubusercontent.com/nvm-sh/nvm/v${NVM_VERSION}/install.sh" | bash \
     && . "$NVM_DIR/nvm.sh" \
-    && nvm install 24 \
-    && nvm alias default 24 \
+    && nvm install ${NODEJS_VERSION} \
+    && nvm alias default ${NODEJS_VERSION} \
     && node -v \
     && npm -v \
     && npm install -g \
