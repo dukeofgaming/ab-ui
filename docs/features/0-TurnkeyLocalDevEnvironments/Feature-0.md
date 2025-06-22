@@ -14,7 +14,7 @@ The developer environment should accomplish the following:
 
 - [x] Support VSCode as a baseline experience for an IDE
 
-- [ ] Be turnkey and allow developers to build, test and release applications with minimal setup or previous knowledge about the project.
+- [x] Be turnkey and allow developers to build, test and release applications with minimal setup or previous knowledge about the project.
 
     - [x] Start development servers
     - [x] Run tests in watch-mode
@@ -22,11 +22,11 @@ The developer environment should accomplish the following:
     - [x] Enable live-collaboration
     - [x] Run relevant automated checks
     - [x] Install necessary project dependencies
-    - [ ] Recommend necessary IDE extensions
+    - [x] Recommend necessary IDE extensions
 
-- [ ] Optional: Be portable across Windows, MacOS and Linux.
+- [x] Optional: Be portable across Windows, MacOS and Linux.
 
-- [ ] Optional: Run locally and not require a remote dependencies.
+- [x] Optional: Run locally and not require a remote dependencies.
 
 ## Notes
 
