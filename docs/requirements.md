@@ -85,7 +85,7 @@ Prevent design drift by enforcing consistency between component implementation a
 Automatically generate release notes, highlighting changes, deprecations, and upgrade paths.
 
 #### 7.2
-Keep documentation synchronized with each component and its version (see [[ADR-3]])
+Keep documentation synchronized with each component and its version (see [[ADR-3]], [[Feature-0]])
 
 ### 8. **Large-Scale Application Management**
 #### 8.1

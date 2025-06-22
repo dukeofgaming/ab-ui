@@ -24,6 +24,7 @@
                 "watahani.markdown-image-paste-for-remote",
                 "foam.foam-vscode",
                 "marp-team.marp-vscode",
+                "vitest.explorer",
                 "Terrastruct.d2"
             ]
         }

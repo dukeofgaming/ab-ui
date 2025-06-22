@@ -11,10 +11,15 @@
             "isBackground": true,
             "runOptions": {
                 "runOn": "folderOpen",
+            },
+            "icon": {
+                "id": "package",
+                "color": "terminal.ansiRed"   
             }
         },
         {
             "label": "Vite",
+            "dependsOn": "NPM install",
             "type": "shell",
             "command": "npm run dev",
             "isBackground": true, 
@@ -27,10 +32,14 @@
             "runOptions": {
                 "runOn": "folderOpen",
             },
-            "dependsOn": "NPM install"
+            "icon": {
+                "id": "combine",
+                "color": "terminal.ansiYellow"
+            }
         },
         {
             "label": "Storybook",
+            "dependsOn": "NPM install",
             "type": "shell",
             "command": "npm run storybook",
             "isBackground": true,
@@ -42,7 +51,23 @@
             "runOptions": {
                 "runOn": "folderOpen",
             },
-            "dependsOn": "NPM install"
-        }
+            "icon": {
+                "id": "book",
+                "color": "terminal.ansiMagenta"
+            }
+        },
+        {
+            "label": "Vitest",
+            "type": "shell",
+            "command": "npm run test",
+            "isBackground": true,
+            "runOptions": {
+                "runOn": "folderOpen",
+            },
+            "icon": {
+                "id": "beaker",
+                "color": "terminal.ansiGreen"
+            }
+        },
     ]
 }

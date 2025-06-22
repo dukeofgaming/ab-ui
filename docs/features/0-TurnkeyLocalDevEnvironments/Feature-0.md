@@ -17,7 +17,7 @@ The developer environment should accomplish the following:
 - [ ] Be turnkey and allow developers to build, test and release applications with minimal setup or previous knowledge about the project.
 
     - [x] Start development servers
-    - [ ] Run tests in watch-mode
+    - [x] Run tests in watch-mode
     - [x] Enable writing documentation
     - [x] Enable live-collaboration
     - [x] Run relevant automated checks
@@ -31,5 +31,9 @@ The developer environment should accomplish the following:
 ## Notes
 
 - Used NVM despite caveats to stick with the official method and enable optionality for using multiple Node versions. This also has better developer experience than potentially having to rebuild the DevContainer image.
+
+- Added default JRE for local SonarQube.
+
+- Vitest thinks Storybook stories are tests, we will revisit this later. #TODO
 
 - Added D2 (with Tala) and Marp for documentation. 
