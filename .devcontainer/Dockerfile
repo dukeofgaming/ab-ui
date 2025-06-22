@@ -9,6 +9,7 @@ RUN apt-get install -y \
         curl \
         default-jre \
         git \
+        make \
         unzip \
         wget \
         zip \
@@ -31,3 +32,9 @@ RUN export NVM_DIR="$HOME/.nvm" \
         typescript \
     && npx playwright install \
     && npx playwright install-deps 
+
+# Install D2 with Tala engine
+RUN curl -fsSL https://d2lang.com/install.sh \
+        | sh -s -- \
+                --version v0.6.8 \
+                --tala v0.4.1

@@ -22,7 +22,9 @@
                 "ms-vsliveshare.vsliveshare",
                 "SonarSource.sonarlint-vscode",
                 "watahani.markdown-image-paste-for-remote",
-                "foam.foam-vscode"
+                "foam.foam-vscode",
+                "marp-team.marp-vscode",
+                "Terrastruct.d2"
             ]
         }
     },

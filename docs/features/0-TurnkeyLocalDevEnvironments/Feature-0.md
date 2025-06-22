@@ -18,9 +18,9 @@ The developer environment should accomplish the following:
 
     - [x] Start development servers
     - [ ] Run tests in watch-mode
-    - [ ] Enable writing documentation
-    - [ ] Enable live-collaboration
-    - [ ] Run relevant automated checks
+    - [x] Enable writing documentation
+    - [x] Enable live-collaboration
+    - [x] Run relevant automated checks
     - [x] Install necessary project dependencies
     - [ ] Recommend necessary IDE extensions
 
@@ -31,3 +31,5 @@ The developer environment should accomplish the following:
 ## Notes
 
 - Used NVM despite caveats to stick with the official method and enable optionality for using multiple Node versions. This also has better developer experience than potentially having to rebuild the DevContainer image.
+
+- Added D2 (with Tala) and Marp for documentation. 

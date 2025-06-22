@@ -75,7 +75,7 @@ Consider a monorepo for shared libraries and micro-repos/packages for individual
 
 ### 6. **Collaboration and Contributions**
 #### 6.1
-Streamline contributions from a large developer community through local dev setups, peer-review workflows, and automated checks.
+Streamline contributions from a large developer community through local dev setups (see [[Feature-0]]), peer-review workflows, and automated checks.
 
 #### 6.2
 Prevent design drift by enforcing consistency between component implementation and design specifications (see [[ADR-2]]).
