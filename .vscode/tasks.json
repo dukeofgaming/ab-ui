@@ -58,6 +58,7 @@
         },
         {
             "label": "Vitest",
+            "dependsOn": "NPM install",
             "type": "shell",
             "command": "npm run test",
             "isBackground": true,
