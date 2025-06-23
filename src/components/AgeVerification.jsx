@@ -2,13 +2,15 @@ import React, { useState } from "react";
 import NumberInput from "./NumberInput";
 import Button from "./Button";
 
-const AgeVerification = () => {
+const AgeVerification = ({ minAge = 18 }) => {
   const [month, setMonth] = useState("");
-  const [day, setDay] = useState("");
-  const [year, setYear] = useState("");
+  const [day, setDay]     = useState("");
+  const [year, setYear]   = useState("");
+
   const [verified, setVerified] = useState(null);
-  const [error, setError] = useState("");
   
+  const [error, setError] = useState("");
+
 
   const handleVerify = () => {
     setError("");
@@ -24,7 +26,11 @@ const AgeVerification = () => {
     if (m < 0 || (m === 0 && now.getDate() < birthDate.getDate())) {
       age--;
     }
-    setVerified(age >= 18);
+    setVerified(age >= minAge);
+    if (age < minAge) {
+      setError(`You must be at least ${minAge} years old.`);
+    }
+
   };
 
   return (
@@ -65,11 +71,17 @@ const AgeVerification = () => {
 
       {verified !== null && !error && (
         <div style={{ marginTop: 16, color: verified ? "green" : "red" }}>
-          {verified ? "Access granted!" : "You must be at least 18 years old."}
+          {verified ? "Access granted!" : `You must be at least ${minAge} years old.`}
         </div>
       )}
     </div>
   );
+};
+
+import PropTypes from "prop-types";
+
+AgeVerification.propTypes = {
+  minAge: PropTypes.number,
 };
 
 export default AgeVerification;

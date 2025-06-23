@@ -34,6 +34,6 @@ The developer environment should accomplish the following:
 
 - Added default JRE for local SonarQube.
 
-- Vitest thinks Storybook stories are tests, we will revisit this later. #TODO
+- Vitest thinks Storybook stories are tests, we will revisit this later.
 
 - Added D2 (with Tala) and Marp for documentation. 

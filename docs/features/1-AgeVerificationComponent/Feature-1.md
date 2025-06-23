@@ -8,11 +8,12 @@ As a developer, I want to create a component that verifies a user's age, so that
 
 ## Acceptance Criteria
 
-- [ ] Implement component that verifies a user's age.
-    - [ ] Implement subcomponent for number type inputs.
-    - [ ] Implement subcomponent for a button.
-- [ ] Add testing for the component.
-- [ ] Add documentation for the component.
+- [x] Implement component that verifies a user's age.
+    - [x] Implement subcomponent for number type inputs.
+    - [x] Implement subcomponent for a button.
+- [ ] Add testing for the components.
+- [ ] Add stories for the components.
+- [ ] Parametrize age for the age verification component.
 
 ## Notes
 
