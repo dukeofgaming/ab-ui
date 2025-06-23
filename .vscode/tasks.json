@@ -52,7 +52,7 @@
                 "runOn": "folderOpen",
             },
             "icon": {
-                "id": "book",
+                "id": "notebook",
                 "color": "terminal.ansiMagenta"
             }
         },
