@@ -6,6 +6,7 @@
         "node": {
             "ADR": "#ff6666",
             "Feature": "#66ff66",
+            "Presentation": "#ffff33",
         }
     }
 }

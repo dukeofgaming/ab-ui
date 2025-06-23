@@ -4,21 +4,43 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import Button from "./Button";
 
 describe("Button", () => {
-  it("renders with label", () => {
-    render(<Button>Click Me</Button>);
-    expect(screen.getByRole("button", { name: /click me/i })).toBeInTheDocument();
+  describe("Given the Button is rendered with a label", () => {
+    describe("When nothing happens", () => {
+      it("Then should render the button with the correct label", () => {
+        // Arrange
+        render(<Button>Click Me</Button>);
+
+        // Assert
+        expect(screen.getByRole("button", { name: /click me/i })).toBeInTheDocument();
+      });
+    });
   });
 
-  it("calls onClick when clicked", () => {
-    const handleClick = vi.fn();
-    render(<Button onClick={handleClick}>Click</Button>);
-    fireEvent.click(screen.getByRole("button"));
-    expect(handleClick).toHaveBeenCalledTimes(1);
+  describe("Given the Button is rendered with an onClick handler", () => {
+    describe("When the button is clicked", () => {
+      it("Then should call the onClick handler", () => {
+        // Arrange
+        const handleClick = vi.fn();
+        render(<Button onClick={handleClick}>Click</Button>);
+
+        // Act
+        fireEvent.click(screen.getByRole("button"));
+
+        // Assert
+        expect(handleClick).toHaveBeenCalledTimes(1);
+      });
+    });
   });
 
-  it("applies custom styles", () => {
-    render(<Button style={{ background: "red" }}>Styled</Button>);
-    expect(screen.getByRole("button")).toHaveStyle({ background: "red" });
+  describe("Given the Button is rendered with custom styles", () => {
+    describe("When nothing happens", () => {
+      it("Then should apply the custom styles", () => {
+        // Arrange
+        render(<Button style={{ background: "red" }}>Styled</Button>);
+
+        // Assert
+        expect(screen.getByRole("button")).toHaveStyle({ background: "red" });
+      });
+    });
   });
-  
 });

@@ -11,9 +11,9 @@ As a developer, I want to create a component that verifies a user's age, so that
 - [x] Implement component that verifies a user's age.
     - [x] Implement subcomponent for number type inputs.
     - [x] Implement subcomponent for a button.
-- [ ] Add testing for the components.
+- [x] Add unit testing for the components.
 - [ ] Add stories for the components.
-- [ ] Parametrize age for the age verification component.
+- [x] Parametrize age for the age verification component.
 
 ## Notes
 
@@ -31,5 +31,8 @@ As a developer, I want to create a component that verifies a user's age, so that
 
 https://medium.com/towkns/creating-a-design-tokens-library-advanced-strategies-for-streamlined-design-systems-91a96e35b640
 
+- Refactored tests to use the Arrange Act Assert and Given When Then patterns
+
+- Design / style tests should be moved to Storybook with Playwright #TODO
 
 
