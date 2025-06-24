@@ -12,6 +12,23 @@ dist
 dist-ssr
 *.local
 
+# Terraform
+infra/.terraform/
+infra/.terraform.lock.hcl
+infra/terraform.tfstate*
+infra/crash.log
+infra/*.tfvars
+infra/*.tfvars.json
+
+# Local env files and secrets
+.env
+.env.*
+infra/.env
+infra/.env.*
+
+# Docker build cache and artifacts
+**/storybook-static
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
