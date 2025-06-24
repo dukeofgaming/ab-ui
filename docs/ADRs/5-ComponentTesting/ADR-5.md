@@ -1,5 +1,8 @@
 ---
 type: ADR
+status: proposed
+authors:
+  - David Vega
 ---
 
 # ADR 5: Component Testing
@@ -15,3 +18,5 @@ We will use Vitest & jsdom for unit-testing logic and behavior, and Storybook wi
 ## Consequences
 
 1. Addressed behavior testing through Vitest & jsdom (see [[requirements#Context]], [[Feature-1]]).
+
+2. Addressed E2E testing through Storybook with Playwright as the engine, using the Vitest integration..
