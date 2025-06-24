@@ -2,12 +2,15 @@ name: Run Vitest
 
 on:
   push:
-    branches: ["**"]
+    branches: 
+      - main
+      - develop
   pull_request:
     branches: ["**"]
 
 jobs:
   test:
+    name: Run Vitest
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
