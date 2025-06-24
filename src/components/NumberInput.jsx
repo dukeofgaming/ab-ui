@@ -14,7 +14,7 @@ const NumberInput = ({ value, onChange, min, max, ...props }) => (
 );
 
 NumberInput.propTypes = {
-  value: PropTypes.number.isRequired,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   onChange: PropTypes.func.isRequired,
   min: PropTypes.number,
   max: PropTypes.number,
