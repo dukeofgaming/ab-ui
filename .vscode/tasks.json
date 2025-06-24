@@ -52,12 +52,13 @@
                 "runOn": "folderOpen",
             },
             "icon": {
-                "id": "book",
+                "id": "notebook",
                 "color": "terminal.ansiMagenta"
             }
         },
         {
             "label": "Vitest",
+            "dependsOn": "NPM install",
             "type": "shell",
             "command": "npm run test",
             "isBackground": true,

@@ -6,7 +6,7 @@ References to architectural decisions and stories will be denoted with double sq
 
 ## Context
 
-Our company’s frontend ecosystem has become increasingly fragmented over time, with on-device apps, multi-language web apps, and static sites spread across more than 300 repositories developed over decades. Many of these interfaces lack formal design standards, automated testing (unit, integration, E2E), and telemetry.
+Our company’s frontend ecosystem has become increasingly fragmented over time, with on-device apps, multi-language web apps, and static sites spread across more than 300 repositories developed over decades. Many of these interfaces lack formal design standards, automated testing (unit, integration, E2E; see [[Feature-1]]), and telemetry.
 Documentation is limited due to staff turnover (see [[ADR-0]], [[ADR-3]]), and production deployments can take days or even weeks.
 
 Despite these challenges, our frontend platforms deliver mission-critical functionality to diverse audiences—
