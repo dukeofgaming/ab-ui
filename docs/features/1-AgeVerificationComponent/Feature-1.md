@@ -14,7 +14,9 @@ As a developer, I want to create a component that verifies a user's age, so that
 - [x] Add unit testing for the components.
 - [x] Add stories for the components.
 - [x] Parametrize age for the age verification component.
-- [ ] Add tests to pipeline
+- [x] Add tests to pipeline
+- [x] Publish Storybook to GitHub Pages
+- [x] Enforce pull request & code reviews
 
 ## Notes
 
@@ -30,10 +32,10 @@ As a developer, I want to create a component that verifies a user's age, so that
     - Storybook also a good way to test accessibility and design drift
 - Design drift can be prevented and detected by using design tokens #TODO:
 
-https://medium.com/towkns/creating-a-design-tokens-library-advanced-strategies-for-streamlined-design-systems-91a96e35b640
+    https://medium.com/towkns/creating-a-design-tokens-library-advanced-strategies-for-streamlined-design-systems-91a96e35b640
 
 - Refactored tests to use the Arrange Act Assert and Given When Then conventions.
 
 - Design / style tests should be moved to Storybook with Playwright #TODO
 
-
+- Added pull request & code review request from Copilot
