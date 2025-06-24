@@ -1,8 +1,31 @@
 {
-  "name": "ab-ui",
-  "private": true,
-  "version": "0.0.0",
+  "name": "@dukeofgaming/ab-ui",
+  "private": false,
+  "version": "0.1.0",
+  "description": "A set of reusable React UI components.",
+  "keywords": [
+    "react",
+    "components",
+    "ui",
+    "library"
+  ],
   "type": "module",
+  "main": "dist/ab-ui.cjs.js",
+  "module": "dist/ab-ui.es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/ab-ui.es.js",
+      "require": "./dist/ab-ui.cjs.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src/components"
+  ],
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
   "scripts": {
     "dev": "vite",
     "test": "vitest",
