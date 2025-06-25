@@ -1,17 +1,13 @@
 ---
+type: Feature
 name: Feature
 about: A user story or requirement
-title: Feature
+title: "Feature: "
 labels: ''
 assignees: ''
-
 ---
 
----
-type: Feature
----
-
-# Feature #<issue_id>: <title>
+# <title>
 
 <!-- General requirement in user story form, e.g.: As a persona, I need a feature, so that I can accomplish something -->
 
