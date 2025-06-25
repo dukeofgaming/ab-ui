@@ -1,4 +1,4 @@
-name: 'Publish to NPM'
+name: 'Node Publish'
 description: 'Build and publish package to NPM with commit SHA and latest tags.'
 inputs:
   npm_token:
@@ -23,12 +23,12 @@ runs:
       
     - name: Publish to npm
       run: |
-        BRANCH=$(git rev-parse --abbrev-ref HEAD)
+        BRANCH=$(git rev-parse --abbrev-ref HEAD | tr '/' '-')
         COMMIT_SHA=$(git rev-parse --short HEAD)
 
         [ "$BRANCH" != "main" ] && \
           npm version prerelease \
-            --preid "$(echo "$BRANCH" | tr '/' '-')" \
+            --preid "$BRANCH-$COMMIT_SHA" \
             --no-git-tag-version
 
         PKG_NAME=$(npm pkg get name | tr -d '"')
