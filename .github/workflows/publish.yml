@@ -20,7 +20,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           registry-url: 'https://registry.npmjs.org'
           
       - name: Install dependencies
@@ -31,13 +31,26 @@ jobs:
         
       - name: Publish to npm
         run: |
-          npm version \
-            prerelease \
-                --preid $(git rev-parse --abbrev-ref HEAD | tr '/' '-') \
-                --no-git-tag-version
-          
+          BRANCH=$(git rev-parse --abbrev-ref HEAD)
+          COMMIT_SHA=$(git rev-parse --short HEAD)
+
+          if [ "$BRANCH" != "main" ]; then
+            npm version \
+              prerelease \
+              --preid $(echo "$BRANCH" | tr '/' '-') \
+              --no-git-tag-version
+          fi
+
           npm publish \
             --access public \
-            --tag $(git rev-parse --short HEAD)
+            --tag $COMMIT_SHA
+
+          if [ "$BRANCH" = "main" ]; then
+            PKG_NAME=$(npm pkg get name | tr -d '"')
+            PKG_VERSION=$(npm pkg get version | tr -d '"')
+
+            npm dist-tag \
+                add "$PKG_NAME@$PKG_VERSION" latest
+          fi
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
