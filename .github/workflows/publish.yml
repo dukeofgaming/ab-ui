@@ -5,25 +5,15 @@ on:
     branches: 
       - main
       - develop
-      - "**"
-    # Run workflow only when a version tag is pushed (e.g., v1.0.0)
-    tags: ['v*']
+  pull_request:
+    branches: ["**"]
 
 jobs:
   build-and-publish:
-    name: Build and Publish
+    name: Build and Publish NPM Package
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          registry-url: 'https://registry.npmjs.org'
-          
-      - name: Run composite publish action
+      - name: Build and publish
         uses: ./.github/actions/node-publish
         with:
           npm_token: ${{ secrets.NPM_TOKEN }}

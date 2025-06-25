@@ -13,5 +13,5 @@ jobs:
     name: Run Vitest
     runs-on: ubuntu-latest
     steps:
-      - name: Run composite test action
-        uses: ./.github/actions/test
+      - name: Run vitest
+        uses: ./.github/actions/node-test
