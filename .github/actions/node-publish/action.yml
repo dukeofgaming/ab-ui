@@ -29,7 +29,8 @@ runs:
         [ "$BRANCH" != "main" ] && \
           npm version prerelease \
             --preid "$BRANCH-$COMMIT_SHA" \
-            --no-git-tag-version
+            --no-git-tag-version \
+            || echo "Not in main branch, making a prerelease version"
 
         PKG_NAME=$(npm pkg get name | tr -d '"')
         PKG_VERSION=$(npm pkg get version | tr -d '"')
@@ -40,7 +41,8 @@ runs:
 
         [ "$BRANCH" = "main" ] && \
           npm dist-tag \
-            add "$PKG_NAME@$PKG_VERSION" latest
+            add "$PKG_NAME@$PKG_VERSION" latest \
+            || echo "Not in main branch, skipping 'latest' tag"
 
       shell: bash
       env:
