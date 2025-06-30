@@ -38,13 +38,20 @@ jobs:
             issue \
               view ${{ steps.vars.outputs.issue_number }} \
               --json body \
-              | jq -r '.body')
+              | jq -r '.body'
+          )
 
           # Get YAML frontmatter
-          YAML_FRONTMATTER=$(echo "$ISSUE_BODY" | sed -n 's/^---\(.*\)---$/\1/p')
+          YAML_FRONTMATTER=$(echo "$ISSUE_BODY" \
+            | sed -n '/^---$/,/^---$/p' \
+            | sed '1d;$d'
+          )
+
+          which yq
 
           # Get issue type
           ISSUE_TYPE=$(echo "$YAML_FRONTMATTER" | sed -n 's/^type: \(.*\)$/\1/p')
+
 
           # Export step outputs
           echo "issue_type=$ISSUE_TYPE" >> $GITHUB_OUTPUT
