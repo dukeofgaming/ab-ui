@@ -72,11 +72,13 @@ jobs:
             echo "$ISSUE_BODY" > $FILE_DIRECTORY/${{ steps.vars.outputs.branch }}.md
           fi
 
+          echo "$FILE_PATH" >> $GITHUB_OUTPUT
+
 
       - name: Commit and push feature doc
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add ${{ steps.feature_doc.outputs.branch }}
+          git add ${{ steps.feature_doc.outputs.file_path }}
           git commit -m "chore: add feature doc for ${{ steps.vars.outputs.branch }}"
           git push
