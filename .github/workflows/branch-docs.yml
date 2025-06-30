@@ -5,6 +5,10 @@ on:
     branches-ignore: 
       - main
       - develop
+  
+  issues: 
+    types: 
+      - edited
     
 env:
   docs_dir: docs/
