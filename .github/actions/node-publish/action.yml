@@ -22,6 +22,9 @@ runs:
       shell: bash
       
     - name: Publish to npm
+      shell: bash
+      env:
+        NODE_AUTH_TOKEN: ${{ inputs.npm_token }}
       run: |
         BRANCH=$(git rev-parse --abbrev-ref HEAD | tr '/' '-')
         COMMIT_SHA=$(git rev-parse --short HEAD)
@@ -44,6 +47,3 @@ runs:
             add "$PKG_NAME@$PKG_VERSION" latest \
             || echo "Not in main branch, skipping 'latest' tag"
 
-      shell: bash
-      env:
-        NODE_AUTH_TOKEN: ${{ inputs.npm_token }}
