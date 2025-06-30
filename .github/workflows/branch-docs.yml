@@ -49,10 +49,8 @@ jobs:
             | sed '1d;$d'
           )
 
-          which yq
-
-          # Get issue type
-          ISSUE_TYPE=$(echo "$YAML_FRONTMATTER" | sed -n 's/^type: \(.*\)$/\1/p')
+          # Use yq to get the issue type
+          ISSUE_TYPE=$(echo "$YAML_FRONTMATTER" | yq '.type')
 
 
           # Export step outputs
