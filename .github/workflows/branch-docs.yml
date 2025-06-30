@@ -27,6 +27,10 @@ jobs:
           echo "branch=$BRANCH" >> $GITHUB_OUTPUT
           echo "issue_number=$ISSUE_NUMBER" >> $GITHUB_OUTPUT
 
+          # Printing Github Step summary
+          echo "Branch: $BRANCH" >> $GITHUB_STEP_SUMMARY
+          echo "Issue Number: $ISSUE_NUMBER" >> $GITHUB_STEP_SUMMARY
+
       - name: Git Github Issue Details
         id: issue_details
         run: |
@@ -47,6 +51,11 @@ jobs:
           echo "issue_body=$ISSUE_BODY" >> $GITHUB_OUTPUT
           echo "yaml_frontmatter=$YAML_FRONTMATTER" >> $GITHUB_OUTPUT
 
+          # Printing Github Step summary
+          echo "Issue Type: $ISSUE_TYPE" >> $GITHUB_STEP_SUMMARY
+          echo "Issue Body: $ISSUE_BODY" >> $GITHUB_STEP_SUMMARY
+          echo "YAML Frontmatter: $YAML_FRONTMATTER" >> $GITHUB_STEP_SUMMARY
+
       - name: Fetch GitHub issue and create feature doc
         id: feature_doc
         run: |
@@ -59,26 +68,32 @@ jobs:
           # Check if filename without directory exists in repository
           FILE_PATH=$(find . -type f -name $FILE_NAME)
           if [ -n "$FILE_PATH" ]; then
-            echo "File $FILE_PATH already exists, updating issue body"
+            echo "File $FILE_PATH already exists, updating issue body" >> $GITHUB_STEP_SUMMARY
 
+            ISSUE_BODY=$(cat $FILE_PATH)
             gh issue edit \
               ${{ steps.vars.outputs.issue_number }} \
                 --body "$ISSUE_BODY"
           else
             mkdir -p $FILE_DIRECTORY
-            FILE_PATH=$FILE_DIRECTORY/$FILE_NAME
-            echo "$ISSUE_BODY" > $FILE_PATH
             
-            echo "$ISSUE_BODY" > $FILE_DIRECTORY/${{ steps.vars.outputs.branch }}.md
+            FILE_PATH=$FILE_DIRECTORY/$FILE_NAME
+            echo "file_path=$FILE_PATH" >> $GITHUB_OUTPUT
+            
+            echo "Creating new feature doc at $FILE_PATH" >> $GITHUB_STEP_SUMMARY
+            echo "$ISSUE_BODY" > $FILE_PATH
+
           fi
 
           echo "$FILE_PATH" >> $GITHUB_OUTPUT
 
+          # Adding Documentation URL to Github Step summary
+          echo "Documentation URL: https://github.com/${{ github.repository }}/blob/${{ steps.vars.outputs.branch }}/$FILE_PATH" >> $GITHUB_STEP_SUMMARY
 
       - name: Commit and push feature doc
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add ${{ steps.feature_doc.outputs.file_path }}
-          git commit -m "chore: add feature doc for ${{ steps.vars.outputs.branch }}"
+          git commit -m "[GITHUB] add feature doc for ${{ steps.vars.outputs.branch }}"
           git push
