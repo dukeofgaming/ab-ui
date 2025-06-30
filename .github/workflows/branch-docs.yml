@@ -23,11 +23,9 @@ jobs:
           BRANCH=$(git rev-parse --abbrev-ref HEAD | tr '/' '-')
           ISSUE_NUMBER=$(echo "$BRANCH" | sed -E 's/^([0-9]+)-.*$/\1/')
 
-          # Export step outputs
           echo "branch=$BRANCH" >> $GITHUB_OUTPUT
           echo "issue_number=$ISSUE_NUMBER" >> $GITHUB_OUTPUT
 
-          # Printing Github Step summary
           echo "Branch: $BRANCH" >> $GITHUB_STEP_SUMMARY
           echo "Issue Number: $ISSUE_NUMBER" >> $GITHUB_STEP_SUMMARY
 
@@ -49,19 +47,10 @@ jobs:
             | sed '1d;$d'
           )
 
-          # Use yq to get the issue type
           ISSUE_TYPE=$(echo "$YAML_FRONTMATTER" | yq '.type')
 
-
-          # Export step outputs
           echo "issue_type=$ISSUE_TYPE" >> $GITHUB_OUTPUT
-          echo "issue_body=$ISSUE_BODY" >> $GITHUB_OUTPUT
-          echo "yaml_frontmatter=$YAML_FRONTMATTER" >> $GITHUB_OUTPUT
-
-          # Printing Github Step summary
           echo "Issue Type: $ISSUE_TYPE" >> $GITHUB_STEP_SUMMARY
-          echo "Issue Body: $ISSUE_BODY" >> $GITHUB_STEP_SUMMARY
-          echo "YAML Frontmatter: $YAML_FRONTMATTER" >> $GITHUB_STEP_SUMMARY
 
       - name: Fetch GitHub issue and create feature doc
         id: feature_doc
@@ -89,7 +78,14 @@ jobs:
             FILE_PATH=$FILE_DIRECTORY/$FILE_NAME
             echo "file_path=$FILE_PATH" >> $GITHUB_OUTPUT
             
-            echo "Creating new feature doc at $FILE_PATH" >> $GITHUB_STEP_SUMMARY
+            echo "Creating new branch doc at $FILE_PATH" >> $GITHUB_STEP_SUMMARY
+
+            ISSUE_BODY=$(gh \
+              issue \
+                view ${{ steps.vars.outputs.issue_number }} \
+                --json body \
+                | jq -r '.body'
+            )
             echo "$ISSUE_BODY" > $FILE_PATH
 
           fi
