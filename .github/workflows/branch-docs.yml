@@ -65,6 +65,7 @@ jobs:
             
           # Check if filename without directory exists in repository
           FILE_PATH=$(find . -type f -name $FILE_NAME)
+
           if [ -n "$FILE_PATH" ]; then
             echo "File $FILE_PATH already exists, updating issue body" >> $GITHUB_STEP_SUMMARY
 
@@ -76,7 +77,6 @@ jobs:
             mkdir -p $FILE_DIRECTORY
             
             FILE_PATH=$FILE_DIRECTORY/$FILE_NAME
-            echo "file_path=$FILE_PATH" >> $GITHUB_OUTPUT
             
             echo "Creating new branch doc at $FILE_PATH" >> $GITHUB_STEP_SUMMARY
 
@@ -90,7 +90,7 @@ jobs:
 
           fi
 
-          echo "$FILE_PATH" >> $GITHUB_OUTPUT
+          echo "file_path=$FILE_PATH" >> $GITHUB_OUTPUT
 
           # Adding Documentation URL to Github Step summary
           echo "Documentation URL: https://github.com/${{ github.repository }}/blob/${{ steps.vars.outputs.branch }}/$FILE_PATH" >> $GITHUB_STEP_SUMMARY
