@@ -23,12 +23,12 @@ As a developer, I want to release the package to NPM, so that I can use my compo
 - [ ] Tie feature branches and releases directly to specific design documents (see [[requirements#3.2]])
 
     - [x] Create issue template
-    - [ ] Automate generation of Markdown documentation file upon branch creation
+    - [x] Automate generation of Markdown documentation file upon branch creation
 
-- [ ] Maintain a single source of truth for design assets (Figma, Sketch, etc.) mapped to frontend component
-versions (see [[requirements#2.1]])
+- [ ] Maintain a single source of truth for design assets (Figma, Sketch, etc.) mapped to frontend componentversions (see [[requirements#2.1]])
 
-    - [ ] Integrate Storybook to Figma
+    - [x] Integrate Storybook to Figma
+    - [x] Integrate Figma to Storybook
 
 - [ ] Provide clear lineage between design revisions, code commits, and semantic releases (see [[requirements#2.2]])
 
@@ -45,3 +45,4 @@ versions (see [[requirements#2.1]])
 
 - While having the option to publish Storybook to GH Pages, Chromatic additionally offers the advantage of visual testing.
 
+- There is a changelog viewer for Storybook: https://storybook.js.org/addons/storybook-addon-changelog-viewer
