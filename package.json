@@ -3,6 +3,9 @@
   "private": false,
   "version": "0.1.1",
   "description": "A set of reusable React UI components.",
+  "publishConfig": {
+    "access": "public"
+  },
   "keywords": [
     "react",
     "components",
