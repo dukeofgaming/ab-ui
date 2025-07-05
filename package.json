@@ -1,7 +1,7 @@
 {
   "name": "@dukeofgaming/ab-ui",
   "private": false,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A set of reusable React UI components.",
   "keywords": [
     "react",
