@@ -58,4 +58,6 @@ As a developer, I want to release the package to NPM, so that I can use my compo
         - Local: for feature branches, Storybook runs locally
         - Chromatic: for pre-release versions in dev, to coordinate development
         - GH Pages: for release versions, serves as the official documentation
+
+    - Changesets requires special permissions to create / approve PRs
     
