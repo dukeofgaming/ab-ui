@@ -1,0 +1,107 @@
+name: Monorepo Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  test:
+    name: Run Vitest
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Tests
+        uses: ./.github/actions/node-test
+
+  # publish_pre_release:
+  #   name: Build and Publish Pre-release NPM Package
+  #   runs-on: ubuntu-latest
+  #   needs: test
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
+  #     - name: Build and publish
+  #       uses: ./.github/actions/node-publish
+  #       with:
+  #         npm_token: ${{ secrets.NPM_TOKEN }}
+
+
+  package_release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js 20.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.x
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Create Release Pull Request or Publish to npm
+        id: changesets
+        uses: changesets/action@v1
+        # with:
+        #   # This expects you to have a script called release which does a build for your packages and calls changeset publish
+        #   publish: npm run release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+  
+
+  # TODO: Publish Sotrybook to Chromatic for pre-release versions in dev
+
+  # storybook_chromatic_dev:
+  #   name: Publish Storybook to Chromatic
+  #   runs-on: ubuntu-latest
+  #   needs: test
+  #   if: github.ref == 'refs/heads/develop'
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
+
+  #     - name: Setup Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: 24
+
+  #     - name: Publish Storybook to Chromatic
+  #       uses: chromatic-com/storybook@4.0.0
+  #       with:
+  #         install_command: yarn install # default: npm ci
+  #         build_command: yarn build-storybook # default: npm run build-storybook
+  #         path: storybook-static # default: dist/storybook
+  #         checkout: false # default: true
+
+
+  storybook_release:
+    name: Publish Storybook to Github Pages
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Publish Storybook to GitHub Pages
+        uses: bitovi/github-actions-storybook-to-github-pages@v1.0.3
+        with:
+          install_command: yarn install # default: npm ci
+          build_command: yarn build-storybook # default: npm run build-storybook
+          path: storybook-static # default: dist/storybook
+          checkout: false # default: true
