@@ -17,6 +17,11 @@ runs:
       run: npx playwright install --with-deps
       shell: bash
 
-    - name: Run Vitest
-      run: npm run test
+    - name: Run Vitest (components)
+      run: npm run test:components
       shell: bash
+
+    - name: Run Vitest (storybook)
+      run: npm run test:storybook
+      shell: bash
+      
