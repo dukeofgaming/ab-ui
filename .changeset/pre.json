@@ -1,0 +1,14 @@
+{
+  "mode": "pre",
+  "tag": "dev",
+  "initialVersions": {
+    "@dukeofgaming/ab-ui": "0.1.1"
+  },
+  "changesets": [
+    "moody-radios-bow",
+    "ripe-eyes-drum",
+    "spotty-paws-lay",
+    "stale-baboons-see",
+    "thirty-dingos-stare"
+  ]
+}
