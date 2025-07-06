@@ -52,9 +52,8 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
-          branch: develop
-        #   # This expects you to have a script called release which does a build for your packages and calls changeset publish
-        #   publish: npm run release
+          branch: ${{ github.ref_name }}
+          publish: npx changeset publish --tag ${{ github.ref_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
