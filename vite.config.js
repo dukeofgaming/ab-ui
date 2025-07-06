@@ -7,6 +7,25 @@ import { storybookTest } from '@storybook/addon-vitest/vitest-plugin';
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  build: {
+    lib: {
+      entry: 'src/components/index.js',
+      name: 'AbUI',
+      fileName: (format) => `ab-ui.${format}.js`,
+      formats: ['es', 'cjs']
+    },
+    rollupOptions: {
+      // Externalize peer deps like react
+      external: ['react', 'react-dom'],
+      output: {
+        globals: {
+          react: 'React',
+          'react-dom': 'ReactDOM'
+        }
+      }
+    },
+    outDir: 'dist'
+  },
   test: {
     projects: [
       {
