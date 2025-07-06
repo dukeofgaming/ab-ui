@@ -1,17 +1,18 @@
 name: Monorepo Pipeline
 
 on:
+  pull_request:
+    branches:
+      - develop
+      - main
   push:
     branches:
-      - main
       - develop
-      
-  pull_request:
-    branches: ["**"]
+      - main
 
 jobs:
   test:
-    name: Run Vitest
+    name: Run Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -20,44 +21,73 @@ jobs:
       - name: Run Tests
         uses: ./.github/actions/node-test
 
-  # publish_pre_release:
-  #   name: Build and Publish Pre-release NPM Package
-  #   runs-on: ubuntu-latest
-  #   needs: test
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v4
-  #     - name: Build and publish
-  #       uses: ./.github/actions/node-publish
-  #       with:
-  #         npm_token: ${{ secrets.NPM_TOKEN }}
 
-
-  package_release:
-    name: Release
+  snapshot:
+    name: Snapshot Preview Release
     runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
-
       - name: Setup Node.js 20.x
         uses: actions/setup-node@v3
         with:
           node-version: 20.x
-
       - name: Install Dependencies
         run: npm ci
+      - name: Changeset Snapshot (PR only)
+        run: npx changeset pre snapshot
 
-      - name: Create Release Pull Request or Publish to npm
-        id: changesets
+
+  release_dev:
+    name: Pre-release (develop)
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+      - name: Setup Node.js 20.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.x
+      - name: Install Dependencies
+        run: npm ci
+      - name: Enter Pre-release Mode (dev)
+        run: npx changeset pre enter dev
+      - name: Create Release Pull Request or Publish Pre-release to npm
         uses: changesets/action@v1
         with:
-          branch: ${{ github.ref_name }}
-          publish: npx changeset publish --tag ${{ github.ref_name }}
+          branch: develop
+          publish: npx changeset publish --tag dev
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-  
+
+
+  release_main:
+    name: Stable Release (main)
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+      - name: Setup Node.js 20.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.x
+      - name: Install Dependencies
+        run: npm ci
+      - name: Exit Pre-release Mode (stable)
+        run: npx changeset pre exit
+      - name: Create Release Pull Request or Publish Stable to npm
+        uses: changesets/action@v1
+        with:
+          branch: main
+          publish: npx changeset publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
 
   # TODO: Publish Sotrybook to Chromatic for pre-release versions in dev
 
