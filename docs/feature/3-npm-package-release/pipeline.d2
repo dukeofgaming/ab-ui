@@ -1,0 +1,30 @@
+
+
+
+feature-branch: {
+    Build -> Publish feature Pre-Release
+    Build -> Changesets (dry-run summary)
+}
+
+Test -> feature-branch.Build: Feature Branch
+
+
+dev-branch:{
+    publish-storybook-chromatic: "Publish Storyboock (Chromatic)"
+    
+    Build -> Create Changeset PR
+    Build -> Publish dev Pre-Release -> publish-storybook-chromatic
+
+
+}
+
+Test -> dev-branch.Build: Dev Branch
+
+main-branch: {
+    publish-storybook-github-pages: "Publish Storybook to GitHub Pages"
+
+    Build -> Publish to NPM with Changeset -> publish-storybook-github-pages
+    
+}
+
+Test -> main-branch.Build: Main Branch
