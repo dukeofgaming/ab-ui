@@ -170,37 +170,32 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
         shell: bash
 
-
-  # TODO: Publish Sotrybook to Chromatic for pre-release versions in dev
-
-  # storybook_chromatic_dev:
-  #   name: Publish Storybook to Chromatic
-  #   runs-on: ubuntu-latest
-  #   needs: test
-  #   if: github.ref == 'refs/heads/develop'
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v4
-
-  #     - name: Setup Node.js
-  #       uses: actions/setup-node@v4
-  #       with:
-  #         node-version: 24
-
-  #     - name: Publish Storybook to Chromatic
-  #       uses: chromatic-com/storybook@4.0.0
-  #       with:
-  #         install_command: yarn install # default: npm ci
-  #         build_command: yarn build-storybook # default: npm run build-storybook
-  #         path: storybook-static # default: dist/storybook
-  #         checkout: false # default: true
+  storybook_dev:
+    if: github.ref == 'refs/heads/develop'
+    name: Publish Storybook (develop:Chromatic)
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Install dependencies
+        run: npm ci
+      - name: Run Chromatic
+        uses: chromaui/action@v1
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
 
 
   storybook_release:
-    name: Publish Storybook to Github Pages
+    if: github.ref == 'refs/heads/main'
+    name: Publish Storybook (main:Github Pages)
     runs-on: ubuntu-latest
     needs: test
-    if: github.ref == 'refs/heads/main'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
