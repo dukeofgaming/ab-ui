@@ -29,8 +29,6 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Setup Node.js 24
         uses: actions/setup-node@v4
@@ -44,30 +42,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       
-      - name: Fetch all branches for changeset status
-        run: git fetch --all --tags
-
-      - name: Ensure local refs for PR and base branches
-        run: |
-          git branch pr-head "origin/${{ github.head_ref }}"
-          git branch pr-base "origin/${{ github.base_ref }}"
-
-      - name: 📦 Summarize Snapshot Packages
+      - name: 📦 Summarize Snapshot Package Version
         shell: bash
         run: |
-          pkgs=$(npx changeset status --since=pr-base --output=- \
-            | jq -r '.releases[] | "- 📦 [\(.name)](https://www.npmjs.com/package/\(.name))/v/\(.newVersion) `v\(.newVersion)`"'
-          )
-
-          echo "### 📦 Published Snapshot Packages" >> $GITHUB_STEP_SUMMARY
-          if [ -n "$pkgs" ]; then
-            echo "$pkgs" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "No packages were published." >> $GITHUB_STEP_SUMMARY
-          fi
-
+          version=$(jq -r '.version' package.json)
+          name=$(jq -r '.name' package.json)
+          echo "### 📦 Published Snapshot Package" >> $GITHUB_STEP_SUMMARY
+          echo "- 📦 [${name}](https://www.npmjs.com/package/${name})/v/${version} \`v${version}\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-
           echo "### 🔗 Pull Request" >> $GITHUB_STEP_SUMMARY
           echo "- [View this PR](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/pull/${{ github.event.pull_request.number }})" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
