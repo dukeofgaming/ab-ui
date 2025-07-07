@@ -85,7 +85,7 @@ jobs:
         uses: changesets/action@v1
         with:
           branch: develop
-          publish: npx changeset publish --tag dev
+          publish: npx changeset publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
