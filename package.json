@@ -22,8 +22,7 @@
     }
   },
   "files": [
-    "dist",
-    "src/components"
+    "dist"
   ],
   "peerDependencies": {
     "react": ">=18",
