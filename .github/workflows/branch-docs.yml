@@ -69,10 +69,9 @@ jobs:
           if [ -n "$FILE_PATH" ]; then
             echo "File $FILE_PATH already exists, updating issue body" >> $GITHUB_STEP_SUMMARY
 
-            ISSUE_BODY=$(cat $FILE_PATH)
             gh issue edit \
               ${{ steps.vars.outputs.issue_number }} \
-                --body "$ISSUE_BODY"
+                --body-file "$FILE_PATH"
           else
             mkdir -p $FILE_DIRECTORY
             
