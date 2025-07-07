@@ -9,6 +9,12 @@ export default {
   argTypes: {
     minAge: { control: 'number', defaultValue: 18 },
   },
+  parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/lwNVL3ceJV5Ih2l1QnODI1/AB-UI-Design-System?node-id=65-30&t=nVFTBXrGcAbexbGa-4',
+    }
+  }
 };
 
 export const Default = {
@@ -27,7 +33,7 @@ export const MinAge21 = {
 
 export const UnderageInput = {
   args: { minAge: 18 },
-  name: 'Underage Input Shows Error',
+  name: 'Underage Input Error',
   play: async ({ canvasElement, args }) => {
     // Arrange
     const canvas = within(canvasElement);
