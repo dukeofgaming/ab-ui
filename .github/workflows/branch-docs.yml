@@ -26,7 +26,8 @@ jobs:
           echo "branch=$BRANCH" >> $GITHUB_OUTPUT
           echo "issue_number=$ISSUE_NUMBER" >> $GITHUB_OUTPUT
 
-          echo "- 🏷️ Branch: $BRANCH" >> $GITHUB_STEP_SUMMARY
+          echo "- 🔗 Issue Link: https://github.com/${{ github.repository }}/issues/${ISSUE_NUMBER}" >> $GITHUB_STEP_SUMMARY
+          echo "- 🏷️ Branch [$BRANCH](https://github.com/${{ github.repository }}/tree/${BRANCH})" >> $GITHUB_STEP_SUMMARY
 
       - name: Git Github Issue Details
         id: issue_details
