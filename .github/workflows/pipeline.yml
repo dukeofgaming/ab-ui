@@ -95,7 +95,7 @@ jobs:
           echo "### 📦 Published Packages" >> $GITHUB_STEP_SUMMARY
 
           if [ "${{ steps.changesets.outputs.published }}" = 'true' ]; then
-            pkgs=$(echo '${{ steps.changesets.outputs.publishedPackages }}' | jq -r '.[] | "- 📦 [\(.name)](https://www.npmjs.com/package/\(.name)) `\(.version)`"')
+            pkgs=$(echo '${{ steps.changesets.outputs.publishedPackages }}' | jq -r '.[] | "- 📦 [\(.name)@\(.version)](https://www.npmjs.com/package/\(.name)/v/\(.version))"')
             echo "$pkgs" >> $GITHUB_STEP_SUMMARY
           else
             echo "No packages were published." >> $GITHUB_STEP_SUMMARY
@@ -151,7 +151,7 @@ jobs:
           echo "### 📦 Published Packages" >> $GITHUB_STEP_SUMMARY
 
           if [ "${{ steps.changesets.outputs.published }}" = 'true' ]; then
-            pkgs=$(echo '${{ steps.changesets.outputs.publishedPackages }}' | jq -r '.[] | "- 📦 [\(.name)](https://www.npmjs.com/package/\(.name)) `\(.version)`"')
+            pkgs=$(echo '${{ steps.changesets.outputs.publishedPackages }}' | jq -r '.[] | "- 📦 [\(.name)@\(.version)](https://www.npmjs.com/package/\(.name)/v/\(.version))"')
             echo "$pkgs" >> $GITHUB_STEP_SUMMARY
           else
             echo "No packages were published." >> $GITHUB_STEP_SUMMARY
