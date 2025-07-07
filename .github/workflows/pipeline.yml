@@ -47,10 +47,15 @@ jobs:
       - name: Fetch all branches for changeset status
         run: git fetch --all --tags
 
+      - name: Ensure local refs for PR and base branches
+        run: |
+          git branch pr-head "origin/${{ github.head_ref }}"
+          git branch pr-base "origin/${{ github.base_ref }}"
+
       - name: 📦 Summarize Snapshot Packages
         shell: bash
         run: |
-          pkgs=$(npx changeset status --since=${{ github.base_ref }} --output=- \
+          pkgs=$(npx changeset status --since=pr-base --output=- \
             | jq -r '.releases[] | "- 📦 [\(.name)](https://www.npmjs.com/package/\(.name))/v/\(.newVersion) `v\(.newVersion)`"'
           )
 
