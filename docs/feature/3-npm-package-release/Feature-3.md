@@ -60,4 +60,6 @@ As a developer, I want to release the package to NPM, so that I can use my compo
         - GH Pages: for release versions, serves as the official documentation
 
     - Changesets requires special permissions to create / approve PRs
+
+    - Installed changesets bot: https://github.com/changesets/bot?tab=readme-ov-file
     
