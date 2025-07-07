@@ -48,7 +48,7 @@ jobs:
           version=$(jq -r '.version' package.json)
           name=$(jq -r '.name' package.json)
           echo "### 📦 Published Snapshot Package" >> $GITHUB_STEP_SUMMARY
-          echo "- 📦 [${name}](https://www.npmjs.com/package/${name})/v/${version} \`v${version}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- 📦 [${name}@${version}](https://www.npmjs.com/package/${name}/v/${version})" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 🔗 Pull Request" >> $GITHUB_STEP_SUMMARY
           echo "- [View this PR](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/pull/${{ github.event.pull_request.number }})" >> $GITHUB_STEP_SUMMARY
