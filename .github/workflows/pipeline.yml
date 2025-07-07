@@ -25,18 +25,47 @@ jobs:
   snapshot:
     name: Snapshot Preview Release
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
+    # Run for PRs (except changeset-release/*) and for pushes to develop or main
+    if: |
+      (github.event_name == 'pull_request' && !startsWith(github.head_ref, 'changeset-release/')) ||
+      (github.event_name == 'push' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'))
     steps:
+      - name: Skip if merge from changeset-release/* (push events only)
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main')
+        run: |
+          # Determine base branch for PR lookup
+          if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
+            BASE_BRANCH="main"
+          else
+            BASE_BRANCH="develop"
+          fi
+          echo "Checking if last merged PR was from changeset-release/*..." >> $GITHUB_STEP_SUMMARY
+
+          pr_branch=$(gh pr list \
+            --state merged \
+            --base "$BASE_BRANCH" \
+            --json headRefName,mergeCommit \
+            --jq '.[] | select(.mergeCommit.oid=="'${GITHUB_SHA}'") | .headRefName' \
+          )
+
+          echo "Merged PR branch: $pr_branch" >> $GITHUB_STEP_SUMMARY
+
+          if [[ "$pr_branch" == changeset-release/* ]]; then
+            echo "This is a changeset-release PR merge, skipping snapshot publish." >> $GITHUB_STEP_SUMMARY
+            exit 0
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Checkout Repo
         uses: actions/checkout@v4
-
       - name: Setup Node.js 24
         uses: actions/setup-node@v4
         with:
           node-version: 24
       - name: Install Dependencies
         run: npm ci
-      - name: Changeset Snapshot (PR only)
+      - name: Changeset Snapshot (PR or push)
         run: |
           npx changeset version --snapshot ${{ github.head_ref || github.ref_name }}
 
@@ -46,13 +75,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      
       - name: 📦 Summarize Snapshot Package Version
         shell: bash
         run: |
           version=$(jq -r '.version' package.json)
           name=$(jq -r '.name' package.json)
           echo "### 📦 Published Snapshot Package" >> $GITHUB_STEP_SUMMARY
+
           echo "- 📦 [${name}@${version}](https://www.npmjs.com/package/${name}/v/${version})" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 🔗 Pull Request" >> $GITHUB_STEP_SUMMARY
