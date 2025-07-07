@@ -44,8 +44,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       
-      - name: Fetch PR base branch for changeset status
-        run: git fetch origin ${{ github.base_ref }}:refs/remotes/origin/${{ github.base_ref }}
+      - name: Ensure PR and base branches are present for changeset status
+        run: |
+          git fetch origin ${{ github.head_ref }}:refs/remotes/origin/${{ github.head_ref }}
+          git fetch origin ${{ github.base_ref }}:refs/remotes/origin/${{ github.base_ref }}
 
       - name: 📦 Summarize Snapshot Packages
         shell: bash
