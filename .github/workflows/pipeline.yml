@@ -40,6 +40,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      
+      - name: Fetch main branch for changeset status
+        run: git fetch origin main:refs/remotes/origin/main --depth=1
+
       - name: 📦 Summarize Snapshot Packages
         shell: bash
         run: |
