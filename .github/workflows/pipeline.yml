@@ -50,7 +50,7 @@ jobs:
       - name: 📦 Summarize Snapshot Packages
         shell: bash
         run: |
-          pkgs=$(npx changeset status --output=- \
+          pkgs=$(npx changeset status --since=${{ github.base_ref }} --output=- \
             | jq -r '.releases[] | "- 📦 [\(.name)](https://www.npmjs.com/package/\(.name))/v/\(.newVersion) `v\(.newVersion)`"'
           )
 
