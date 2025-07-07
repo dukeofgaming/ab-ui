@@ -67,17 +67,23 @@ jobs:
           FILE_PATH=$(find . -type f -name $FILE_NAME)
 
           if [ -n "$FILE_PATH" ]; then
-            echo "File $FILE_PATH already exists, updating issue body" >> $GITHUB_STEP_SUMMARY
-
+            echo "## 📝 Existing Documentation" >> $GITHUB_STEP_SUMMARY
+            echo "File $FILE_PATH already exists, updating issue body." >> $GITHUB_STEP_SUMMARY
+            
             gh issue edit \
               ${{ steps.vars.outputs.issue_number }} \
                 --body-file "$FILE_PATH"
+
+            echo "### 🔗 Related Issue" >> $GITHUB_STEP_SUMMARY
+            echo "- [View Issue #${{ steps.vars.outputs.issue_number }}](https://github.com/${{ github.repository }}/issues/${{ steps.vars.outputs.issue_number }})" >> $GITHUB_STEP_SUMMARY
+
           else
             mkdir -p $FILE_DIRECTORY
             
             FILE_PATH=$FILE_DIRECTORY/$FILE_NAME
             
-            echo "Creating new branch doc at $FILE_PATH" >> $GITHUB_STEP_SUMMARY
+            echo "## 🆕 Creating Documentation" >> $GITHUB_STEP_SUMMARY
+            echo "Creating new branch doc at \\`$FILE_PATH\\`" >> $GITHUB_STEP_SUMMARY
 
             ISSUE_BODY=$(gh \
               issue \
@@ -102,10 +108,20 @@ jobs:
             git commit -m "[GITHUB] add feature doc for ${{ steps.vars.outputs.branch }}"
             git push
 
-            echo "Documentation added to branch ${{ steps.vars.outputs.branch }}" >> $GITHUB_STEP_SUMMARY
+            echo "\n---" >> $GITHUB_STEP_SUMMARY
+            echo "## 📄 File Status" >> $GITHUB_STEP_SUMMARY
+            echo "### ✅ Documentation added to branch \\`${{ steps.vars.outputs.branch }}\\`" >> $GITHUB_STEP_SUMMARY
           else
-            echo "Documentation already exists for branch ${{ steps.vars.outputs.branch }}" >> $GITHUB_STEP_SUMMARY
+            echo "\n---" >> $GITHUB_STEP_SUMMARY
+            echo "## 📄 File Status" >> $GITHUB_STEP_SUMMARY
+            echo "### ℹ️ No changes committed (documentation already up to date)" >> $GITHUB_STEP_SUMMARY
           fi
 
-          echo "Documentation URL: https://github.com/${{ github.repository }}/blob/${{ steps.vars.outputs.branch }}/${{ steps.feature_doc.outputs.file_path }}" \
-            >> $GITHUB_STEP_SUMMARY
+          echo "\n---" >> $GITHUB_STEP_SUMMARY
+          echo "## 📝 Issue Details" >> $GITHUB_STEP_SUMMARY
+          echo "- Issue Number: ${{ steps.vars.outputs.issue_number }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Issue Type: ${{ steps.issue_details.outputs.issue_type }}" >> $GITHUB_STEP_SUMMARY
+
+          echo "\n---" >> $GITHUB_STEP_SUMMARY
+          echo "## 📄 Documentation URL" >> $GITHUB_STEP_SUMMARY
+          echo "- [View Documentation](https://github.com/${{ github.repository }}/blob/${{ steps.vars.outputs.branch }}/${{ steps.feature_doc.outputs.file_path }})" >> $GITHUB_STEP_SUMMARY
