@@ -2,7 +2,7 @@
 type: Feature
 ---
 
-# Feature 1: Age Verification Component
+# Feature #1: Age Verification Component
 
 As a developer, I want to create a component that verifies a user's age, so that I can add it to a brand site.
 

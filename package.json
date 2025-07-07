@@ -1,8 +1,33 @@
 {
-  "name": "ab-ui",
-  "private": true,
-  "version": "0.0.0",
+  "name": "@dukeofgaming/ab-ui",
+  "private": false,
+  "version": "0.1.1",
+  "description": "A set of reusable React UI components.",
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "react",
+    "components",
+    "ui",
+    "library"
+  ],
   "type": "module",
+  "main": "dist/ab-ui.cjs.js",
+  "module": "dist/ab-ui.es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/ab-ui.es.js",
+      "require": "./dist/ab-ui.cjs.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
   "scripts": {
     "dev": "vite",
     "test": "vitest",
@@ -13,16 +38,14 @@
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "chromatic": "npx chromatic --project-token=chpt_4789e7b5809ff52"
-  },
-  "dependencies": {
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "chromatic": "npx chromatic --project-token=${CHROMATIC_PROJECT_TOKEN}"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.29.5",
     "@chromatic-com/storybook": "^4.0.0",
     "@eslint/js": "^9.25.0",
     "@storybook/addon-a11y": "^9.0.12",
+    "@storybook/addon-designs": "^10.0.1",
     "@storybook/addon-docs": "^9.0.6",
     "@storybook/addon-onboarding": "^9.0.6",
     "@storybook/addon-vitest": "^9.0.12",

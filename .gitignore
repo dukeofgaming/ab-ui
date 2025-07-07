@@ -33,3 +33,9 @@ storybook-static
 
 # Marp
 **/slides/**/*.html
+
+# npm auth
+.npmrc
+
+# Docs
+/docs/dist

@@ -1,0 +1,214 @@
+name: Monorepo Pipeline
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - main
+  push:
+    branches:
+      - develop
+      - main
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Tests
+        uses: ./.github/actions/node-test
+
+
+  snapshot:
+    name: Snapshot Preview Release
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Install Dependencies
+        run: npm ci
+      - name: Changeset Snapshot (PR only)
+        run: |
+          npx changeset version --snapshot ${{ github.head_ref || github.ref_name }}
+
+          # Set NPM_TOKEN for changeset publish
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+          npx changeset publish --tag ${{ github.head_ref || github.ref_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      
+      - name: 📦 Summarize Snapshot Package Version
+        shell: bash
+        run: |
+          version=$(jq -r '.version' package.json)
+          name=$(jq -r '.name' package.json)
+          echo "### 📦 Published Snapshot Package" >> $GITHUB_STEP_SUMMARY
+          echo "- 📦 [${name}@${version}](https://www.npmjs.com/package/${name}/v/${version})" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🔗 Pull Request" >> $GITHUB_STEP_SUMMARY
+          echo "- [View this PR](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/pull/${{ github.event.pull_request.number }})" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+
+  release_dev:
+    name: Pre-release (develop)
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Install Dependencies
+        run: npm ci
+      - name: Enter Pre-release Mode (dev)
+        run: |
+          if [ ! -f .changeset/pre.json ]; then
+            npx changeset pre enter dev
+          else
+            echo "Already in pre mode, skipping changeset pre enter dev"
+          fi
+      - name: Create Release Pull Request or Publish Pre-release to npm
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          branch: develop
+          publish: npx changeset publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: 📦 Summarize Published Packages
+        if: steps.changesets.outputs.published == 'true' || steps.changesets.outputs.pullRequestNumber != ''
+        run: |
+          echo "### 📦 Published Packages" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ steps.changesets.outputs.published }}" = 'true' ]; then
+            pkgs=$(echo '${{ steps.changesets.outputs.publishedPackages }}' | jq -r '.[] | "- 📦 [\(.name)](https://www.npmjs.com/package/\(.name)) `\(.version)`"')
+            echo "$pkgs" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "No packages were published." >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          echo "### 🔗 Release Pull Request" >> $GITHUB_STEP_SUMMARY
+          
+          if [ -n "${{ steps.changesets.outputs.pullRequestNumber }}" ]; then
+            pr_url="https://github.com/${{ github.repository }}/pull/${{ steps.changesets.outputs.pullRequestNumber }}"
+            echo "- [View PR #${{ steps.changesets.outputs.pullRequestNumber }}]($pr_url)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "No release PR was created or updated." >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+        shell: bash
+
+
+  release_main:
+    name: Stable Release (main)
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Install Dependencies
+        run: npm ci
+      - name: Exit Pre-release Mode (stable)
+        run: |
+          if [ -f .changeset/pre.json ]; then
+            npx changeset pre exit
+          else
+            echo "Not in pre mode, skipping changeset pre exit"
+          fi
+      - name: Create Release Pull Request or Publish Stable to npm
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          branch: main
+          publish: npx changeset publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: 📦 Summarize Published Packages
+        if: steps.changesets.outputs.published == 'true' || steps.changesets.outputs.pullRequestNumber != ''
+        run: |
+          echo "### 📦 Published Packages" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ steps.changesets.outputs.published }}" = 'true' ]; then
+            pkgs=$(echo '${{ steps.changesets.outputs.publishedPackages }}' | jq -r '.[] | "- 📦 [\(.name)](https://www.npmjs.com/package/\(.name)) `\(.version)`"')
+            echo "$pkgs" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "No packages were published." >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY 
+
+          echo "### 🔗 Release Pull Request" >> $GITHUB_STEP_SUMMARY
+          if [ -n "${{ steps.changesets.outputs.pullRequestNumber }}" ]; then
+            pr_url="https://github.com/${{ github.repository }}/pull/${{ steps.changesets.outputs.pullRequestNumber }}"
+            echo "- [View PR #${{ steps.changesets.outputs.pullRequestNumber }}]($pr_url)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "No release PR was created or updated." >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+        shell: bash
+
+  storybook_dev:
+    if: github.ref == 'refs/heads/develop'
+    name: Publish Storybook (develop:Chromatic)
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Install dependencies
+        run: npm ci
+      - name: Run Chromatic
+        uses: chromaui/action@v1
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+
+
+  storybook_release:
+    if: github.ref == 'refs/heads/main'
+    name: Publish Storybook (main:Github Pages)
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Publish Storybook to GitHub Pages
+        uses: bitovi/github-actions-storybook-to-github-pages@v1.0.3
+        with:
+          install_command: yarn install # default: npm ci
+          build_command: yarn build-storybook # default: npm run build-storybook
+          path: storybook-static # default: dist/storybook
+          checkout: false # default: true
