@@ -36,20 +36,19 @@ jobs:
       - name: Install Dependencies
         run: npm ci
       - name: Changeset Snapshot (PR only)
-        id: changesets
-        uses: changesets/action@v1
-        with:
-          version: npx changeset version --snapshot ${{ github.head_ref || github.ref_name }}
+        run: npx changeset version --snapshot ${{ github.head_ref || github.ref_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: 📦 Summarize Snapshot Packages
-        if: steps.changesets.outputs.published == 'true' || steps.changesets.outputs.pullRequestNumber != ''
+        shell: bash
         run: |
-          echo "### 📦 Published Snapshot Packages" >> $GITHUB_STEP_SUMMARY
+          pkgs=$(npx changeset status --output=- \
+            | jq -r '.releases[] | "- 📦 [\(.name)](https://www.npmjs.com/package/\(.name))/v/\(.newVersion) `v\(.newVersion)`"'
+          )
 
-          if [ "${{ steps.changesets.outputs.published }}" = 'true' ]; then
-            pkgs=$(echo '${{ steps.changesets.outputs.publishedPackages }}' | jq -r '.[] | "- 📦 [\(.name)](https://www.npmjs.com/package/\(.name)) `\(.version)`"')
+          echo "### 📦 Published Snapshot Packages" >> $GITHUB_STEP_SUMMARY
+          if [ -n "$pkgs" ]; then
             echo "$pkgs" >> $GITHUB_STEP_SUMMARY
           else
             echo "No packages were published." >> $GITHUB_STEP_SUMMARY
@@ -57,17 +56,9 @@ jobs:
 
           echo "" >> $GITHUB_STEP_SUMMARY
 
-          echo "### 🔗 Release Pull Request" >> $GITHUB_STEP_SUMMARY
-
-          if [ -n "${{ steps.changesets.outputs.pullRequestNumber }}" ]; then
-            pr_url="https://github.com/${{ github.repository }}/pull/${{ steps.changesets.outputs.pullRequestNumber }}"
-            echo "- [View PR #${{ steps.changesets.outputs.pullRequestNumber }}]($pr_url)" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "No release PR was created or updated." >> $GITHUB_STEP_SUMMARY
-          fi
-
+          echo "### 🔗 Pull Request" >> $GITHUB_STEP_SUMMARY
+          echo "- [View this PR](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/pull/${{ github.event.pull_request.number }})" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-        shell: bash
 
 
   release_dev:
