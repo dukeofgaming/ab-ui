@@ -36,7 +36,12 @@ jobs:
       - name: Install Dependencies
         run: npm ci
       - name: Changeset Snapshot (PR only)
-        run: npx changeset version --snapshot ${{ github.head_ref || github.ref_name }}
+        uses: changesets/action@v1
+        with:
+          version: npx changeset version --snapshot ${{ github.head_ref || github.ref_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
 
   release_dev:
