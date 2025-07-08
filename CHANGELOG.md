@@ -1,5 +1,14 @@
 # @dukeofgaming/ab-ui
 
+## 0.1.2-dev.1
+
+### Patch Changes
+
+- 3dafdcc: Fixing issue with dev and main snapshots
+- 5878484: Added snapshots for regular merges, but skipping for changeset-release/\* PR merges
+- 9427a4b: Adding develop & main snapshots on regular merges (non changeset-release/\*)
+- 1e69138: Adding links to published packages for dev (pre) and main
+
 ## 0.1.2-dev.0
 
 ### Patch Changes
