@@ -1,5 +1,11 @@
 # @dukeofgaming/ab-ui
 
+## 0.1.2-dev.3
+
+### Patch Changes
+
+- 27dc146: Improved robustness of Changesets merge commit detection
+
 ## 0.1.2-dev.2
 
 ### Patch Changes
