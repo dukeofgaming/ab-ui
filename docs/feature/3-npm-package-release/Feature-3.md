@@ -62,4 +62,10 @@ As a developer, I want to release the package to NPM, so that I can use my compo
     - Changesets requires special permissions to create / approve PRs
 
     - Installed changesets bot: https://github.com/changesets/bot?tab=readme-ov-file
+
+- Refactored publishing to use Changesets Github Action primarily, where:
+    - Feature branches with open PRs create snapshot releases (no use of the action, but still using the changeset command)
+    - Merges to develop create a PR for a `dev` pre-release version
+    - Merges to main create a PR for a stable release
+    
     

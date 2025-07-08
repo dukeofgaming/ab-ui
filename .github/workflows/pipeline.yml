@@ -1,10 +1,6 @@
 name: Monorepo Pipeline
 
 on:
-  pull_request:
-    branches:
-      - develop
-      - main
   push:
     branches:
       - develop
@@ -25,45 +21,63 @@ jobs:
   snapshot:
     name: Snapshot Preview Release
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
     steps:
+      # - name: Skip if merge from changeset-release/* (push events only)
+      #   if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'
+      #   run: |
+      #     # Determine base branch for PR lookup
+      #     if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
+      #       BASE_BRANCH="main"
+      #     else
+      #       BASE_BRANCH="develop"
+      #     fi
+      #     echo "Checking if last merged PR was from changeset-release/*..." >> $GITHUB_STEP_SUMMARY
+
+      #     pr_branch=$(gh pr list \
+      #       --state merged \
+      #       --base "$BASE_BRANCH" \
+      #       --json headRefName,mergeCommit \
+      #       --jq '.[] | select(.mergeCommit.oid=="'${GITHUB_SHA}'") | .headRefName' \
+      #     )
+
+      #     echo "Merged PR branch: $pr_branch" >> $GITHUB_STEP_SUMMARY
+
+      #     if [[ "$pr_branch" == changeset-release/* ]]; then
+      #       echo "This is a changeset-release PR merge, skipping snapshot publish." >> $GITHUB_STEP_SUMMARY
+      #       exit 0
+      #     fi
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Checkout Repo
         uses: actions/checkout@v4
-
       - name: Setup Node.js 24
         uses: actions/setup-node@v4
         with:
           node-version: 24
       - name: Install Dependencies
         run: npm ci
-      - name: Changeset Snapshot (PR only)
+      - name: Changeset Snapshot (PR or push)
         run: |
           npx changeset version --snapshot ${{ github.head_ref || github.ref_name }}
 
           # Set NPM_TOKEN for changeset publish
           echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
           npx changeset publish --tag ${{ github.head_ref || github.ref_name }}
+
+          # Summarize Snapshot Package Version
+          version=$(jq -r '.version' package.json)
+          name=$(jq -r '.name' package.json)
+
+          echo "- 📦 Published Snapshot Package: [${name}@${version}](https://www.npmjs.com/package/${name}/v/${version})" >> $GITHUB_STEP_SUMMARY
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      
-      - name: 📦 Summarize Snapshot Package Version
-        shell: bash
-        run: |
-          version=$(jq -r '.version' package.json)
-          name=$(jq -r '.name' package.json)
-          echo "### 📦 Published Snapshot Package" >> $GITHUB_STEP_SUMMARY
-          echo "- 📦 [${name}@${version}](https://www.npmjs.com/package/${name}/v/${version})" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 🔗 Pull Request" >> $GITHUB_STEP_SUMMARY
-          echo "- [View this PR](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/pull/${{ github.event.pull_request.number }})" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-
 
   release_dev:
     name: Pre-release (develop)
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/develop'
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -73,6 +87,31 @@ jobs:
           node-version: 24
       - name: Install Dependencies
         run: npm ci
+
+      #TODO: Refactor develop snapshot to avoid repeated code
+      - name: Ensure Changesets is not in "pre" mode for snapshot
+        run: |
+          if [ -f .changeset/pre.json ]; then
+            echo "- 🦋 Changesets is in pre mode for target branch \`${{ github.head_ref || github.ref_name }}\`"
+            echo "  |- exiting pre mode without committing..."
+
+            npx changeset pre exit
+          fi
+
+
+      - name: Changeset Snapshot (develop)
+        run: |
+          npx changeset version --snapshot ${{ github.head_ref || github.ref_name }}
+
+          # Set NPM_TOKEN for changeset publish
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+          npx changeset publish --tag ${{ github.head_ref || github.ref_name }}
+
+          # Summarize Snapshot Package Version
+          version=$(jq -r '.version' package.json)
+          name=$(jq -r '.name' package.json)
+
+          echo "- 📦 Published Snapshot Package: [${name}@${version}](https://www.npmjs.com/package/${name}/v/${version})" >> $GITHUB_STEP_SUMMARY
       - name: Enter Pre-release Mode (dev)
         run: |
           if [ ! -f .changeset/pre.json ]; then
@@ -95,7 +134,7 @@ jobs:
           echo "### 📦 Published Packages" >> $GITHUB_STEP_SUMMARY
 
           if [ "${{ steps.changesets.outputs.published }}" = 'true' ]; then
-            pkgs=$(echo '${{ steps.changesets.outputs.publishedPackages }}' | jq -r '.[] | "- 📦 [\(.name)](https://www.npmjs.com/package/\(.name)) `\(.version)`"')
+            pkgs=$(echo '${{ steps.changesets.outputs.publishedPackages }}' | jq -r '.[] | "- 📦 [\(.name)@\(.version)](https://www.npmjs.com/package/\(.name)/v/\(.version))"')
             echo "$pkgs" >> $GITHUB_STEP_SUMMARY
           else
             echo "No packages were published." >> $GITHUB_STEP_SUMMARY
@@ -103,13 +142,11 @@ jobs:
 
           echo "" >> $GITHUB_STEP_SUMMARY
 
-          echo "### 🔗 Release Pull Request" >> $GITHUB_STEP_SUMMARY
-          
           if [ -n "${{ steps.changesets.outputs.pullRequestNumber }}" ]; then
             pr_url="https://github.com/${{ github.repository }}/pull/${{ steps.changesets.outputs.pullRequestNumber }}"
-            echo "- [View PR #${{ steps.changesets.outputs.pullRequestNumber }}]($pr_url)" >> $GITHUB_STEP_SUMMARY
+            echo "- 🦋 [View PR #${{ steps.changesets.outputs.pullRequestNumber }}]($pr_url)" >> $GITHUB_STEP_SUMMARY
           else
-            echo "No release PR was created or updated." >> $GITHUB_STEP_SUMMARY
+            echo "- 🦋 No Changesets release PR was created or updated." >> $GITHUB_STEP_SUMMARY
           fi
 
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -119,7 +156,7 @@ jobs:
   release_main:
     name: Stable Release (main)
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/main'
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -129,6 +166,31 @@ jobs:
           node-version: 24
       - name: Install Dependencies
         run: npm ci
+      #TODO: Refactor main snapshot to avoid repeated code
+      - name: Ensure Changesets is not in "pre" mode for snapshot
+        run: |
+          if [ -f .changeset/pre.json ]; then
+            echo "- 🦋 Changesets is in pre mode for target branch \`${{ github.head_ref || github.ref_name }}\`"
+            echo "  |- exiting pre mode without committing..."
+
+            npx changeset pre exit
+          fi
+
+
+      - name: Changeset Snapshot (main)
+        run: |
+          npx changeset version --snapshot ${{ github.head_ref || github.ref_name }}
+
+          # Set NPM_TOKEN for changeset publish
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+          npx changeset publish --tag ${{ github.head_ref || github.ref_name }}
+
+          # Summarize Snapshot Package Version
+          version=$(jq -r '.version' package.json)
+          name=$(jq -r '.name' package.json)
+
+          echo "- 📦 Published Snapshot Package: [${name}@${version}](https://www.npmjs.com/package/${name}/v/${version})" >> $GITHUB_STEP_SUMMARY
+
       - name: Exit Pre-release Mode (stable)
         run: |
           if [ -f .changeset/pre.json ]; then
@@ -151,7 +213,7 @@ jobs:
           echo "### 📦 Published Packages" >> $GITHUB_STEP_SUMMARY
 
           if [ "${{ steps.changesets.outputs.published }}" = 'true' ]; then
-            pkgs=$(echo '${{ steps.changesets.outputs.publishedPackages }}' | jq -r '.[] | "- 📦 [\(.name)](https://www.npmjs.com/package/\(.name)) `\(.version)`"')
+            pkgs=$(echo '${{ steps.changesets.outputs.publishedPackages }}' | jq -r '.[] | "- 📦 [\(.name)@\(.version)](https://www.npmjs.com/package/\(.name)/v/\(.version))"')
             echo "$pkgs" >> $GITHUB_STEP_SUMMARY
           else
             echo "No packages were published." >> $GITHUB_STEP_SUMMARY
@@ -159,15 +221,14 @@ jobs:
 
           echo "" >> $GITHUB_STEP_SUMMARY 
 
-          echo "### 🔗 Release Pull Request" >> $GITHUB_STEP_SUMMARY
           if [ -n "${{ steps.changesets.outputs.pullRequestNumber }}" ]; then
             pr_url="https://github.com/${{ github.repository }}/pull/${{ steps.changesets.outputs.pullRequestNumber }}"
-            echo "- [View PR #${{ steps.changesets.outputs.pullRequestNumber }}]($pr_url)" >> $GITHUB_STEP_SUMMARY
+            echo "- 🦋 View Changesets Release PR #${{ steps.changesets.outputs.pullRequestNumber }}]($pr_url)" >> $GITHUB_STEP_SUMMARY
           else
-            echo "No release PR was created or updated." >> $GITHUB_STEP_SUMMARY
+            echo "- 🦋 No Changesets Release PR was created or updated." >> $GITHUB_STEP_SUMMARY
           fi
 
-          echo "" >> $GITHUB_STEP_SUMMARY
+
         shell: bash
 
   storybook_dev:
