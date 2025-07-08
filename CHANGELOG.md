@@ -1,5 +1,14 @@
 # @dukeofgaming/ab-ui
 
+## 0.1.2-dev.2
+
+### Patch Changes
+
+- 4ca36b6: Wiring jobs and dependencies, ensuring non-shallow clones are used for certain cases
+- e61726b: Fixes for promotion PR creation, adding comment on updated run
+- e1fbbe5: Adding develop -> main promotional PR
+- 2d63a48: Adding job to check if a changeset-release/ branch is an ancestor to verify if jobs should run on a Changesets release commit (coming from a Changesets PR)
+
 ## 0.1.2-dev.1
 
 ### Patch Changes
