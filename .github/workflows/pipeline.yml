@@ -22,41 +22,18 @@ jobs:
     name: Snapshot Preview Release
     runs-on: ubuntu-latest
     steps:
-      # - name: Skip if merge from changeset-release/* (push events only)
-      #   if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'
-      #   run: |
-      #     # Determine base branch for PR lookup
-      #     if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
-      #       BASE_BRANCH="main"
-      #     else
-      #       BASE_BRANCH="develop"
-      #     fi
-      #     echo "Checking if last merged PR was from changeset-release/*..." >> $GITHUB_STEP_SUMMARY
-
-      #     pr_branch=$(gh pr list \
-      #       --state merged \
-      #       --base "$BASE_BRANCH" \
-      #       --json headRefName,mergeCommit \
-      #       --jq '.[] | select(.mergeCommit.oid=="'${GITHUB_SHA}'") | .headRefName' \
-      #     )
-
-      #     echo "Merged PR branch: $pr_branch" >> $GITHUB_STEP_SUMMARY
-
-      #     if [[ "$pr_branch" == changeset-release/* ]]; then
-      #       echo "This is a changeset-release PR merge, skipping snapshot publish." >> $GITHUB_STEP_SUMMARY
-      #       exit 0
-      #     fi
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Checkout Repo
         uses: actions/checkout@v4
+
       - name: Setup Node.js 24
         uses: actions/setup-node@v4
         with:
           node-version: 24
+
       - name: Install Dependencies
         run: npm ci
+
       - name: Changeset Snapshot
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -89,10 +66,12 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
+
       - name: Setup Node.js 24
         uses: actions/setup-node@v4
         with:
           node-version: 24
+
       - name: Install Dependencies
         run: npm ci
 
@@ -103,6 +82,7 @@ jobs:
           else
             echo "Already in pre mode, skipping changeset pre enter dev"
           fi
+
       - name: Create Release Pull Request or Publish Pre-release to npm
         id: changesets
         env:
@@ -234,3 +214,51 @@ jobs:
           build_command: npm run build-storybook # default: npm run build-storybook
           path: storybook-static # default: dist/storybook
           checkout: false # default: true
+
+  promote_dev_to_main:
+    name: Promote dev to main
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop' && !startsWith(github.ref_name, 'changeset-release/')
+    # needs: [test]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Create PR from dev to main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ACTION_RUN_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${{ github.run_id }}"
+
+          PR_JSON=$(gh pr \
+            list \
+            --base main \
+            --head develop \
+            --state open \
+            --json number,url
+          )
+
+          if [ "$(echo "$PR_JSON" | jq 'length')" -eq 0 ]; then
+            PR_JSON=$(gh pr \
+              create \
+              --base main \
+              --head develop \
+              --title "Promote dev to main" \
+              --body "Automated promotion PR from dev to main" \
+              --json number,url
+            )
+            ACTION="Created"
+          else
+            ACTION="Updated"
+            PR_NUMBER=$(echo "$PR_JSON" | jq -r '.number')
+
+            gh pr \
+              comment \
+                $PR_NUMBER \
+                --body "- 🚀 Updated PR from dev to main from action run ${ACTION_RUN_URL}"
+          fi
+
+          PR_NUMBER=$(echo "$PR_JSON" | jq -r '.number')
+          PR_URL=$(echo "$PR_JSON" | jq -r '.url')
+
+          echo "- 🚀 $ACTION PR from dev to main [#$PR_NUMBER]($PR_URL)" >> $GITHUB_STEP_SUMMARY
+        shell: bash
