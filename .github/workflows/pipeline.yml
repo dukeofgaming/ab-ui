@@ -1,0 +1,324 @@
+name: Monorepo Pipeline
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Tests
+        uses: ./.github/actions/node-test
+
+
+  is_changeset_release:
+    name: Check if commit is from changeset-release
+    runs-on: ubuntu-latest
+    outputs:
+      is_changeset_release: ${{ steps.check_changeset_release.outputs.is_changeset_release }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Detect changeset-release ancestor
+        id: check_changeset_release
+        run: |
+          git fetch --all
+          # Get parent SHAs
+          PARENTS=$(git rev-list --parents -n 1 $GITHUB_SHA | cut -d' ' -f2-)
+          NUM_PARENTS=$(echo $PARENTS | wc -w)
+
+          if [ "$NUM_PARENTS" -lt 2 ]; then
+            echo "is_changeset_release=false" >> $GITHUB_OUTPUT
+            echo "- 🦋❌ Not a merge commit: $GITHUB_SHA" >> $GITHUB_STEP_SUMMARY
+            exit 0
+          fi
+
+          IS_CHANGESET_RELEASE=false
+          for parent in $PARENTS; do
+            if git branch -r --contains $parent | grep -q 'origin/changeset-release/'; then
+              IS_CHANGESET_RELEASE=true
+              break
+            fi
+          done
+
+          if [ "$IS_CHANGESET_RELEASE" = true ]; then
+            echo "is_changeset_release=true" >> $GITHUB_OUTPUT
+            echo "- 🦋✅ Changesets merge commit detected with ancestor in changeset-release branch: $GITHUB_SHA" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "is_changeset_release=false" >> $GITHUB_OUTPUT
+            echo "- 🦋❌ Changesets merge commit not detected: $GITHUB_SHA" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  snapshot:
+    name: Snapshot Preview Release
+    runs-on: ubuntu-latest
+    needs: 
+      - test
+      - is_changeset_release
+    if: needs.is_changeset_release.outputs.is_changeset_release == 'false'
+    steps:
+
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Changeset Snapshot
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [ -f .changeset/pre.json ]; then
+            echo "- 🦋 Changesets is in pre mode for current branch \`${{ github.head_ref || github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
+            echo "  |- exiting pre mode without committing..." >> $GITHUB_STEP_SUMMARY
+
+            npx changeset pre exit
+          fi
+
+          npx changeset version --snapshot ${{ github.head_ref || github.ref_name }}
+
+          # Set NPM_TOKEN for changeset publish
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+          npx changeset publish --tag ${{ github.head_ref || github.ref_name }}
+
+          # Summarize Snapshot Package Version
+          version=$(jq -r '.version' package.json)
+          name=$(jq -r '.name' package.json)
+
+          echo "- 📦 Published Snapshot Package: [${name}@${version}](https://www.npmjs.com/package/${name}/v/${version})" >> $GITHUB_STEP_SUMMARY
+        
+
+  release_dev:
+    name: Pre-release (develop)
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+    needs: 
+      - test
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Enter Pre-release Mode (dev)
+        run: |
+          if [ ! -f .changeset/pre.json ]; then
+            npx changeset pre enter dev
+          else
+            echo "Already in pre mode, skipping changeset pre enter dev"
+          fi
+
+      - name: Create Release Pull Request or Publish Pre-release to npm
+        id: changesets
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        uses: changesets/action@v1
+        with:
+          branch: develop
+          publish: npx changeset publish
+        
+      - name: 📦 Summarize Published Packages
+        if: steps.changesets.outputs.published == 'true' || steps.changesets.outputs.pullRequestNumber != ''
+        run: |
+          echo "### 📦 Published Packages" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ steps.changesets.outputs.published }}" = 'true' ]; then
+            pkgs=$(echo '${{ steps.changesets.outputs.publishedPackages }}' | jq -r '.[] | "- 📦 [\(.name)@\(.version)](https://www.npmjs.com/package/\(.name)/v/\(.version))"')
+            echo "$pkgs" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "No packages were published." >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ -n "${{ steps.changesets.outputs.pullRequestNumber }}" ]; then
+            pr_url="https://github.com/${{ github.repository }}/pull/${{ steps.changesets.outputs.pullRequestNumber }}"
+            echo "- 🦋 [View PR #${{ steps.changesets.outputs.pullRequestNumber }}]($pr_url)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- 🦋 No Changesets release PR was created or updated." >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+        shell: bash
+
+
+  release_main:
+    name: Stable Release (main)
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    needs: 
+      - test
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Exit Pre-release Mode (stable)
+        run: |
+          if [ -f .changeset/pre.json ]; then
+            npx changeset pre exit
+          else
+            echo "Not in pre mode, skipping changeset pre exit"
+          fi
+      - name: Create Release Pull Request or Publish Stable to npm
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          branch: main
+          publish: npx changeset publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: 📦 Summarize Published Packages
+        if: steps.changesets.outputs.published == 'true' || steps.changesets.outputs.pullRequestNumber != ''
+        run: |
+          echo "### 📦 Published Packages" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ steps.changesets.outputs.published }}" = 'true' ]; then
+            pkgs=$(echo '${{ steps.changesets.outputs.publishedPackages }}' | jq -r '.[] | "- 📦 [\(.name)@\(.version)](https://www.npmjs.com/package/\(.name)/v/\(.version))"')
+            echo "$pkgs" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "No packages were published." >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY 
+
+          if [ -n "${{ steps.changesets.outputs.pullRequestNumber }}" ]; then
+            pr_url="https://github.com/${{ github.repository }}/pull/${{ steps.changesets.outputs.pullRequestNumber }}"
+            echo "- 🦋 View Changesets Release PR #${{ steps.changesets.outputs.pullRequestNumber }}]($pr_url)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- 🦋 No Changesets Release PR was created or updated." >> $GITHUB_STEP_SUMMARY
+          fi
+
+
+        shell: bash
+
+  storybook_dev:
+    if: github.ref == 'refs/heads/develop'
+    name: Publish Storybook (develop:Chromatic)
+    runs-on: ubuntu-latest
+    needs: 
+      - snapshot
+      - release_dev
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Install dependencies
+        run: npm ci
+      - name: Run Chromatic
+        uses: chromaui/action@v1
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+
+
+  storybook_release:
+    if: github.ref == 'refs/heads/main'
+    name: Publish Storybook (main:Github Pages)
+    runs-on: ubuntu-latest
+    needs: 
+      - release_main
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Publish Storybook to GitHub Pages
+        uses: bitovi/github-actions-storybook-to-github-pages@v1.0.3
+        with:
+          install_command: npm ci
+          build_command: npm run build-storybook
+          path: storybook-static
+          checkout: false
+
+  promote_dev_to_main:
+    name: Promote dev to main
+    runs-on: ubuntu-latest
+    needs:
+      - test
+      - is_changeset_release
+      - release_dev
+    if: needs.is_changeset_release.outputs.is_changeset_release == 'true' && github.ref == 'refs/heads/develop'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Create PR from dev to main
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ACTION_RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          PR_JSON=$(gh pr \
+            list \
+            --base main \
+            --head develop \
+            --state open \
+            --json number,url
+          )
+
+          if [ "$(echo "$PR_JSON" | jq 'length')" -eq 0 ]; then
+            ACTION="Created"
+
+            PR_URL=$(gh pr \
+              create \
+              --base main \
+              --head develop \
+              --title "Promote dev to main" \
+              --body "Automated promotion PR from dev to main" \
+              --fill \
+              | tail -n1)
+
+            PR_NUMBER=$(basename "$PR_URL")
+            
+          else
+            ACTION="Updated"
+
+            PR_URL=$(echo "$PR_JSON" | jq -r '.[0].url')
+            PR_NUMBER=$(echo "$PR_JSON" | jq -r '.[0].number')
+
+            gh pr \
+              comment \
+                $PR_NUMBER \
+                --body "- 🚀 Updated PR from dev to main from action run ${ACTION_RUN_URL}"
+          fi
+
+          echo "- 🚀 $ACTION PR from dev to main: $PR_URL" >> $GITHUB_STEP_SUMMARY
