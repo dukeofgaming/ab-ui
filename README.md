@@ -47,15 +47,11 @@ This will output the distributable files to the `dist/` directory.
 
 ## Publishing
 
-1. Make sure you are logged in to npm:
-   ```sh
-   npm login
-   ```
-2. Publish the package:
-   ```sh
-   npm publish --access public
-   ```
+- Changesets
+- Github Actions
+
+
 
 ## License
 
-MIT
+[CC BY-NC 4.0 License](https://creativecommons.org/licenses/by-nc/4.0/)

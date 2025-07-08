@@ -68,4 +68,5 @@ As a developer, I want to release the package to NPM, so that I can use my compo
     - Merges to develop create a PR for a `dev` pre-release version
     - Merges to main create a PR for a stable release
     
+- Installed Chromatic's GitHub UI review: https://www.chromatic.com/features/review
     
