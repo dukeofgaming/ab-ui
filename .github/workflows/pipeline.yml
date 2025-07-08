@@ -188,11 +188,18 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Exit Pre-release Mode (if needed)
+      - name: Exit Pre-release Mode, Commit, and Push (if needed)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           if [ -f .changeset/pre.json ]; then
             npx changeset pre exit
-            echo "- 🚧🚀 Exited pre mode for stable release" >> $GITHUB_STEP_SUMMARY
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add .
+            git commit -m "chore: exit pre mode for stable release"
+            git push
+            echo "- 🚧🚀 Exited pre mode and pushed for stable release" >> $GITHUB_STEP_SUMMARY
           else
             echo "- 🚧🚫 Not in pre mode, skipping changeset pre exit" >> $GITHUB_STEP_SUMMARY
           fi
