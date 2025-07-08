@@ -18,13 +18,36 @@ jobs:
         uses: ./.github/actions/node-test
 
 
+  is_changeset_release:
+    name: Check if commit is from changeset-release
+    runs-on: ubuntu-latest
+    outputs:
+      is_changeset_release: ${{ steps.check_changeset_release.outputs.is_changeset_release }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Detect changeset-release ancestor
+        id: check_changeset_release
+        run: |
+          git fetch --all
+          if git branch -r --contains $GITHUB_SHA | grep -q 'origin/changeset-release/'; then
+            echo "is_changeset_release=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_changeset_release=false" >> $GITHUB_OUTPUT
+          fi
+
   snapshot:
     name: Snapshot Preview Release
     runs-on: ubuntu-latest
+    needs: is_changeset_release
+    if: needs.is_changeset_release.outputs.is_changeset_release == 'false'
     steps:
 
       - name: Checkout Repo
         uses: actions/checkout@v4
+
 
       - name: Setup Node.js 24
         uses: actions/setup-node@v4
@@ -180,8 +203,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -210,24 +231,30 @@ jobs:
       - name: Publish Storybook to GitHub Pages
         uses: bitovi/github-actions-storybook-to-github-pages@v1.0.3
         with:
-          install_command: npm ci # default: npm ci
-          build_command: npm run build-storybook # default: npm run build-storybook
-          path: storybook-static # default: dist/storybook
-          checkout: false # default: true
+          install_command: npm ci
+          build_command: npm run build-storybook
+          path: storybook-static
+          checkout: false
 
   promote_dev_to_main:
     name: Promote dev to main
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/develop' && !startsWith(github.ref_name, 'changeset-release/')
-    # needs: [test]
+    needs:
+      - test
+      - is_changeset_release
+      - release_dev
+    if: needs.is_changeset_release.outputs.is_changeset_release == 'true' && github.ref == 'refs/heads/develop'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Create PR from dev to main
+        shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          ACTION_RUN_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${{ github.run_id }}"
+          ACTION_RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
           PR_JSON=$(gh pr \
             list \
@@ -238,18 +265,24 @@ jobs:
           )
 
           if [ "$(echo "$PR_JSON" | jq 'length')" -eq 0 ]; then
-            PR_JSON=$(gh pr \
+            ACTION="Created"
+
+            PR_URL=$(gh pr \
               create \
               --base main \
               --head develop \
               --title "Promote dev to main" \
               --body "Automated promotion PR from dev to main" \
-              --json number,url
-            )
-            ACTION="Created"
+              --fill \
+              | tail -n1)
+
+            PR_NUMBER=$(basename "$PR_URL")
+            
           else
             ACTION="Updated"
-            PR_NUMBER=$(echo "$PR_JSON" | jq -r '.number')
+
+            PR_URL=$(echo "$PR_JSON" | jq -r '.[0].url')
+            PR_NUMBER=$(echo "$PR_JSON" | jq -r '.[0].number')
 
             gh pr \
               comment \
@@ -257,8 +290,4 @@ jobs:
                 --body "- 🚀 Updated PR from dev to main from action run ${ACTION_RUN_URL}"
           fi
 
-          PR_NUMBER=$(echo "$PR_JSON" | jq -r '.number')
-          PR_URL=$(echo "$PR_JSON" | jq -r '.url')
-
-          echo "- 🚀 $ACTION PR from dev to main [#$PR_NUMBER]($PR_URL)" >> $GITHUB_STEP_SUMMARY
-        shell: bash
+          echo "- 🚀 $ACTION PR from dev to main: $PR_URL" >> $GITHUB_STEP_SUMMARY
