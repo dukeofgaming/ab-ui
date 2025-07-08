@@ -1,5 +1,11 @@
 # @dukeofgaming/ab-ui
 
+## 0.1.2-dev.5
+
+### Patch Changes
+
+- 8e2f717: Fixing typo in pipeline, adding is_changeset_release dependency to main
+
 ## 0.1.2-dev.4
 
 ### Patch Changes
