@@ -5,11 +5,15 @@
     "@dukeofgaming/ab-ui": "0.1.1"
   },
   "changesets": [
+    "crazy-readers-scream",
     "heavy-toys-talk",
+    "kind-paths-arrive",
+    "legal-stars-fall",
     "moody-radios-bow",
     "ripe-eyes-drum",
     "spotty-paws-lay",
     "stale-baboons-see",
-    "thirty-dingos-stare"
+    "thirty-dingos-stare",
+    "tricky-planets-spend"
   ]
 }
