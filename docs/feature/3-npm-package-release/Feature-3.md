@@ -65,7 +65,7 @@ As a developer, I want to release the package to NPM, so that I can use my compo
 
 - Refactored publishing to use Changesets Github Action primarily, where:
     - Feature branches with open PRs create snapshot releases (no use of the action, but still using the changeset command)
-    - Merges to develop creat a PR for a `dev` pre-release version
+    - Merges to develop create a PR for a `dev` pre-release version
     - Merges to main create a PR for a stable release
     
     
