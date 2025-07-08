@@ -64,22 +64,15 @@ jobs:
           # Set NPM_TOKEN for changeset publish
           echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
           npx changeset publish --tag ${{ github.head_ref || github.ref_name }}
+
+          # Summarize Snapshot Package Version
+          version=$(jq -r '.version' package.json)
+          name=$(jq -r '.name' package.json)
+
+          echo "- 📦 Published Snapshot Package: [${name}@${version}](https://www.npmjs.com/package/${name}/v/${version})" >> $GITHUB_STEP_SUMMARY
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - name: 📦 Summarize Snapshot Package Version
-        shell: bash
-        run: |
-          version=$(jq -r '.version' package.json)
-          name=$(jq -r '.name' package.json)
-          echo "### 📦 Published Snapshot Package" >> $GITHUB_STEP_SUMMARY
-
-          echo "- 📦 [${name}@${version}](https://www.npmjs.com/package/${name}/v/${version})" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 🔗 Pull Request" >> $GITHUB_STEP_SUMMARY
-          echo "- [View this PR](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/pull/${{ github.event.pull_request.number }})" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-
 
   release_dev:
     name: Pre-release (develop)
@@ -124,13 +117,11 @@ jobs:
 
           echo "" >> $GITHUB_STEP_SUMMARY
 
-          echo "### 🔗 Release Pull Request" >> $GITHUB_STEP_SUMMARY
-          
           if [ -n "${{ steps.changesets.outputs.pullRequestNumber }}" ]; then
             pr_url="https://github.com/${{ github.repository }}/pull/${{ steps.changesets.outputs.pullRequestNumber }}"
-            echo "- [View PR #${{ steps.changesets.outputs.pullRequestNumber }}]($pr_url)" >> $GITHUB_STEP_SUMMARY
+            echo "- 🦋 [View PR #${{ steps.changesets.outputs.pullRequestNumber }}]($pr_url)" >> $GITHUB_STEP_SUMMARY
           else
-            echo "No release PR was created or updated." >> $GITHUB_STEP_SUMMARY
+            echo "- 🦋 No Changesets release PR was created or updated." >> $GITHUB_STEP_SUMMARY
           fi
 
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -180,15 +171,14 @@ jobs:
 
           echo "" >> $GITHUB_STEP_SUMMARY 
 
-          echo "### 🔗 Release Pull Request" >> $GITHUB_STEP_SUMMARY
           if [ -n "${{ steps.changesets.outputs.pullRequestNumber }}" ]; then
             pr_url="https://github.com/${{ github.repository }}/pull/${{ steps.changesets.outputs.pullRequestNumber }}"
-            echo "- [View PR #${{ steps.changesets.outputs.pullRequestNumber }}]($pr_url)" >> $GITHUB_STEP_SUMMARY
+            echo "- 🦋 View Changesets Release PR #${{ steps.changesets.outputs.pullRequestNumber }}]($pr_url)" >> $GITHUB_STEP_SUMMARY
           else
-            echo "No release PR was created or updated." >> $GITHUB_STEP_SUMMARY
+            echo "- 🦋 No Changesets Release PR was created or updated." >> $GITHUB_STEP_SUMMARY
           fi
 
-          echo "" >> $GITHUB_STEP_SUMMARY
+
         shell: bash
 
   storybook_dev:
