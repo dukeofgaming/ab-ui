@@ -242,7 +242,7 @@ jobs:
       - test
       - is_changeset_release
       - release_dev
-    if: needs.is_changeset_release.outputs.is_changeset_release == 'false' && github.ref == 'refs/heads/develop'
+    if: needs.is_changeset_release.outputs.is_changeset_release == 'true' && github.ref == 'refs/heads/develop'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
