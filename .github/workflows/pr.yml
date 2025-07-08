@@ -33,8 +33,8 @@ jobs:
       - name: Ensure Changesets is not in "pre" mode
         run: |
           if [ -f .changeset/pre.json ]; then
-            echo "- 🦋 Changesets is in pre mode for target branch \`${{ github.head_ref || github.ref_name }}\`"
-            echo "  |- exiting pre mode without committing..."
+            echo "- 🦋 Changesets is in pre mode for target branch \`${{ github.base_ref }}\`" >> $GITHUB_STEP_SUMMARY
+            echo "  |- exiting pre mode without committing..." >> $GITHUB_STEP_SUMMARY
 
             npx changeset pre exit
           fi
