@@ -32,30 +32,32 @@ jobs:
         id: check_changeset_release
         run: |
           git fetch --all
-          # Get parent SHAs
-          PARENTS=$(git rev-list --parents -n 1 $GITHUB_SHA | cut -d' ' -f2-)
-          NUM_PARENTS=$(echo $PARENTS | wc -w)
+          # Get parent SHAs as array
+          PARENTS=($(git rev-list --parents -n 1 $GITHUB_SHA | cut -d' ' -f2-))
+          NUM_PARENTS=${#PARENTS[@]}
 
-          if [ "$NUM_PARENTS" -lt 2 ]; then
+          if [ "$NUM_PARENTS" -ne 2 ]; then
             echo "is_changeset_release=false" >> $GITHUB_OUTPUT
-            echo "- 🦋❌ Not a merge commit: $GITHUB_SHA" >> $GITHUB_STEP_SUMMARY
+            echo "- 🦋❌ Not a 2-parent merge commit: $GITHUB_SHA" >> $GITHUB_STEP_SUMMARY
             exit 0
           fi
 
           IS_CHANGESET_RELEASE=false
-          for parent in $PARENTS; do
-            if git branch -r --contains $parent | grep -q 'origin/changeset-release/'; then
-              IS_CHANGESET_RELEASE=true
-              break
-            fi
+          for parent in "${PARENTS[@]}"; do
+            for branch in $(git branch -r --contains $parent); do
+              if [[ "$branch" == origin/changeset-release/* ]]; then
+                IS_CHANGESET_RELEASE=true
+                break 2
+              fi
+            done
           done
 
           if [ "$IS_CHANGESET_RELEASE" = true ]; then
             echo "is_changeset_release=true" >> $GITHUB_OUTPUT
-            echo "- 🦋✅ Changesets merge commit detected with ancestor in changeset-release branch: $GITHUB_SHA" >> $GITHUB_STEP_SUMMARY
+            echo "- 🦋✅ Direct merge from changeset-release branch detected: $GITHUB_SHA" >> $GITHUB_STEP_SUMMARY
           else
             echo "is_changeset_release=false" >> $GITHUB_OUTPUT
-            echo "- 🦋❌ Changesets merge commit not detected: $GITHUB_SHA" >> $GITHUB_STEP_SUMMARY
+            echo "- 🦋❌ Not a direct merge from changeset-release: $GITHUB_SHA" >> $GITHUB_STEP_SUMMARY
           fi
 
   snapshot:
@@ -110,6 +112,7 @@ jobs:
     if: github.ref == 'refs/heads/develop'
     needs: 
       - test
+      - is_changeset_release
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -139,8 +142,11 @@ jobs:
         with:
           branch: develop
           publish: npx changeset publish
+          createGithubReleases: true
+          setupGitUser: true
         
       - name: 📦 Summarize Published Packages
+        shell: bash
         if: steps.changesets.outputs.published == 'true' || steps.changesets.outputs.pullRequestNumber != ''
         run: |
           echo "### 📦 Published Packages" >> $GITHUB_STEP_SUMMARY
@@ -162,7 +168,7 @@ jobs:
           fi
 
           echo "" >> $GITHUB_STEP_SUMMARY
-        shell: bash
+        
 
 
   release_main:
@@ -181,19 +187,24 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Exit Pre-release Mode (stable)
+      - name: Exit Pre-release Mode (if needed)
         run: |
           if [ -f .changeset/pre.json ]; then
             npx changeset pre exit
+            echo "- 🚧🚀 Exited pre mode for stable release" >> $GITHUB_STEP_SUMMARY
           else
-            echo "Not in pre mode, skipping changeset pre exit"
+            echo "- 🚧🚫 Not in pre mode, skipping changeset pre exit" >> $GITHUB_STEP_SUMMARY
           fi
+
       - name: Create Release Pull Request or Publish Stable to npm
         id: changesets
         uses: changesets/action@v1
         with:
           branch: main
           publish: npx changeset publish
+          setupGitUser: true
+          commitMode: git-cli
+          createGithubReleases: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -321,4 +332,4 @@ jobs:
                 --body "- 🚀 Updated PR from dev to main from action run ${ACTION_RUN_URL}"
           fi
 
-          echo "- 🚀 $ACTION PR from dev to main: $PR_URL" >> $GITHUB_STEP_SUMMARY
+          echo "- 🚀 $ACTION PR from dev to main: $PR_URL" >> $GITHUB_STEP_SUMMARYs
