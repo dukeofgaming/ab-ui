@@ -57,8 +57,18 @@ jobs:
           node-version: 24
       - name: Install Dependencies
         run: npm ci
-      - name: Changeset Snapshot (PR or push)
+      - name: Changeset Snapshot
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
+          if [ -f .changeset/pre.json ]; then
+            echo "- 🦋 Changesets is in pre mode for current branch \`${{ github.head_ref || github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
+            echo "  |- exiting pre mode without committing..." >> $GITHUB_STEP_SUMMARY
+
+            npx changeset pre exit
+          fi
+
           npx changeset version --snapshot ${{ github.head_ref || github.ref_name }}
 
           # Set NPM_TOKEN for changeset publish
@@ -70,9 +80,7 @@ jobs:
           name=$(jq -r '.name' package.json)
 
           echo "- 📦 Published Snapshot Package: [${name}@${version}](https://www.npmjs.com/package/${name}/v/${version})" >> $GITHUB_STEP_SUMMARY
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        
 
   release_dev:
     name: Pre-release (develop)
@@ -88,30 +96,6 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      #TODO: Refactor develop snapshot to avoid repeated code
-      - name: Ensure Changesets is not in "pre" mode for snapshot
-        run: |
-          if [ -f .changeset/pre.json ]; then
-            echo "- 🦋 Changesets is in pre mode for target branch \`${{ github.head_ref || github.ref_name }}\`"
-            echo "  |- exiting pre mode without committing..."
-
-            npx changeset pre exit
-          fi
-
-
-      - name: Changeset Snapshot (develop)
-        run: |
-          npx changeset version --snapshot ${{ github.head_ref || github.ref_name }}
-
-          # Set NPM_TOKEN for changeset publish
-          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
-          npx changeset publish --tag ${{ github.head_ref || github.ref_name }}
-
-          # Summarize Snapshot Package Version
-          version=$(jq -r '.version' package.json)
-          name=$(jq -r '.name' package.json)
-
-          echo "- 📦 Published Snapshot Package: [${name}@${version}](https://www.npmjs.com/package/${name}/v/${version})" >> $GITHUB_STEP_SUMMARY
       - name: Enter Pre-release Mode (dev)
         run: |
           if [ ! -f .changeset/pre.json ]; then
@@ -121,13 +105,14 @@ jobs:
           fi
       - name: Create Release Pull Request or Publish Pre-release to npm
         id: changesets
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         uses: changesets/action@v1
         with:
           branch: develop
           publish: npx changeset publish
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        
       - name: 📦 Summarize Published Packages
         if: steps.changesets.outputs.published == 'true' || steps.changesets.outputs.pullRequestNumber != ''
         run: |
@@ -166,30 +151,6 @@ jobs:
           node-version: 24
       - name: Install Dependencies
         run: npm ci
-      #TODO: Refactor main snapshot to avoid repeated code
-      - name: Ensure Changesets is not in "pre" mode for snapshot
-        run: |
-          if [ -f .changeset/pre.json ]; then
-            echo "- 🦋 Changesets is in pre mode for target branch \`${{ github.head_ref || github.ref_name }}\`"
-            echo "  |- exiting pre mode without committing..."
-
-            npx changeset pre exit
-          fi
-
-
-      - name: Changeset Snapshot (main)
-        run: |
-          npx changeset version --snapshot ${{ github.head_ref || github.ref_name }}
-
-          # Set NPM_TOKEN for changeset publish
-          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
-          npx changeset publish --tag ${{ github.head_ref || github.ref_name }}
-
-          # Summarize Snapshot Package Version
-          version=$(jq -r '.version' package.json)
-          name=$(jq -r '.name' package.json)
-
-          echo "- 📦 Published Snapshot Package: [${name}@${version}](https://www.npmjs.com/package/${name}/v/${version})" >> $GITHUB_STEP_SUMMARY
 
       - name: Exit Pre-release Mode (stable)
         run: |
@@ -269,7 +230,7 @@ jobs:
       - name: Publish Storybook to GitHub Pages
         uses: bitovi/github-actions-storybook-to-github-pages@v1.0.3
         with:
-          install_command: yarn install # default: npm ci
-          build_command: yarn build-storybook # default: npm run build-storybook
+          install_command: npm ci # default: npm ci
+          build_command: npm run build-storybook # default: npm run build-storybook
           path: storybook-static # default: dist/storybook
           checkout: false # default: true
