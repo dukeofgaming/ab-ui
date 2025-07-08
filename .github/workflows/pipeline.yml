@@ -32,30 +32,32 @@ jobs:
         id: check_changeset_release
         run: |
           git fetch --all
-          # Get parent SHAs
-          PARENTS=$(git rev-list --parents -n 1 $GITHUB_SHA | cut -d' ' -f2-)
-          NUM_PARENTS=$(echo $PARENTS | wc -w)
+          # Get parent SHAs as array
+          PARENTS=($(git rev-list --parents -n 1 $GITHUB_SHA | cut -d' ' -f2-))
+          NUM_PARENTS=${#PARENTS[@]}
 
-          if [ "$NUM_PARENTS" -lt 2 ]; then
+          if [ "$NUM_PARENTS" -ne 2 ]; then
             echo "is_changeset_release=false" >> $GITHUB_OUTPUT
-            echo "- 🦋❌ Not a merge commit: $GITHUB_SHA" >> $GITHUB_STEP_SUMMARY
+            echo "- 🦋❌ Not a 2-parent merge commit: $GITHUB_SHA" >> $GITHUB_STEP_SUMMARY
             exit 0
           fi
 
           IS_CHANGESET_RELEASE=false
-          for parent in $PARENTS; do
-            if git branch -r --contains $parent | grep -q 'origin/changeset-release/'; then
-              IS_CHANGESET_RELEASE=true
-              break
-            fi
+          for parent in "${PARENTS[@]}"; do
+            for branch in $(git branch -r --contains $parent); do
+              if [[ "$branch" == origin/changeset-release/* ]]; then
+                IS_CHANGESET_RELEASE=true
+                break 2
+              fi
+            done
           done
 
           if [ "$IS_CHANGESET_RELEASE" = true ]; then
             echo "is_changeset_release=true" >> $GITHUB_OUTPUT
-            echo "- 🦋✅ Changesets merge commit detected with ancestor in changeset-release branch: $GITHUB_SHA" >> $GITHUB_STEP_SUMMARY
+            echo "- 🦋✅ Direct merge from changeset-release branch detected: $GITHUB_SHA" >> $GITHUB_STEP_SUMMARY
           else
             echo "is_changeset_release=false" >> $GITHUB_OUTPUT
-            echo "- 🦋❌ Changesets merge commit not detected: $GITHUB_SHA" >> $GITHUB_STEP_SUMMARY
+            echo "- 🦋❌ Not a direct merge from changeset-release: $GITHUB_SHA" >> $GITHUB_STEP_SUMMARY
           fi
 
   snapshot:
