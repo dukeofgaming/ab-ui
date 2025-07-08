@@ -210,20 +210,23 @@ jobs:
       - name: Publish Storybook to GitHub Pages
         uses: bitovi/github-actions-storybook-to-github-pages@v1.0.3
         with:
-          install_command: npm ci # default: npm ci
-          build_command: npm run build-storybook # default: npm run build-storybook
-          path: storybook-static # default: dist/storybook
-          checkout: false # default: true
+          install_command: npm ci
+          build_command: npm run build-storybook
+          path: storybook-static
+          checkout: false
 
   promote_dev_to_main:
     name: Promote dev to main
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/develop' && !startsWith(github.ref_name, 'changeset-release/')
-    # needs: [test]
+    needs:
+      - test
+      - release_dev
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Create PR from dev to main
+        shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -238,18 +241,24 @@ jobs:
           )
 
           if [ "$(echo "$PR_JSON" | jq 'length')" -eq 0 ]; then
-            PR_JSON=$(gh pr \
+            ACTION="Created"
+
+            PR_URL=$(gh pr \
               create \
               --base main \
               --head develop \
               --title "Promote dev to main" \
               --body "Automated promotion PR from dev to main" \
-              --json number,url
-            )
-            ACTION="Created"
+              --fill \
+              | tail -n1)
+
+            PR_NUMBER=$(basename "$PR_URL")
+            
           else
             ACTION="Updated"
-            PR_NUMBER=$(echo "$PR_JSON" | jq -r '.number')
+
+            PR_URL=$(echo "$PR_JSON" | jq -r '.[0].url')
+            PR_NUMBER=$(echo "$PR_JSON" | jq -r '.[0].number')
 
             gh pr \
               comment \
@@ -257,8 +266,4 @@ jobs:
                 --body "- 🚀 Updated PR from dev to main from action run ${ACTION_RUN_URL}"
           fi
 
-          PR_NUMBER=$(echo "$PR_JSON" | jq -r '.number')
-          PR_URL=$(echo "$PR_JSON" | jq -r '.url')
-
-          echo "- 🚀 $ACTION PR from dev to main [#$PR_NUMBER]($PR_URL)" >> $GITHUB_STEP_SUMMARY
-        shell: bash
+          echo "- 🚀 $ACTION PR from dev to main: $PR_URL" >> $GITHUB_STEP_SUMMARY
