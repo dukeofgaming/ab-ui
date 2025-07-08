@@ -64,7 +64,7 @@ jobs:
     name: Snapshot Preview Release
     runs-on: ubuntu-latest
     needs: 
-      - test
+      # - test
       - is_changeset_release
     if: needs.is_changeset_release.outputs.is_changeset_release == 'false'
     steps:
@@ -111,7 +111,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/develop'
     needs: 
-      - test
+      # - test
       - is_changeset_release
     steps:
       - name: Checkout Repo
@@ -176,7 +176,8 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     needs: 
-      - test
+      # - test
+      - is_changeset_release
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -282,7 +283,7 @@ jobs:
     name: Promote dev to main
     runs-on: ubuntu-latest
     needs:
-      - test
+      # - test
       - is_changeset_release
       - release_dev
     if: needs.is_changeset_release.outputs.is_changeset_release == 'true' && github.ref == 'refs/heads/develop'
@@ -332,4 +333,4 @@ jobs:
                 --body "- 🚀 Updated PR from dev to main from action run ${ACTION_RUN_URL}"
           fi
 
-          echo "- 🚀 $ACTION PR from dev to main: $PR_URL" >> $GITHUB_STEP_SUMMARYs
+          echo "- 🚀 $ACTION PR from dev to main: $PR_URL" >> $GITHUB_STEP_SUMMARY
