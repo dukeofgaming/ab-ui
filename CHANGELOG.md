@@ -1,5 +1,12 @@
 # @dukeofgaming/ab-ui
 
+## 0.1.2-dev.4
+
+### Patch Changes
+
+- 76d0383: Exiting pre mode as part of changeset-release/main branch
+- 214a79a: Fixed edge case where changeset-release/\* merge is found, but not at the tip for one of the parents of a merge commit
+
 ## 0.1.2-dev.3
 
 ### Patch Changes
