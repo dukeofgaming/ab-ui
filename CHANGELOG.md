@@ -1,5 +1,11 @@
 # @dukeofgaming/ab-ui
 
+## 0.1.2-dev.6
+
+### Patch Changes
+
+- 9229fcd: Adding pre exit commit on main release job
+
 ## 0.1.2-dev.5
 
 ### Patch Changes
