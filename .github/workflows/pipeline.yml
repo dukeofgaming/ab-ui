@@ -1,10 +1,6 @@
 name: Monorepo Pipeline
 
 on:
-  pull_request:
-    branches:
-      - develop
-      - main
   push:
     branches:
       - develop
@@ -25,37 +21,33 @@ jobs:
   snapshot:
     name: Snapshot Preview Release
     runs-on: ubuntu-latest
-    # Run for PRs (except changeset-release/*) and for pushes to develop or main
-    if: |
-      (github.event_name == 'pull_request' && !startsWith(github.head_ref, 'changeset-release/')) ||
-      (github.event_name == 'push' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'))
     steps:
-      - name: Skip if merge from changeset-release/* (push events only)
-        if: github.event_name == 'push' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main')
-        run: |
-          # Determine base branch for PR lookup
-          if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
-            BASE_BRANCH="main"
-          else
-            BASE_BRANCH="develop"
-          fi
-          echo "Checking if last merged PR was from changeset-release/*..." >> $GITHUB_STEP_SUMMARY
+      # - name: Skip if merge from changeset-release/* (push events only)
+      #   if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'
+      #   run: |
+      #     # Determine base branch for PR lookup
+      #     if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
+      #       BASE_BRANCH="main"
+      #     else
+      #       BASE_BRANCH="develop"
+      #     fi
+      #     echo "Checking if last merged PR was from changeset-release/*..." >> $GITHUB_STEP_SUMMARY
 
-          pr_branch=$(gh pr list \
-            --state merged \
-            --base "$BASE_BRANCH" \
-            --json headRefName,mergeCommit \
-            --jq '.[] | select(.mergeCommit.oid=="'${GITHUB_SHA}'") | .headRefName' \
-          )
+      #     pr_branch=$(gh pr list \
+      #       --state merged \
+      #       --base "$BASE_BRANCH" \
+      #       --json headRefName,mergeCommit \
+      #       --jq '.[] | select(.mergeCommit.oid=="'${GITHUB_SHA}'") | .headRefName' \
+      #     )
 
-          echo "Merged PR branch: $pr_branch" >> $GITHUB_STEP_SUMMARY
+      #     echo "Merged PR branch: $pr_branch" >> $GITHUB_STEP_SUMMARY
 
-          if [[ "$pr_branch" == changeset-release/* ]]; then
-            echo "This is a changeset-release PR merge, skipping snapshot publish." >> $GITHUB_STEP_SUMMARY
-            exit 0
-          fi
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     if [[ "$pr_branch" == changeset-release/* ]]; then
+      #       echo "This is a changeset-release PR merge, skipping snapshot publish." >> $GITHUB_STEP_SUMMARY
+      #       exit 0
+      #     fi
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -92,7 +84,7 @@ jobs:
   release_dev:
     name: Pre-release (develop)
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/develop'
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -148,7 +140,7 @@ jobs:
   release_main:
     name: Stable Release (main)
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/main'
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4

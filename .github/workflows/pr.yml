@@ -1,0 +1,51 @@
+name: Pull Request Checks
+
+on:
+  pull_request:
+    branches-ignore:
+      - changeset-release/*
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Run Tests
+        uses: ./.github/actions/node-test
+
+  snapshot:
+    name: Snapshot Preview Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Changeset Snapshot (PR or push)
+        run: |
+          npx changeset version --snapshot ${{ github.head_ref || github.ref_name }}
+
+          # Set NPM_TOKEN for changeset publish
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+          npx changeset publish --tag ${{ github.head_ref || github.ref_name }}
+
+          # Summarize Snapshot Package Version
+          version=$(jq -r '.version' package.json)
+          name=$(jq -r '.name' package.json)
+          pr_number=${{ github.event.pull_request.number }}
+
+          echo "- 📦 Published Snapshot Package: [${name}@${version}](https://www.npmjs.com/package/${name}/v/${version})" >> $GITHUB_STEP_SUMMARY
+          echo "- PR #${pr_number}: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/pull/${pr_number}" >> $GITHUB_STEP_SUMMARY
+
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
