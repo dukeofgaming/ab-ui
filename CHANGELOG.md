@@ -1,5 +1,11 @@
 # @dukeofgaming/ab-ui
 
+## 0.1.2-dev.7
+
+### Patch Changes
+
+- 94d4142: Removing branch protection rules to test workflow
+
 ## 0.1.2-dev.6
 
 ### Patch Changes
