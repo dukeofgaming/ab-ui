@@ -1,5 +1,11 @@
 # @dukeofgaming/ab-ui
 
+## 0.1.3-dev.0
+
+### Patch Changes
+
+- d4a53dd: Adding missing build step to workflow
+
 ## 0.1.2
 
 ### Patch Changes
