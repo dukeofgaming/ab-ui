@@ -59,18 +59,18 @@ jobs:
               TIP_SHA=$(git rev-parse "$branch")
               short_tip=$(echo $TIP_SHA | cut -c1-7)
 
-              echo " - 🔝 Tip of $branch is $short_tip" >> $GITHUB_STEP_SUMMARY
+              echo "└── 🔝 Tip of $branch is $short_tip" >> $GITHUB_STEP_SUMMARY
 
               if [ "$parent" = "$TIP_SHA" ]; then
 
-                echo " - ✅ Parent $short_parent IS the tip of $branch (direct merge from changeset-release)" >> $GITHUB_STEP_SUMMARY
+                echo "└── ✅ Parent $short_parent IS the tip of $branch (direct merge from changeset-release)" >> $GITHUB_STEP_SUMMARY
                 IS_CHANGESET_RELEASE=true
 
                 break 2
 
               else
 
-                echo " - ❌ Parent $short_parent is NOT the tip of $branch" >> $GITHUB_STEP_SUMMARY
+                echo "└── ❌ Parent $short_parent is NOT the tip of $branch" >> $GITHUB_STEP_SUMMARY
 
               fi
             done
@@ -196,7 +196,7 @@ jobs:
 
           if [ -n "${{ steps.changesets.outputs.pullRequestNumber }}" ]; then
             pr_url="https://github.com/${{ github.repository }}/pull/${{ steps.changesets.outputs.pullRequestNumber }}"
-            echo "- 🦋 [View PR #${{ steps.changesets.outputs.pullRequestNumber }}]($pr_url)" >> $GITHUB_STEP_SUMMARY
+            echo "- 🦋 [View Changesets Pre-release PR (develop) #${{ steps.changesets.outputs.pullRequestNumber }}]($pr_url)" >> $GITHUB_STEP_SUMMARY
           else
             echo "- 🦋 No Changesets release PR was created or updated." >> $GITHUB_STEP_SUMMARY
           fi
@@ -256,7 +256,7 @@ jobs:
 
           if [ -n "${{ steps.changesets.outputs.pullRequestNumber }}" ]; then
             pr_url="https://github.com/${{ github.repository }}/pull/${{ steps.changesets.outputs.pullRequestNumber }}"
-            echo "- 🦋 View Changesets Release PR #${{ steps.changesets.outputs.pullRequestNumber }}]($pr_url)" >> $GITHUB_STEP_SUMMARY
+            echo "- 🦋 View Changesets Stable release PR (main) #${{ steps.changesets.outputs.pullRequestNumber }}]($pr_url)" >> $GITHUB_STEP_SUMMARY
           else
             echo "- 🦋 No Changesets Release PR was created or updated." >> $GITHUB_STEP_SUMMARY
           fi
