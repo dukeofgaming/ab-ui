@@ -16,13 +16,13 @@ jobs:
         uses: ./.github/actions/node-test
 
   branch-doc:
-    name: Create Branch docs & update issue
+    name: Create branch doc / update issue
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Run branch-docs composite action
-        uses: ./.github/actions/branch-docs
+        uses: ./.github/actions/github-branch-md
         with:
           docs_dir: docs/
 

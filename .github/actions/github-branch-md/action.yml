@@ -1,4 +1,4 @@
-name: "Create Feature Doc on Branch Creation"
+name: "GitHub branch doc issue updater"
 description: "Creates a feature doc and posts branch/issue links on branch creation."
 author: "@dukeofgaming"
 inputs:
