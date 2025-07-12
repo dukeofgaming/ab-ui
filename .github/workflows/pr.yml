@@ -29,6 +29,8 @@ jobs:
   snapshot:
     name: Snapshot Preview Release
     runs-on: ubuntu-latest
+    needs:
+      - test
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
