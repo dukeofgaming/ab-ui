@@ -25,7 +25,7 @@ jobs:
 
 
   is_changeset_release:
-    name: Check if commit is from changeset-release
+    name: Changeset-release merge-commit detection
     runs-on: ubuntu-latest
     outputs:
       is_changeset_release: ${{ steps.check_changeset_release.outputs.is_changeset_release }}
@@ -50,10 +50,24 @@ jobs:
 
           IS_CHANGESET_RELEASE=false
           for parent in "${PARENTS[@]}"; do
+            echo "🔍 Checking parent commit: $parent" >> $GITHUB_STEP_SUMMARY
+
             for branch in $(git branch -r --contains $parent); do
+              echo "└─ Considering branch: $branch (for parent $parent)" >> $GITHUB_STEP_SUMMARY
+              
               if [[ "$branch" == origin/changeset-release/* ]]; then
-                IS_CHANGESET_RELEASE=true
-                break 2
+                TIP_SHA=$(git rev-parse "$branch")
+
+                echo " - 🔝 Tip of $branch is $TIP_SHA" >> $GITHUB_STEP_SUMMARY
+                
+                if [ "$parent" = "$TIP_SHA" ]; then
+                  echo " - ✅ Parent $parent IS the tip of $branch (this is a direct merge from changeset-release)" >> $GITHUB_STEP_SUMMARY
+                  IS_CHANGESET_RELEASE=true
+
+                  break 2
+                else
+                  echo " - ❌ Parent $parent is NOT the tip of $branch" >> $GITHUB_STEP_SUMMARY
+                fi
               fi
             done
           done
@@ -314,7 +328,7 @@ jobs:
             else
               echo "- 🚧⚠️ No changes to commit after exiting pre mode" >> $GITHUB_STEP_SUMMARY
             fi
-            
+
           else
             echo "- 🚧🚫 Not in pre mode, skipping changeset pre exit" >> $GITHUB_STEP_SUMMARY
           fi
