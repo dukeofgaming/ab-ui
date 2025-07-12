@@ -1,0 +1,87 @@
+name: "GitHub branch doc issue updater"
+description: "Creates a feature doc and posts branch/issue links on branch creation."
+author: "@dukeofgaming"
+inputs:
+  docs_dir:
+    description: 'Directory where docs should be created/managed'
+    required: false
+    default: 'docs/'
+runs:
+  using: "composite"
+  steps:
+    - name: Get Github branch and issue number from Branch
+      id: vars
+      shell: bash
+      run: |
+        BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME:-$(git rev-parse --abbrev-ref HEAD)}}"
+        BRANCH=$(echo "$BRANCH" | tr '/' '-')
+        ISSUE_NUMBER=$(echo "$BRANCH" | sed -E 's/^([0-9]+)-.*$/\1/')
+
+        echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+        echo "issue_number=$ISSUE_NUMBER" >> $GITHUB_OUTPUT
+
+        echo "- 🔗 Issue Link: https://github.com/${{ github.repository }}/issues/${ISSUE_NUMBER}" >> $GITHUB_STEP_SUMMARY
+        echo "- 🏷️ Branch [$BRANCH](https://github.com/${{ github.repository }}/tree/${BRANCH})" >> $GITHUB_STEP_SUMMARY
+
+    - name: Fetch Github Issue Details
+      id: issue_details
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        ISSUE_NUMBER="${{ steps.vars.outputs.issue_number }}"
+        ISSUE_BODY=$(gh issue view "$ISSUE_NUMBER" --json body -q '.body')
+        echo "ISSUE_BODY<<EOF"
+        echo "$ISSUE_BODY"
+        echo "EOF"
+
+        if [ -z "$ISSUE_BODY" ]; then
+          echo "No issue body found for issue #$ISSUE_NUMBER" >> $GITHUB_STEP_SUMMARY
+          exit 1
+        fi
+
+        YAML_FRONTMATTER=$(echo "$ISSUE_BODY" \
+          | sed -n '/^---$/,/^---$/p' \
+          | sed '1d;$d'
+        )
+        if [ -z "$YAML_FRONTMATTER" ]; then
+          echo "No YAML frontmatter found in issue body." >> $GITHUB_STEP_SUMMARY
+          exit 1
+        fi
+
+        echo "yaml_frontmatter<<EOF" >> $GITHUB_OUTPUT
+        echo "$YAML_FRONTMATTER" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+        ISSUE_TYPE=$(echo "$YAML_FRONTMATTER" | yq '.type')
+        echo "issue_type=$ISSUE_TYPE" >> $GITHUB_OUTPUT
+        echo "- 📋 Issue Type: $ISSUE_TYPE" >> $GITHUB_STEP_SUMMARY
+
+    - name: Fetch GitHub issue and create feature doc
+      id: feature_doc
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+        DOCS_DIR: ${{ inputs.docs_dir }}
+      run: |
+        ISSUE_TYPE="${{ steps.issue_details.outputs.issue_type }}"
+        ISSUE_NUMBER="${{ steps.vars.outputs.issue_number }}"
+        
+        BRANCH="${{ steps.vars.outputs.branch }}"
+
+        FILE_NAME="$ISSUE_TYPE-$ISSUE_NUMBER.md"
+        FILE_DIRECTORY="$DOCS_DIR/$(echo "$ISSUE_TYPE" | tr '[:upper:]' '[:lower:]')/$BRANCH"
+
+        echo "file_directory=$FILE_DIRECTORY" >> $GITHUB_OUTPUT
+        echo "file_name=$FILE_NAME" >> $GITHUB_OUTPUT
+        FILE_PATH=$(find . -type f -name $FILE_NAME)
+        if [ -n "$FILE_PATH" ]; then
+          echo "- 🔎 File \"$FILE_PATH\" already exists, updating issue body." >> $GITHUB_STEP_SUMMARY
+          gh issue edit $ISSUE_NUMBER --body-file "$FILE_PATH"
+          echo "- ✅ Updated issue body" >> $GITHUB_STEP_SUMMARY
+        else
+          mkdir -p $FILE_DIRECTORY
+          FILE_PATH=$FILE_DIRECTORY/$FILE_NAME
+          echo "## 🆕 Creating Documentation" >> $GITHUB_STEP_SUMMARY
+          echo "Creating new branch doc at \\\\$FILE_PATH\\\\" >> $GITHUB_STEP_SUMMARY
+          # Optionally, create a starter doc file here if needed
+        fi

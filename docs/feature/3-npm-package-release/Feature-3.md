@@ -70,3 +70,4 @@ As a developer, I want to release the package to NPM, so that I can use my compo
     
 - Installed Chromatic's GitHub UI review: https://www.chromatic.com/features/review
     
+- Fixed packaging issues that caused SSR problems when trying to use the package in a Next.js app
