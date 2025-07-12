@@ -1,5 +1,11 @@
 # @dukeofgaming/ab-ui
 
+## 0.1.2-dev.8
+
+### Patch Changes
+
+- fa8d3ff: Making pre-exit commit in the develop branch as chore commit for promotion PR
+
 ## 0.1.2-dev.7
 
 ### Patch Changes
