@@ -50,34 +50,38 @@ jobs:
 
           IS_CHANGESET_RELEASE=false
           for parent in "${PARENTS[@]}"; do
-            echo "🔍 Checking parent commit: $parent" >> $GITHUB_STEP_SUMMARY
+            short_parent=$(echo $parent | cut -c1-7)
+            echo "🔍 Checking parent commit: $short_parent" >> $GITHUB_STEP_SUMMARY
 
-            for branch in $(git branch -r --contains $parent); do
-              echo "└─ Considering branch: $branch (for parent $parent)" >> $GITHUB_STEP_SUMMARY
-              
-              if [[ "$branch" == origin/changeset-release/* ]]; then
-                TIP_SHA=$(git rev-parse "$branch")
+            for branch in $(git branch -r --contains $parent | grep 'origin/changeset-release/'); do
+              echo "└─ Considering changeset-release branch: $branch (for parent $short_parent)" >> $GITHUB_STEP_SUMMARY
 
-                echo " - 🔝 Tip of $branch is $TIP_SHA" >> $GITHUB_STEP_SUMMARY
-                
-                if [ "$parent" = "$TIP_SHA" ]; then
-                  echo " - ✅ Parent $parent IS the tip of $branch (this is a direct merge from changeset-release)" >> $GITHUB_STEP_SUMMARY
-                  IS_CHANGESET_RELEASE=true
+              TIP_SHA=$(git rev-parse "$branch")
+              short_tip=$(echo $TIP_SHA | cut -c1-7)
 
-                  break 2
-                else
-                  echo " - ❌ Parent $parent is NOT the tip of $branch" >> $GITHUB_STEP_SUMMARY
-                fi
+              echo " - 🔝 Tip of $branch is $short_tip" >> $GITHUB_STEP_SUMMARY
+
+              if [ "$parent" = "$TIP_SHA" ]; then
+
+                echo " - ✅ Parent $short_parent IS the tip of $branch (direct merge from changeset-release)" >> $GITHUB_STEP_SUMMARY
+                IS_CHANGESET_RELEASE=true
+
+                break 2
+
+              else
+
+                echo " - ❌ Parent $short_parent is NOT the tip of $branch" >> $GITHUB_STEP_SUMMARY
+
               fi
             done
           done
 
           if [ "$IS_CHANGESET_RELEASE" = true ]; then
             echo "is_changeset_release=true" >> $GITHUB_OUTPUT
-            echo "- 🦋✅ Direct merge from changeset-release branch detected: $GITHUB_SHA" >> $GITHUB_STEP_SUMMARY
+            echo "### 🦋✅ Direct merge from changeset-release branch detected: $GITHUB_SHA" >> $GITHUB_STEP_SUMMARY
           else
             echo "is_changeset_release=false" >> $GITHUB_OUTPUT
-            echo "- 🦋❌ Not a direct merge from changeset-release: $GITHUB_SHA" >> $GITHUB_STEP_SUMMARY
+            echo "### 🦋❌ Not a direct merge from changeset-release: $GITHUB_SHA" >> $GITHUB_STEP_SUMMARY
           fi
 
   snapshot:
