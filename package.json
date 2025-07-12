@@ -26,7 +26,8 @@
   ],
   "peerDependencies": {
     "react": ">=19",
-    "react-dom": ">=19"
+    "react-dom": ">=19",
+    "prop-types": ">=15.8.1"
   },
   "scripts": {
     "dev": "vite",
