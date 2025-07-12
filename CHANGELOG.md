@@ -1,5 +1,11 @@
 # @dukeofgaming/ab-ui
 
+## 0.1.2-dev.9
+
+### Patch Changes
+
+- 7ba2316: Fixing PR creation by adding missing installation o f node packages
+
 ## 0.1.2-dev.8
 
 ### Patch Changes
