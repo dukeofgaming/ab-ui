@@ -105,6 +105,9 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
+      - name: Build
+        run: npm run build
+
       - name: Changeset Snapshot
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -116,6 +119,8 @@ jobs:
 
             npx changeset pre exit
           fi
+
+          ls dist
 
           npx changeset version --snapshot ${{ github.head_ref || github.ref_name }}
 
@@ -149,6 +154,8 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
+      - name: Build
+        run: npm run build
       - name: Enter Pre-release Mode (dev)
         run: |
           if [ ! -f .changeset/pre.json ]; then
@@ -173,6 +180,9 @@ jobs:
         shell: bash
         if: steps.changesets.outputs.published == 'true' || steps.changesets.outputs.pullRequestNumber != ''
         run: |
+
+          ls dist
+
           echo "### 📦 Published Packages" >> $GITHUB_STEP_SUMMARY
 
           if [ "${{ steps.changesets.outputs.published }}" = 'true' ]; then
@@ -211,6 +221,10 @@ jobs:
           node-version: 24
       - name: Install Dependencies
         run: npm ci
+
+      - name: Build
+        run: npm run build
+
       - name: Create Release Pull Request or Publish Stable to npm
         id: changesets
         uses: changesets/action@v1
@@ -226,6 +240,9 @@ jobs:
       - name: 📦 Summarize Published Packages
         if: steps.changesets.outputs.published == 'true' || steps.changesets.outputs.pullRequestNumber != ''
         run: |
+
+          ls dist
+
           echo "### 📦 Published Packages" >> $GITHUB_STEP_SUMMARY
 
           if [ "${{ steps.changesets.outputs.published }}" = 'true' ]; then
