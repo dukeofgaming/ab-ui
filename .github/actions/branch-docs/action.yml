@@ -30,7 +30,27 @@ runs:
         GH_TOKEN: ${{ github.token }}
       run: |
         ISSUE_NUMBER="${{ steps.vars.outputs.issue_number }}"
-        YAML_FRONTMATTER=$(gh issue view "$ISSUE_NUMBER" --json body -q '.body' | yq 'split("---")[1]')
+        ISSUE_BODY=$(gh issue view "$ISSUE_NUMBER" --json body -q '.body')
+        echo "ISSUE_BODY<<EOF"
+        echo "$ISSUE_BODY"
+        echo "EOF"
+
+        if [ -z "$ISSUE_BODY" ]; then
+          echo "No issue body found for issue #$ISSUE_NUMBER" >> $GITHUB_STEP_SUMMARY
+          exit 1
+        fi
+
+        if [ "$(echo "$ISSUE_BODY" | yq 'type')" != "!!str" ]; then
+          echo "Issue body is not a string, aborting." >> $GITHUB_STEP_SUMMARY
+          exit 1
+        fi
+
+        YAML_FRONTMATTER=$(echo "$ISSUE_BODY" | yq 'split("---")[1]' || echo "")
+        if [ -z "$YAML_FRONTMATTER" ]; then
+          echo "No YAML frontmatter found in issue body."
+          exit 1
+        fi
+
         echo "yaml_frontmatter<<EOF" >> $GITHUB_OUTPUT
         echo "$YAML_FRONTMATTER" >> $GITHUB_OUTPUT
         echo "EOF" >> $GITHUB_OUTPUT
