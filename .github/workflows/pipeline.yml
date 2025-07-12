@@ -149,6 +149,8 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
+      - name: Build
+        run: npm run build
       - name: Enter Pre-release Mode (dev)
         run: |
           if [ ! -f .changeset/pre.json ]; then
@@ -211,6 +213,10 @@ jobs:
           node-version: 24
       - name: Install Dependencies
         run: npm ci
+
+      - name: Build
+        run: npm run build
+
       - name: Create Release Pull Request or Publish Stable to npm
         id: changesets
         uses: changesets/action@v1
