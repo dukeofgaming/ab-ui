@@ -5,6 +5,11 @@ on:
     branches:
       - develop
       - main
+      
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
   test:
@@ -224,12 +229,12 @@ jobs:
         shell: bash
 
   storybook_dev:
-    if: github.ref == 'refs/heads/develop'
+    needs: 
+      - release_dev
+      - is_changeset_release
+    if: github.ref == 'refs/heads/develop' && needs.is_changeset_release.outputs.is_changeset_release == 'true'
     name: Publish Storybook (develop:Chromatic)
     runs-on: ubuntu-latest
-    needs: 
-      - snapshot
-      - release_dev
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -247,10 +252,11 @@ jobs:
 
 
   storybook_release:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && needs.is_changeset_release.outputs.is_changeset_release == 'true'
     name: Publish Storybook (main:Github Pages)
     runs-on: ubuntu-latest
     needs: 
+      - is_changeset_release
       - release_main
     steps:
       - name: Checkout repository
