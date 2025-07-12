@@ -67,7 +67,6 @@
     "eslint-plugin-storybook": "^9.0.6",
     "globals": "^16.0.0",
     "jsdom": "^26.1.0",
-    "prop-types": "^15.8.1",
     "storybook": "^9.0.6",
     "vite": "^6.3.5",
     "vitest": "^3.2.3"
