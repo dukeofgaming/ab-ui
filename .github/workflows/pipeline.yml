@@ -120,6 +120,8 @@ jobs:
             npx changeset pre exit
           fi
 
+          ls dist
+
           npx changeset version --snapshot ${{ github.head_ref || github.ref_name }}
 
           # Set NPM_TOKEN for changeset publish
@@ -178,6 +180,9 @@ jobs:
         shell: bash
         if: steps.changesets.outputs.published == 'true' || steps.changesets.outputs.pullRequestNumber != ''
         run: |
+
+          ls dist
+
           echo "### 📦 Published Packages" >> $GITHUB_STEP_SUMMARY
 
           if [ "${{ steps.changesets.outputs.published }}" = 'true' ]; then
@@ -235,6 +240,9 @@ jobs:
       - name: 📦 Summarize Published Packages
         if: steps.changesets.outputs.published == 'true' || steps.changesets.outputs.pullRequestNumber != ''
         run: |
+
+          ls dist
+
           echo "### 📦 Published Packages" >> $GITHUB_STEP_SUMMARY
 
           if [ "${{ steps.changesets.outputs.published }}" = 'true' ]; then
