@@ -16,11 +16,12 @@ export default defineConfig({
     },
     rollupOptions: {
       // Externalize peer deps like react
-      external: ['react', 'react-dom'],
+      external: ['react', 'react-dom', 'prop-types'],
       output: {
         globals: {
           react: 'React',
-          'react-dom': 'ReactDOM'
+          'react-dom': 'ReactDOM',
+          'prop-types': 'PropTypes'
         }
       }
     },
