@@ -1,4 +1,9 @@
+## 0.1.3
 
+### Patch Changes
+
+- e3d1d8c: Improving summary output, refactored to create an action for branch-docs avoiding a separate workflow
+- 8e68877: Setting tests as initial step for pr and regular pipeline
 
 ### Patch Changes
 
