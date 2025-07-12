@@ -1,4 +1,3 @@
-/// <reference types="vitest/config" />
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'node:path';
@@ -16,7 +15,13 @@ export default defineConfig({
     },
     rollupOptions: {
       // Externalize peer deps like react
-      external: ['react', 'react-dom', 'prop-types'],
+      external: [
+        'react',
+        'react-dom',
+        'prop-types',
+        'react/jsx-runtime',
+        'react/jsx-dev-runtime'
+      ],
       output: {
         globals: {
           react: 'React',
