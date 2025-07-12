@@ -40,14 +40,12 @@ runs:
           exit 1
         fi
 
-        if [ "$(echo "$ISSUE_BODY" | yq 'type')" != "!!str" ]; then
-          echo "Issue body is not a string, aborting." >> $GITHUB_STEP_SUMMARY
-          exit 1
-        fi
-
-        YAML_FRONTMATTER=$(echo "$ISSUE_BODY" | yq 'split("---")[1]' || echo "")
+        YAML_FRONTMATTER=$(echo "$ISSUE_BODY" \
+          | sed -n '/^---$/,/^---$/p' \
+          | sed '1d;$d'
+        )
         if [ -z "$YAML_FRONTMATTER" ]; then
-          echo "No YAML frontmatter found in issue body."
+          echo "No YAML frontmatter found in issue body." >> $GITHUB_STEP_SUMMARY
           exit 1
         fi
 
