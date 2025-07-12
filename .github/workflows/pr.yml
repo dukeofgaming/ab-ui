@@ -15,9 +15,22 @@ jobs:
       - name: Run Tests
         uses: ./.github/actions/node-test
 
+  branch-doc:
+    name: Create branch doc / update issue
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Run branch-docs composite action
+        uses: ./.github/actions/github-branch-md
+        with:
+          docs_dir: docs/
+
   snapshot:
     name: Snapshot Preview Release
     runs-on: ubuntu-latest
+    needs:
+      - test
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -29,6 +42,9 @@ jobs:
 
       - name: Install Dependencies
         run: npm ci
+
+      - name: Build
+        run: npm run build
 
       - name: Ensure Changesets is not in "pre" mode
         run: |
@@ -54,8 +70,10 @@ jobs:
           pr_number=${{ github.event.pull_request.number }}
 
           echo "- 📦 Published Snapshot Package: [${name}@${version}](https://www.npmjs.com/package/${name}/v/${version})" >> $GITHUB_STEP_SUMMARY
-          echo "- PR #${pr_number}: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/pull/${pr_number}" >> $GITHUB_STEP_SUMMARY
+          echo "- Built from PR #${pr_number}: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/pull/${pr_number}" >> $GITHUB_STEP_SUMMARY
 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  
