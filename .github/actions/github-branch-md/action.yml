@@ -74,14 +74,40 @@ runs:
         echo "file_directory=$FILE_DIRECTORY" >> $GITHUB_OUTPUT
         echo "file_name=$FILE_NAME" >> $GITHUB_OUTPUT
         FILE_PATH=$(find . -type f -name $FILE_NAME)
+
         if [ -n "$FILE_PATH" ]; then
+
           echo "- 🔎 File \"$FILE_PATH\" already exists, updating issue body." >> $GITHUB_STEP_SUMMARY
           gh issue edit $ISSUE_NUMBER --body-file "$FILE_PATH"
           echo "- ✅ Updated issue body" >> $GITHUB_STEP_SUMMARY
+
         else
+
           mkdir -p $FILE_DIRECTORY
           FILE_PATH=$FILE_DIRECTORY/$FILE_NAME
           echo "## 🆕 Creating Documentation" >> $GITHUB_STEP_SUMMARY
-          echo "Creating new branch doc at \\\\$FILE_PATH\\\\" >> $GITHUB_STEP_SUMMARY
-          # Optionally, create a starter doc file here if needed
+          echo "Creating new branch doc at \`$FILE_PATH\`" >> $GITHUB_STEP_SUMMARY
+          ISSUE_BODY=$(gh issue view $ISSUE_NUMBER --json body -q '.body')
+          echo "$ISSUE_BODY" > "$FILE_PATH"
+          
         fi
+
+    - name: Commit and push doc changes
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+        FILE_PATH: ${{ steps.feature_doc.outputs.file_directory }}/${{ steps.feature_doc.outputs.file_name }}
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        
+        git add "$FILE_PATH" || { echo "❌ Could not stage $FILE_PATH for commit (file missing or git error)." >> $GITHUB_STEP_SUMMARY; exit 0; }
+
+        if git diff --cached --quiet; then
+          echo "No doc changes to commit for $FILE_PATH" >> $GITHUB_STEP_SUMMARY
+          exit 0
+        fi
+
+        git commit -m "docs: create or update $FILE_PATH [skip ci]"
+        git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:${GITHUB_REF}
+        echo "- 🚀 Committed and pushed $FILE_PATH to branch ${GITHUB_REF}" >> $GITHUB_STEP_SUMMARY
