@@ -109,5 +109,9 @@ runs:
         fi
 
         git commit -m "docs: create or update $FILE_PATH [skip ci]"
-        git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:${GITHUB_REF}
+
+        git fetch origin "${{ steps.vars.outputs.branch }}"
+        git rebase "origin/${{ steps.vars.outputs.branch }}"
+        git push origin "HEAD:${{ steps.vars.outputs.branch }}"
+
         echo "- 🚀 Committed and pushed $FILE_PATH to branch ${GITHUB_REF}" >> $GITHUB_STEP_SUMMARY
