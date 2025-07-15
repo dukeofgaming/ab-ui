@@ -68,17 +68,17 @@ Allow multiple component library versions to coexist without breaking existing a
 ### 5. **Repository Strategy**
 
 #### 5.1
-Minimize the total number of repos while avoiding a monolithic structure.
+Minimize the total number of repos while avoiding a monolithic structure (see [[Feature-6]]).
 
 #### 5.2
-Consider a monorepo for shared libraries and micro-repos/packages for individual apps.
+Consider a monorepo for shared libraries and micro-repos/packages for individual apps (see [[Feature-3]], [[Feature-6]]).
 
 ### 6. **Collaboration and Contributions**
 #### 6.1
-Streamline contributions from a large developer community through local dev setups (see [[Feature-0]]), peer-review workflows, and automated checks.
+Streamline contributions from a large developer community through local dev setups (see [[Feature-0]]), peer-review workflows (see [[Feature-6]]), and automated checks (see [[Feature-6]]).
 
 #### 6.2
-Prevent design drift by enforcing consistency between component implementation and design specifications (see [[ADR-2]]).
+Prevent design drift by enforcing consistency between component implementation and design specifications (see [[ADR-2]], [[Feature-6]]).
 
 ### 7. **Release Notes and Documentation**
 #### 7.1
