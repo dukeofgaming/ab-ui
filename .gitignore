@@ -39,3 +39,6 @@ storybook-static
 
 # Docs
 /docs/dist
+
+# Ignore generated design token CSS
+src/tokens.css
