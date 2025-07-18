@@ -4,7 +4,7 @@ type: Feature
 
 # Feature #6: Streamline collaboration and contributions
 
-<!-- General requirement in user story form, e.g.: As a persona, I need a feature, so that I can accomplish something -->
+
 
 ## Acceptance Criteria
 
@@ -29,7 +29,8 @@ type: Feature
 
 - [ ] **"Prevent design drift by enforcing consistency between component implementation and design specifications"** (see [[requirements#6.2]])
 
-    - [ ] Implement design tokens
+    - [ ] Export design tokens from Figma using Tokens Studio
+    - [ ] Implement design tokens with Style Dictionary
 
 - [ ] **"Provide clear lineage between design revisions, code commits, and semantic releases"** (see [[requirements#2.2]])
 
@@ -44,4 +45,23 @@ type: Feature
 
 <!-- Topics and details discovered throughout discussion, design and implementation -->
 
-1. ...
+1. Created a base app repo to fork from upstream to serve as a base app implementation: https://github.com/dukeofgaming/ab-app
+
+    - NextJS was chosen since it provides a turnkey experience with Tailwind: https://tailwindcss.com/docs/installation/framework-guides/nextjs
+
+    - Created an app to CRUD brands base off that repository: https://github.com/ab-internal/ab-app-brands
+
+2. Generated a few test tokens and integrated Figma with Github through Tokens Studio using the  GitHub sync provider: https://docs.tokens.studio/token-storage/remote/sync-git-github
+
+    - Created new design branch as the point of integration
+    - Designers can create pull requests from Figma, allowing them to merge from the design branch to the develop branch, creating an async communication channel with developers
+
+3. After getting Tokens Studio to work to build tokens as css variables, went to implement switchable themes with Tailwind in the brands app: https://github.com/ab-internal/ab-app-brands/tree/1-implement-design
+
+    - Refactored the app into a set of Typescript components called DataManager, DataTable and DataForm to simplify understanding of color schemes.
+
+    - Reverse engineered a basic token structure from the app.
+
+    - Implemented switchable themes with Tailwind.
+
+    - Imported the tokens into Tokens Studio and reexported to the design branch
