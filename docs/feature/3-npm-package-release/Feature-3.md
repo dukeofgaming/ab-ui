@@ -12,28 +12,23 @@ As a developer, I want to release the package to NPM, so that I can use my compo
 
 ## Acceptance Criteria
 
-- [ ] Use a mechanism (e.g., semantic versioning) to facilitate controlled, incremental upgrades of shared components. (see [[requirements#4.1]])
+- [x] **"Use a mechanism (e.g., semantic versioning) to facilitate controlled, incremental upgrades of shared components"** (see [[requirements#4.1]])
 
     - [x] Publish UI components package to an NPM registry
 
-- [ ] Automatically generate release notes, highlighting changes, deprecations, and upgrade paths. (see [[requirements#7.1]])
+- [x] **"Automatically generate release notes, highlighting changes, deprecations, and upgrade paths"** (see [[requirements#7.1]])
 
-    - [ ] Implement the use of [changesets](https://github.com/changesets/changesets)
+    - [x] Implement the use of [changesets](https://github.com/changesets/changesets)
 
-- [ ] Tie feature branches and releases directly to specific design documents (see [[requirements#3.2]])
+- [x] **"Tie feature branches and releases directly to specific design documents"** (see [[requirements#3.2]])
 
     - [x] Create issue template
     - [x] Automate generation of Markdown documentation file upon branch creation
-    - [ ] Create PR template
 
-- [ ] Maintain a single source of truth for design assets (Figma, Sketch, etc.) mapped to frontend componentversions (see [[requirements#2.1]])
+- [x] **"Maintain a single source of truth for design assets (Figma, Sketch, etc.) mapped to frontend component versions"** (see [[requirements#2.1]])
 
     - [x] Integrate Storybook to Figma
     - [x] Integrate Figma to Storybook
-
-- [ ] Provide clear lineage between design revisions, code commits, and semantic releases (see [[requirements#2.2]])
-
-    - [ ] Find a way to enforce links to specific Figma revisions
 
 
 ## Notes
