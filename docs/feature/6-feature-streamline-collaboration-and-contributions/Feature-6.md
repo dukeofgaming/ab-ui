@@ -24,17 +24,18 @@ type: Feature
 
 - [ ] **"Minimize the total number of repos while avoiding a monolithic structure"** (see [[requirements#5.1]])
 
-    - [ ] Create base app repo to fork from upstream
-    - [ ] Create example app repos
+    - [x] Create base app repo to fork from upstream
+    - [x] Create example app repos
 
 - [ ] **"Prevent design drift by enforcing consistency between component implementation and design specifications"** (see [[requirements#6.2]])
 
-    - [ ] Export design tokens from Figma using Tokens Studio
-    - [ ] Implement design tokens with Style Dictionary
+    - [x] Export design tokens from Figma using Tokens Studio
+    - [x] Implement design tokens with Style Dictionary
+    - [ ] Integrate Storybook with Tailwind themes and tokens
 
 - [ ] **"Provide clear lineage between design revisions, code commits, and semantic releases"** (see [[requirements#2.2]])
 
-    - [ ] Find a way to enforce links to specific Figma revisions
+    - [x] Integrated Figma Tokens Studio with GitHub
 
 - [x] **"Tie feature branches and releases directly to specific design documents"** (see [[requirements#3.2]])
 

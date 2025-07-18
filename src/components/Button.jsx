@@ -5,7 +5,18 @@ const Button = ({ onClick, children, className = '', ...props }) => (
   <button
     onClick={onClick}
     className={[
-      'bg-[#ffb300] text-white text-lg font-semibold px-8 py-2 rounded-full shadow hover:bg-[#ffd54f] hover:text-[#7c6a3c] transition-colors',
+      'bg-[var(--global-color-accent)]',
+      'text-[var(--global-color-text)]',
+      'font-sans',
+      'text-lg',
+      'font-semibold',
+      'px-8',
+      'py-2',
+      'rounded-full',
+      'shadow',
+      'transition-colors',
+      'border',
+      'border-[var(--global-color-border)]',
       className
     ].join(' ')}
     {...props}
@@ -18,6 +29,7 @@ const Button = ({ onClick, children, className = '', ...props }) => (
 Button.propTypes = {
   onClick: PropTypes.func.isRequired,
   children: PropTypes.node.isRequired,
+  className: PropTypes.string,
 };
 
 export default Button;
