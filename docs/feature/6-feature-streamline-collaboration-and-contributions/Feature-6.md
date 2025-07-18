@@ -44,7 +44,6 @@ type: Feature
 
 ## Notes
 
-<!-- Topics and details discovered throughout discussion, design and implementation -->
 
 1. Created a base app repo to fork from upstream to serve as a base app implementation: https://github.com/dukeofgaming/ab-app
 
@@ -68,3 +67,9 @@ type: Feature
     - Imported the tokens into Tokens Studio and reexported to the design branch
 
 4. Added [[ADR-6]] to reflect the design tokens system implementation, which will help with collaboration between designers using Figma and developers.
+
+5. Implementing theme switcher with Tailwind:
+
+    - Started by following this guide: https://storybook.js.org/recipes/tailwindcss
+
+    
