@@ -42,21 +42,21 @@ jobs:
         run: |
           docker build \
             -f .devcontainer/Dockerfile \
-            -t ghcr.io/${{ steps.repo.outputs.repo_name }}/devcontainer:latest \
-            -t ghcr.io/${{ steps.repo.outputs.repo_name }}/devcontainer:${{ steps.version.outputs.version }} \
-            -t ghcr.io/${{ steps.repo.outputs.repo_name }}/devcontainer:${{ github.sha }} \
+            -t ghcr.io/${{ steps.repo.outputs.repo_name }}-devcontainer:latest \
+            -t ghcr.io/${{ steps.repo.outputs.repo_name }}-devcontainer:${{ steps.version.outputs.version }} \
+            -t ghcr.io/${{ steps.repo.outputs.repo_name }}-devcontainer:${{ github.sha }} \
             .
 
       - name: Push Docker image (latest)
         run: |
-          docker push ghcr.io/${{ steps.repo.outputs.repo_name }}/devcontainer:latest
+          docker push ghcr.io/${{ steps.repo.outputs.repo_name }}-devcontainer:latest
 
       - name: Push Docker image (version)
         run: |
-          docker push ghcr.io/${{ steps.repo.outputs.repo_name }}/devcontainer:${{ steps.version.outputs.version }}
+          docker push ghcr.io/${{ steps.repo.outputs.repo_name }}-devcontainer:${{ steps.version.outputs.version }}
       - name: Push Docker image (sha)
         run: |
-          docker push ghcr.io/${{ steps.repo.outputs.repo_name }}/devcontainer:${{ github.sha }}
+          docker push ghcr.io/${{ steps.repo.outputs.repo_name }}-devcontainer:${{ github.sha }}
 
 
       - name: Output image URLs to summary
@@ -65,6 +65,6 @@ jobs:
 
           echo "Published the following tags (visit ghcr.io/dukeofgaming/ab-ui/devcontainer):" >> $GITHUB_STEP_SUMMARY
 
-          echo '- `ghcr.io/${{ steps.repo.outputs.repo_name }}/devcontainer:latest`' >> $GITHUB_STEP_SUMMARY
-          echo '- `ghcr.io/${{ steps.repo.outputs.repo_name }}/devcontainer:${{ github.sha }}`' >> $GITHUB_STEP_SUMMARY
-          echo '- `ghcr.io/${{ steps.repo.outputs.repo_name }}/devcontainer:${{ steps.version.outputs.version }}`' >> $GITHUB_STEP_SUMMARY
+          echo '- `ghcr.io/${{ steps.repo.outputs.repo_name }}-devcontainer:latest`' >> $GITHUB_STEP_SUMMARY
+          echo '- `ghcr.io/${{ steps.repo.outputs.repo_name }}-devcontainer:${{ github.sha }}`' >> $GITHUB_STEP_SUMMARY
+          echo '- `ghcr.io/${{ steps.repo.outputs.repo_name }}-devcontainer:${{ steps.version.outputs.version }}`' >> $GITHUB_STEP_SUMMARY
