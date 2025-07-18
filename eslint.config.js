@@ -7,8 +7,25 @@ import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 import vitest from 'eslint-plugin-vitest'
 
+import tseslint from 'typescript-eslint';
+
 export default [
-  { ignores: ['dist'] },
+  { ignores: ['dist', 'node_modules'] },
+  // TypeScript config for .storybook
+  {
+    files: ['.storybook/**/*.ts'],
+    languageOptions: {
+      parser: tseslint.parser,
+      parserOptions: {
+        project: './tsconfig.json',
+        sourceType: 'module',
+      },
+    },
+    plugins: {
+      '@typescript-eslint': tseslint.plugin,
+    },
+    rules: {}, // add custom rules here if needed
+  },
   {
     files: ['**/*.{js,jsx}'],
     languageOptions: {
