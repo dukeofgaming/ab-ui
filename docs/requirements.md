@@ -36,7 +36,7 @@ architecture, and overarching vision. It must address the following engineering 
 ### 1. **Configurable Design System**
 
 #### 1.1
-Accommodate multiple color palettes for logical application grouping.
+Accommodate multiple color palettes for logical application grouping (see [[ADR-6]]).
 
 #### 1.2
 Allow theming or restyling without altering core component logic (see [[ADR-1]], [[ADR-2]]).
@@ -78,7 +78,7 @@ Consider a monorepo for shared libraries and micro-repos/packages for individual
 Streamline contributions from a large developer community through local dev setups (see [[Feature-0]]), peer-review workflows (see [[Feature-6]]), and automated checks (see [[Feature-6]]).
 
 #### 6.2
-Prevent design drift by enforcing consistency between component implementation and design specifications (see [[ADR-2]], [[Feature-6]]).
+Prevent design drift by enforcing consistency between component implementation and design specifications (see [[ADR-2]], [[Feature-6]], [[ADR-6]]).
 
 ### 7. **Release Notes and Documentation**
 #### 7.1

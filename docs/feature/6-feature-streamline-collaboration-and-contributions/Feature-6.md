@@ -65,3 +65,5 @@ type: Feature
     - Implemented switchable themes with Tailwind.
 
     - Imported the tokens into Tokens Studio and reexported to the design branch
+
+4. Added [[ADR-6]] to reflect the design tokens system implementation, which will help with collaboration between designers using Figma and developers.
