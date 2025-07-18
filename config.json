@@ -10,7 +10,13 @@
           "format": "css/variables",
           "options": {
             "selector": ":root"
-          }
+          },
+          "filter": "isGlobal"
+        },
+        {
+          "destination": "themes.css",
+          "format": "css/themeClasses",
+          "filter": "isTheme"
         }
       ]
     }

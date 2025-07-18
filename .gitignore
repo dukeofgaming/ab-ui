@@ -42,3 +42,4 @@ storybook-static
 
 # Ignore generated design token CSS
 src/tokens.css
+src/themes.css
