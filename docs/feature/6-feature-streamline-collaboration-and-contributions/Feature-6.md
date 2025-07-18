@@ -31,7 +31,7 @@ type: Feature
 
     - [x] Export design tokens from Figma using Tokens Studio
     - [x] Implement design tokens with Style Dictionary
-    - [ ] Integrate Storybook with Tailwind themes and tokens
+    - [x] Integrate Storybook with Tailwind themes and tokens
 
 - [ ] **"Provide clear lineage between design revisions, code commits, and semantic releases"** (see [[requirements#2.2]])
 
@@ -71,5 +71,8 @@ type: Feature
 5. Implementing theme switcher with Tailwind:
 
     - Started by following this guide: https://storybook.js.org/recipes/tailwindcss
+    - Loaded themes dynamically from design/tokens/tokens.json
+
+
 
     
