@@ -24,73 +24,23 @@ jobs:
         uses: ./.github/actions/node-test
 
 
-  is_changeset_release:
-    name: Changeset-release merge-commit detection
+  changesets_is_release_merge:
+    name: Changesets-release merge-commit detection
     runs-on: ubuntu-latest
     outputs:
-      is_changeset_release: ${{ steps.check_changeset_release.outputs.is_changeset_release }}
+      changesets-is-release-merge: ${{ steps.changesets_is_release_merge.outputs.changesets-is-release-merge }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Detect changeset-release ancestor
-        id: check_changeset_release
-        run: |
-          git fetch --all
-          # Get parent SHAs as array
-          PARENTS=($(git rev-list --parents -n 1 $GITHUB_SHA | cut -d' ' -f2-))
-          NUM_PARENTS=${#PARENTS[@]}
-
-          if [ "$NUM_PARENTS" -ne 2 ]; then
-            echo "is_changeset_release=false" >> $GITHUB_OUTPUT
-            echo "- 🦋❌ Not a 2-parent merge commit: $GITHUB_SHA" >> $GITHUB_STEP_SUMMARY
-            exit 0
-          fi
-
-          IS_CHANGESET_RELEASE=false
-          for parent in "${PARENTS[@]}"; do
-            short_parent=$(echo $parent | cut -c1-7)
-            echo "🔍 Checking parent commit: $short_parent" >> $GITHUB_STEP_SUMMARY
-
-            for branch in $(git branch -r --contains $parent | grep 'origin/changeset-release/'); do
-              echo "└─ Considering changeset-release branch: $branch (for parent $short_parent)" >> $GITHUB_STEP_SUMMARY
-
-              TIP_SHA=$(git rev-parse "$branch")
-              short_tip=$(echo $TIP_SHA | cut -c1-7)
-
-              echo "└── 🔝 Tip of $branch is $short_tip" >> $GITHUB_STEP_SUMMARY
-
-              if [ "$parent" = "$TIP_SHA" ]; then
-
-                echo "└── ✅ Parent $short_parent IS the tip of $branch (direct merge from changeset-release)" >> $GITHUB_STEP_SUMMARY
-                IS_CHANGESET_RELEASE=true
-
-                break 2
-
-              else
-
-                echo "└── ❌ Parent $short_parent is NOT the tip of $branch" >> $GITHUB_STEP_SUMMARY
-
-              fi
-            done
-          done
-
-          if [ "$IS_CHANGESET_RELEASE" = true ]; then
-            echo "is_changeset_release=true" >> $GITHUB_OUTPUT
-            echo "### 🦋✅ Direct merge from changeset-release branch detected: $GITHUB_SHA" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "is_changeset_release=false" >> $GITHUB_OUTPUT
-            echo "### 🦋❌ Not a direct merge from changeset-release: $GITHUB_SHA" >> $GITHUB_STEP_SUMMARY
-          fi
+      - name: Detect changeset-release merge
+        id: changesets_is_release_merge
+        uses: ./.github/actions/changesets-is-release-merge
 
   snapshot:
     name: Snapshot Preview Release
     runs-on: ubuntu-latest
     needs: 
       - test
-      - is_changeset_release
-    if: needs.is_changeset_release.outputs.is_changeset_release == 'false'
+      - changesets_is_release_merge
+    if: needs.changesets_is_release_merge.outputs.changesets-is-release-merge == 'false'
     steps:
 
       - name: Checkout Repo
@@ -113,7 +63,7 @@ jobs:
     if: github.ref == 'refs/heads/develop'
     needs: 
       - test
-      - is_changeset_release
+      - changesets_is_release_merge
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -183,7 +133,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     needs: 
       - test
-      - is_changeset_release
+      - changesets_is_release_merge
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -239,8 +189,8 @@ jobs:
   storybook_dev:
     needs: 
       - release_dev
-      - is_changeset_release
-    if: github.ref == 'refs/heads/develop' && needs.is_changeset_release.outputs.is_changeset_release == 'true'
+      - changesets_is_release_merge
+    if: github.ref == 'refs/heads/develop' && needs.changesets_is_release_merge.outputs.changesets-is-release-merge == 'true'
     name: Publish Storybook (develop:Chromatic)
     runs-on: ubuntu-latest
     steps:
@@ -260,11 +210,11 @@ jobs:
 
 
   storybook_release:
-    if: github.ref == 'refs/heads/main' && needs.is_changeset_release.outputs.is_changeset_release == 'true'
+    if: github.ref == 'refs/heads/main' && needs.changesets_is_release_merge.outputs.changesets-is-release-merge == 'true'
     name: Publish Storybook (main:Github Pages)
     runs-on: ubuntu-latest
     needs: 
-      - is_changeset_release
+      - changesets_is_release_merge
       - release_main
     steps:
       - name: Checkout repository
@@ -287,9 +237,9 @@ jobs:
     name: Promote dev to main
     runs-on: ubuntu-latest
     needs:
-      - is_changeset_release
+      - changesets_is_release_merge
       - release_dev
-    if: needs.is_changeset_release.outputs.is_changeset_release == 'true' && github.ref == 'refs/heads/develop'
+    if: needs.changesets_is_release_merge.outputs.changesets-is-release-merge == 'true' && github.ref == 'refs/heads/develop'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
