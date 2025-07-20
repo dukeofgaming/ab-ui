@@ -18,28 +18,31 @@ type: Feature
 - [ ] **"Streamline contributions from a large developer community through local dev setups, peer-review workflows, and automated checks"** (see [[requirements#6.1]])
 
     - [x] Publish DevContainer image to GitHub Container Registry for quicker local setup with VSCode as a baseline experience
-    - [ ] Setup base app repository to use devcontainer image
+    - [x] Setup base app repository to use devcontainer image
     - [ ] Make PR promotion mechanism reusable for peer review workflow
     - [ ] Add ESLint to test pipeline
 
-- [ ] **"Minimize the total number of repos while avoiding a monolithic structure"** (see [[requirements#5.1]])
+- [x] **"Minimize the total number of repos while avoiding a monolithic structure"** (see [[requirements#5.1]])
 
     - [x] Create base app repo to fork from upstream
     - [x] Create example app repos
 
-- [ ] **"Prevent design drift by enforcing consistency between component implementation and design specifications"** (see [[requirements#6.2]])
+- [x] **"Prevent design drift by enforcing consistency between component implementation and design specifications"** (see [[requirements#6.2]])
 
     - [x] Export design tokens from Figma using Tokens Studio
     - [x] Implement design tokens with Style Dictionary
     - [x] Integrate Storybook with Tailwind themes and tokens
+    - [ ] Publish design tokens as part of NPM package
 
 - [ ] **"Provide clear lineage between design revisions, code commits, and semantic releases"** (see [[requirements#2.2]])
 
-    - [x] Integrated Figma Tokens Studio with GitHub
+    - [x] Integrate Figma Tokens Studio with GitHub
+    - [ ] Integrate Figma with Storybook
 
 - [x] **"Tie feature branches and releases directly to specific design documents"** (see [[requirements#3.2]])
 
     - [ ] Create PR template with Figma link as a required field
+    - 
 
 
 ## Notes

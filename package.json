@@ -19,10 +19,17 @@
     ".": {
       "import": "./dist/ab-ui.es.js",
       "require": "./dist/ab-ui.cjs.js"
+    },
+    "./css/themes": {
+      "default": "./src/themes.css"
+    },
+    "./css/tokens": {
+      "default": "./src/tokens.css"
     }
   },
   "files": [
     "dist",
+    "src/themes.css",
     "src/tokens.css"
   ],
   "peerDependencies": {
@@ -35,9 +42,9 @@
     "test": "vitest",
     "test:components": "vitest --project=components",
     "test:storybook": "vitest --project=storybook",
-    "build": "vite build",
+    "build": "vite build && npm run build:tokens",
     "build:clean": "rm -rf dist package-lock.json node_modules && npm install && npm run build",
-    "build:tokens": "style-dictionary build",
+    "build:tokens": "node style-dictionary.config.js",
     "lint": "eslint .",
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
