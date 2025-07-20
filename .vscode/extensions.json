@@ -8,6 +8,8 @@
         "ms-vsliveshare.vsliveshare",
         "SonarSource.sonarlint-vscode",
         "watahani.markdown-image-paste-for-remote",
-        "foam.foam-vscode"
+        "foam.foam-vscode",
+        "dbaeumer.vscode-eslint",
+        "bradlc.vscode-tailwindcss"
     ]
 }
