@@ -30,6 +30,9 @@ jobs:
     outputs:
       changesets-is-release-merge: ${{ steps.changesets_is_release_merge.outputs.changesets-is-release-merge }}
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
       - name: Detect changeset-release merge
         id: changesets_is_release_merge
         uses: ./.github/actions/changesets-is-release-merge
