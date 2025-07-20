@@ -32,7 +32,7 @@ type: Feature
     - [x] Export design tokens from Figma using Tokens Studio
     - [x] Implement design tokens with Style Dictionary
     - [x] Integrate Storybook with Tailwind themes and tokens
-    - [ ] Publish design tokens as part of NPM package
+    - [x] Publish design tokens as part of NPM package
 
 - [ ] **"Provide clear lineage between design revisions, code commits, and semantic releases"** (see [[requirements#2.2]])
 
@@ -41,8 +41,7 @@ type: Feature
 
 - [x] **"Tie feature branches and releases directly to specific design documents"** (see [[requirements#3.2]])
 
-    - [ ] Create PR template with Figma link as a required field
-    - 
+    - [x] Create PR template with Figma link as a required field
 
 
 ## Notes
@@ -75,6 +74,8 @@ type: Feature
 
     - Started by following this guide: https://storybook.js.org/recipes/tailwindcss
     - Loaded themes dynamically from design/tokens/tokens.json
+
+6. Validated that Figma Storybook Connect and Chromatic are still working.
 
 
 
