@@ -14,11 +14,13 @@
   ],
   "type": "module",
   "main": "dist/ab-ui.cjs.js",
+  "types": "dist/src/index.d.ts",
   "module": "dist/ab-ui.es.js",
   "exports": {
     ".": {
       "import": "./dist/ab-ui.es.js",
-      "require": "./dist/ab-ui.cjs.js"
+      "require": "./dist/ab-ui.cjs.js",
+      "types": "./dist/src/index.d.ts"
     },
     "./css/themes": {
       "default": "./src/themes.css"
@@ -43,7 +45,8 @@
     "test:components": "vitest --project=components",
     "test:storybook": "vitest --project=storybook",
     "test:lint": "eslint .",
-    "build": "vite build && npm run build:tokens",
+    "build": "vite build && npm run build:types && npm run build:tokens", 
+    "build:types": "tsc --emitDeclarationOnly --declaration --declarationDir dist",
     "build:clean": "rm -rf dist package-lock.json node_modules && npm install && npm run build",
     "build:tokens": "node style-dictionary.config.js",
     "preview": "vite preview",
