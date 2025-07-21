@@ -12,36 +12,11 @@ runs:
       id: check_changeset_release
       shell: bash
       run: |
-        git fetch --all
-        # Get parent SHAs as array
-        PARENTS=($(git rev-list --parents -n 1 $GITHUB_SHA | cut -d' ' -f2-))
-        NUM_PARENTS=${#PARENTS[@]}
+        SCRIPT="${GITHUB_ACTION_PATH:-.}/detect-changeset-release.sh"
+        
+        chmod +x "$SCRIPT"
+        bash "$SCRIPT"
 
-        if [ "$NUM_PARENTS" -ne 2 ]; then
-          echo "changesets-is-release-merge=false" >> $GITHUB_OUTPUT
-          echo "- 🦋❌ Not a 2-parent merge commit: $GITHUB_SHA" >> $GITHUB_STEP_SUMMARY
-          exit 0
-        fi
-
-        IS_CHANGESET_RELEASE=false
-        for parent in "${PARENTS[@]}"; do
-          short_parent=$(echo $parent | cut -c1-7)
-          echo "🔍 Checking parent commit: $short_parent" >> $GITHUB_STEP_SUMMARY
-
-          for branch in $(git branch -r --contains $parent | grep 'origin/changeset-release/'); do
-            echo "└─ Considering changeset-release branch: $branch (for parent $short_parent)" >> $GITHUB_STEP_SUMMARY
-
-            TIP_SHA=$(git rev-parse "$branch")
-            short_tip=$(echo $TIP_SHA | cut -c1-7)
-
-            if [ "$parent" = "$TIP_SHA" ]; then
-              IS_CHANGESET_RELEASE=true
-              echo "✔️ Parent $short_parent matches tip of $branch ($short_tip)" >> $GITHUB_STEP_SUMMARY
-            fi
-          done
-        done
-
-        echo "changesets-is-release-merge=$IS_CHANGESET_RELEASE" >> $GITHUB_OUTPUT
 outputs:
   changesets-is-release-merge:
     description: 'True if this is a changeset-release merge commit.'
