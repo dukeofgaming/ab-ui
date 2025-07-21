@@ -7,40 +7,53 @@ import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 import vitest from 'eslint-plugin-vitest'
 
-import tseslint from 'typescript-eslint';
+import tseslint from '@typescript-eslint/eslint-plugin';
+import tsparser from '@typescript-eslint/parser';
 
 export default [
-  { ignores: ['dist', 'node_modules'] },
+  { 
+    ignores: [
+      'dist',
+      'node_modules',
+      'storybook-static',
+      'build',
+      'coverage',
+      '*.min.js',
+      '**/*.bundle.js',
+      '**/*-bundle.js',
+      '.next',
+      '.nuxt',
+      'public/build',
+      '.obsidian'
+    ] 
+  },
   // TypeScript config for .storybook
   {
     files: ['.storybook/**/*.ts'],
     languageOptions: {
-      parser: tseslint.parser,
+      parser: tsparser,
       parserOptions: {
-        project: './tsconfig.json',
         sourceType: 'module',
       },
     },
     plugins: {
-      '@typescript-eslint': tseslint.plugin,
+      '@typescript-eslint': tseslint,
     },
     rules: {}, // add custom rules here if needed
   },
   {
     files: ['**/*.{js,jsx}'],
     languageOptions: {
-      ecmaVersion: 2020,
+      ecmaVersion: 'latest',
       globals: {
         ...globals.browser,
         ...globals.node,
         ...globals.commonjs,
       },
-      env: { 'vitest/globals': true }, // Enable Vitest test globals
-    },
-    parserOptions: {
-      ecmaVersion: 'latest',
-      ecmaFeatures: { jsx: true },
-      sourceType: 'module',
+      parserOptions: {
+        ecmaFeatures: { jsx: true },
+        sourceType: 'module',
+      },
     },
     plugins: {
       'react-hooks': reactHooks,

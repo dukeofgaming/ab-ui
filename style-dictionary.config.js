@@ -1,11 +1,8 @@
 import StyleDictionary from 'style-dictionary';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { transforms, transformGroups, transformTypes } from 'style-dictionary/enums';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const { attributeCti, nameConstant, sizePx, colorCss, timeSeconds } = transforms;
-const { value: transformTypeValue, name } = transformTypes;
 
 console.log('Build started...');
 console.log('\n==============================================');
@@ -38,7 +35,7 @@ StyleDictionary.registerFormat({
     });
     return Object.entries(themeGroups)
       .map(([themeKey, tokens]) => {
-        const className = `.theme-${themeKey.replace(/^theme[\/-]/, '').replace(/\//g, '-')}`;
+        const className = `.theme-${themeKey.replace(/^theme[/-]/, '').replace(/\//g, '-')}`;
         const lines = tokens.map(
           t => `  --global-color-${t.path[2]}: ${t.value};`
         );
