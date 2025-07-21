@@ -1,0 +1,156 @@
+name: 'Changeset Release'
+description: 'Handles changeset releases for snapshot, pre-release, and stable releases'
+
+inputs:
+  release_type:
+    description: 'Type of release: snapshot, pre, or empty string for normal release'
+    required: false
+    default: ''
+  tag:
+    description: 'Tag to use for snapshot or pre-release (required for snapshot/pre)'
+    required: false
+    default: ''
+  branch:
+    description: 'Branch name for changeset action'
+    required: false
+    default: 'main'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Validate inputs
+      shell: bash
+      run: |
+        case "${{ inputs.release_type }}" in
+          "")
+            ICON="🚀"
+            TYPE_NAME="Stable Release"
+            ;;
+          "snapshot")
+            ICON="📸"
+            TYPE_NAME="Snapshot Release"
+            ;;
+          "pre")
+            ICON="🚧"
+            TYPE_NAME="Pre-release"
+            ;;
+          "skip")
+            echo "## ⏭️ Changeset Release Skipped" | tee -a $GITHUB_STEP_SUMMARY
+            echo "No release needed for current branch/conditions." | tee -a $GITHUB_STEP_SUMMARY
+            exit 0
+            ;;
+          *)
+            echo "## ❌ Changeset Release Failed" | tee -a $GITHUB_STEP_SUMMARY
+            echo "Release type '${{ inputs.release_type }}' is not supported." | tee -a $GITHUB_STEP_SUMMARY
+            echo "Supported types: '' (empty for stable), 'snapshot', 'pre', 'skip'" | tee -a $GITHUB_STEP_SUMMARY
+            exit 1
+            ;;
+        esac
+        
+        # Validate tag for snapshot and pre releases
+        if [[ "${{ inputs.release_type }}" == "snapshot" || "${{ inputs.release_type }}" == "pre" ]]; then
+          if [[ -z "${{ inputs.tag }}" ]]; then
+            echo "## ❌ Changeset Release Failed" | tee -a $GITHUB_STEP_SUMMARY
+            echo "Tag is required when release_type is '${{ inputs.release_type }}'" | tee -a $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+        fi
+        
+        echo "- ${ICON} Starting ${TYPE_NAME}" | tee -a $GITHUB_STEP_SUMMARY
+        if [[ -n "${{ inputs.tag }}" ]]; then
+          echo "  |- Tag: ${{ inputs.tag }}" | tee -a $GITHUB_STEP_SUMMARY
+        fi
+        if [[ -n "${{ inputs.branch }}" ]]; then
+          echo "  |- Branch: ${{ inputs.branch }}" | tee -a $GITHUB_STEP_SUMMARY
+        fi
+
+    - name: Setup Node.js 24
+      uses: actions/setup-node@v4
+      with:
+        node-version: 24
+
+    - name: Install Dependencies
+      shell: bash
+      run: npm ci
+
+    - name: Build
+      shell: bash
+      run: npm run build
+
+    - name: Handle Pre-release Mode (pre type only)
+      if: inputs.release_type == 'pre'
+      shell: bash
+      run: |
+        if [ ! -f .changeset/pre.json ]; then
+          npx changeset pre enter ${{ inputs.tag }}
+          echo "- 🚧 Entered pre-release mode with tag '${{ inputs.tag }}'" | tee -a $GITHUB_STEP_SUMMARY
+        else
+          echo "- 🚧 Already in pre-release mode, skipping changeset pre enter" | tee -a $GITHUB_STEP_SUMMARY
+        fi
+
+    - name: Handle Snapshot Release
+      if: inputs.release_type == 'snapshot'
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
+        NPM_TOKEN: ${{ env.NPM_TOKEN }}
+      run: |
+        if [ -f .changeset/pre.json ]; then
+          echo "- 🦋 Changesets is in pre mode for current branch '${{ inputs.tag }}'" | tee -a $GITHUB_STEP_SUMMARY
+          echo "  |- exiting pre mode without committing..." | tee -a $GITHUB_STEP_SUMMARY
+          npx changeset pre exit
+        fi
+
+        npx changeset version --snapshot ${{ inputs.tag }}
+
+        # Set NPM_TOKEN for changeset publish
+        echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+        npx changeset publish --tag ${{ inputs.tag }}
+
+        # Summarize Snapshot Package Version
+        version=$(jq -r '.version' package.json)
+        name=$(jq -r '.name' package.json)
+
+        echo "- 📦 Published Snapshot Package: [${name}@${version}](https://www.npmjs.com/package/${name}/v/${version})" | tee -a $GITHUB_STEP_SUMMARY
+
+    - name: Handle Pre-release or Stable Release
+      if: inputs.release_type == 'pre' || inputs.release_type == ''
+      id: changesets
+      uses: changesets/action@v1
+      with:
+        branch: ${{ inputs.branch }}
+        publish: npx changeset publish
+        createGithubReleases: true
+        setupGitUser: true
+        commitMode: ${{ inputs.release_type == '' && 'git-cli' || '' }}
+      env:
+        GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
+        NPM_TOKEN: ${{ env.NPM_TOKEN }}
+
+    - name: Summarize Published Packages
+      if: (inputs.release_type == 'pre' || inputs.release_type == '') && (steps.changesets.outputs.published == 'true' || steps.changesets.outputs.pullRequestNumber != '')
+      shell: bash
+      run: |
+        ls dist
+
+        echo "### 📦 Published Packages" | tee -a $GITHUB_STEP_SUMMARY
+
+        if [ "${{ steps.changesets.outputs.published }}" = 'true' ]; then
+          pkgs=$(echo '${{ steps.changesets.outputs.publishedPackages }}' | jq -r '.[] | "- 📦 [\(.name)@\(.version)](https://www.npmjs.com/package/\(.name)/v/\(.version))"')
+          echo "$pkgs" | tee -a $GITHUB_STEP_SUMMARY
+        else
+          echo "No packages were published." | tee -a $GITHUB_STEP_SUMMARY
+        fi
+
+        echo "" | tee -a $GITHUB_STEP_SUMMARY
+
+        if [ -n "${{ steps.changesets.outputs.pullRequestNumber }}" ]; then
+          pr_url="https://github.com/${{ github.repository }}/pull/${{ steps.changesets.outputs.pullRequestNumber }}"
+          release_type_display="${{ inputs.release_type == 'pre' && 'Pre-release' || 'Stable release' }}"
+          branch_display="${{ inputs.release_type == 'pre' && '(develop)' || '(main)' }}"
+          echo "- 🦋 [View Changesets ${release_type_display} PR ${branch_display} #${{ steps.changesets.outputs.pullRequestNumber }}](${pr_url})" | tee -a $GITHUB_STEP_SUMMARY
+        else
+          echo "- 🦋 No Changesets release PR was created or updated." | tee -a $GITHUB_STEP_SUMMARY
+        fi
+
+        echo "" | tee -a $GITHUB_STEP_SUMMARY

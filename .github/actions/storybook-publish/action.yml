@@ -1,39 +1,75 @@
 name: 'Storybook Publish'
-description: 'Publishes Storybook to either GitHub Pages or Chromatic'
+description: 'Publishes Storybook to GitHub Pages, Chromatic, or as an artifact'
 
 inputs:
   target:
-    description: 'Target platform for publishing (github-pages or chromatic)'
-    required: true
+    description: 'Target platform for publishing (artifact, github-pages, or chromatic), default is artifact'
+    required: false
+    default: 'artifact'
 
 runs:
   using: 'composite'
   steps:
-    - name: Validate target input
+    - name: Validate and announce target
       shell: bash
       run: |
-        if [[ "${{ inputs.target }}" != "github-pages" && "${{ inputs.target }}" != "chromatic" ]]; then
-          echo "Error: target must be either 'github-pages' or 'chromatic'"
-          exit 1
-        fi
+        case "${{ inputs.target }}" in
+          "artifact")
+            ICON="📦"
+            ;;
+          "github-pages")
+            ICON="🌐"
+            ;;
+          "chromatic")
+            ICON="🎨"
+            ;;
+          "")
+            echo "## ⚠️ Storybook Publishing Skipped" >> $GITHUB_STEP_SUMMARY
+            echo "Target is empty. Skipping storybook publishing." >> $GITHUB_STEP_SUMMARY
+            exit 0
+            ;;
+          *)
+            echo "## ❌ Storybook Publishing Failed" >> $GITHUB_STEP_SUMMARY
+            echo "Target '${{ inputs.target }}' is not supported." >> $GITHUB_STEP_SUMMARY
+            echo "Supported targets: artifact, github-pages, chromatic" >> $GITHUB_STEP_SUMMARY
+            exit 1
+            ;;
+        esac
+        
+        echo "- ${ICON} Publishing Storybook to ${{ inputs.target }}" >> $GITHUB_STEP_SUMMARY
 
     - name: Validate Chromatic token
       if: inputs.target == 'chromatic'
       shell: bash
       run: |
         if [[ -z "${{ env.CHROMATIC_PROJECT_TOKEN }}" ]]; then
-          echo "Error: CHROMATIC_PROJECT_TOKEN environment variable is required when target is 'chromatic'"
+          echo "- 🚨 Error: CHROMATIC_PROJECT_TOKEN environment variable is required when target is 'chromatic'" >> $GITHUB_STEP_SUMMARY
           exit 1
         fi
 
     - name: Setup Node.js
+      if: inputs.target != ''
       uses: actions/setup-node@v4
       with:
         node-version: 24
 
     - name: Install dependencies
+      if: inputs.target != ''
       shell: bash
       run: npm ci
+
+    - name: Build Storybook
+      if: inputs.target == 'artifact' || inputs.target == 'github-pages'
+      shell: bash
+      run: npm run build-storybook
+
+    - name: Upload Storybook Artifact
+      if: inputs.target == 'artifact'
+      uses: actions/upload-artifact@v4
+      with:
+        name: storybook-static
+        path: storybook-static
+        retention-days: 30
 
     - name: Publish to Chromatic
       if: inputs.target == 'chromatic'
