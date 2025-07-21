@@ -109,6 +109,20 @@ runs:
           echo "- 🚧 Entered pre-release mode with tag '${{ inputs.tag }}'" | tee -a $GITHUB_STEP_SUMMARY
         fi
 
+    - name: Handle Pre Exit
+      if: inputs.release_type == 'stable'
+      shell: bash
+      run: |
+        if [ -f .changeset/pre.json ] && [ "$(jq -r '.mode' .changeset/pre.json 2>/dev/null)" = "pre" ]; then
+          echo "- 🦋 Exiting pre mode..." | tee -a $GITHUB_STEP_SUMMARY
+          
+          npx changeset pre exit
+          echo "- 🚀 Exited pre-release mode" | tee -a $GITHUB_STEP_SUMMARY
+        else
+          echo "- 🦋 Not in pre mode or already in exit mode, skipping changeset pre exit" | tee -a $GITHUB_STEP_SUMMARY
+        fi
+
+
     - name: Handle Pre-release or Stable Release
       if: inputs.release_type == '' || inputs.release_type == 'pre'
       id: changesets
