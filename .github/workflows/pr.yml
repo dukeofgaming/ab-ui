@@ -13,6 +13,7 @@ concurrency:
 jobs:
   test:
     name: Run Tests
+    if: ${{ !contains(github.event.pull_request.title, '[skip-test]') }}
     uses: ./.github/workflows/test.yml
 
   branch-doc:
