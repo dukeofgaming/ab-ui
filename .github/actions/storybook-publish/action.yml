@@ -58,6 +58,12 @@ runs:
       shell: bash
       run: npm ci
 
+    - name: Run build
+      if: inputs.target != ''
+      shell: bash
+      run: npm run build
+
+
     - name: Build Storybook
       if: inputs.target == 'artifact' || inputs.target == 'github-pages'
       shell: bash

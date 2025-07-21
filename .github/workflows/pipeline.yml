@@ -70,7 +70,8 @@ jobs:
               echo "- This allows testing changes after merge" | tee -a $GITHUB_STEP_SUMMARY
               echo "" | tee -a $GITHUB_STEP_SUMMARY
 
-              echo "release_type=snapshot" | tee -a $GITHUB_OUTPUT
+              echo "release_type=skip" | tee -a $GITHUB_OUTPUT
+              echo "snapshot=true" | tee -a $GITHUB_OUTPUT
               echo "tag=${{ github.ref_name }}" | tee -a $GITHUB_OUTPUT
               ;;
           esac
@@ -122,30 +123,7 @@ jobs:
           node-version: 24
       - name: Install Dependencies
         run: npm ci
-      - name: Exit Pre-release Mode, Commit, and Push (if needed)
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          if [ -f .changeset/pre.json ]; then
-            npx changeset pre exit
-            
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            
-            git add .
-
-            if ! git diff --cached --quiet; then
-              git commit -m "[chore]: Exit pre mode for stable release"
-              git push
-              echo "- 🚧🚀 Exited pre mode and pushed for stable release" >> $GITHUB_STEP_SUMMARY
-            else
-              echo "- 🚧⚠️ No changes to commit after exiting pre mode" >> $GITHUB_STEP_SUMMARY
-            fi
-
-          else
-            echo "- 🚧🚫 Not in pre mode, skipping changeset pre exit" >> $GITHUB_STEP_SUMMARY
-          fi
-
+      
       - name: Create PR from dev to main
         shell: bash
         env:
