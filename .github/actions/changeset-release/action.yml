@@ -12,8 +12,11 @@ inputs:
     default: ''
   branch:
     description: 'Branch name for changeset action'
+    required: true
+  snapshot:
+    description: 'Snapshot release'
     required: false
-    default: 'main'
+    default: 'true'
 
 runs:
   using: 'composite'
@@ -22,13 +25,9 @@ runs:
       shell: bash
       run: |
         case "${{ inputs.release_type }}" in
-          "")
+          "stable")
             ICON="🚀"
             TYPE_NAME="Stable Release"
-            ;;
-          "snapshot")
-            ICON="📸"
-            TYPE_NAME="Snapshot Release"
             ;;
           "pre")
             ICON="🚧"
@@ -78,29 +77,25 @@ runs:
       run: npm run build
 
     - name: Handle Snapshot Release
-      if: inputs.release_type == 'snapshot'
+      if: inputs.snapshot == 'true'
       shell: bash
       env:
         GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
         NPM_TOKEN: ${{ env.NPM_TOKEN }}
       run: |
-        if [ -f .changeset/pre.json ]; then
-          echo "- 🦋 Changesets is in pre mode for current branch '${{ inputs.tag }}'" | tee -a $GITHUB_STEP_SUMMARY
-          echo "  |- exiting pre mode without committing..." | tee -a $GITHUB_STEP_SUMMARY
-          npx changeset pre exit
-        fi
-
-        npx changeset version --snapshot ${{ inputs.tag }}
+        npx changeset version --snapshot ${{ inputs.tag || inputs.branch }}
 
         # Set NPM_TOKEN for changeset publish
         echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
-        npx changeset publish --tag ${{ inputs.tag }}
+        npx changeset publish
 
         # Summarize Snapshot Package Version
         version=$(jq -r '.version' package.json)
         name=$(jq -r '.name' package.json)
 
         echo "- 📦 Published Snapshot Package: [${name}@${version}](https://www.npmjs.com/package/${name}/v/${version})" | tee -a $GITHUB_STEP_SUMMARY
+
+        git reset --hard
 
     - name: Handle Pre-release
       if: inputs.release_type == 'pre'
