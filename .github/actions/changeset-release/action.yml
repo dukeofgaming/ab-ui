@@ -77,6 +77,31 @@ runs:
       shell: bash
       run: npm run build
 
+    - name: Handle Snapshot Release
+      if: inputs.release_type == 'snapshot'
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
+        NPM_TOKEN: ${{ env.NPM_TOKEN }}
+      run: |
+        if [ -f .changeset/pre.json ]; then
+          echo "- 🦋 Changesets is in pre mode for current branch '${{ inputs.tag }}'" | tee -a $GITHUB_STEP_SUMMARY
+          echo "  |- exiting pre mode without committing..." | tee -a $GITHUB_STEP_SUMMARY
+          npx changeset pre exit
+        fi
+
+        npx changeset version --snapshot ${{ inputs.tag }}
+
+        # Set NPM_TOKEN for changeset publish
+        echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+        npx changeset publish --tag ${{ inputs.tag }}
+
+        # Summarize Snapshot Package Version
+        version=$(jq -r '.version' package.json)
+        name=$(jq -r '.name' package.json)
+
+        echo "- 📦 Published Snapshot Package: [${name}@${version}](https://www.npmjs.com/package/${name}/v/${version})" | tee -a $GITHUB_STEP_SUMMARY
+
     - name: Handle Pre-release
       if: inputs.release_type == 'pre'
       shell: bash
@@ -90,10 +115,10 @@ runs:
         fi
 
     - name: Handle Pre-release or Stable Release
+      if: inputs.release_type == '' || inputs.release_type == 'pre'
       id: changesets
       uses: changesets/action@v1
       with:
-        version: npx changeset version ${{ inputs.release_type == 'snapshot' && '--snapshot $INPUT_TAG' || '' }}
         branch: ${{ inputs.branch }}
         publish: npx changeset publish
         createGithubReleases: true
