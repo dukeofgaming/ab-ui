@@ -4,12 +4,10 @@ inputs:
   commit:
     description: 'The commit SHA to check.'
     required: true
-    type: string
   unshallow-checkout:
     description: 'If true, perform a full (unshallow) checkout with fetch-depth: 0. If false, assumes code is already checked out.'
     required: false
     default: 'false'
-    type: boolean
 
 runs:
   using: 'composite'
