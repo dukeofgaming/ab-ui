@@ -1,9 +1,21 @@
 name: 'changesets-is-release-merge'
 description: 'Detect if the current commit is a changeset-release merge commit.'
+inputs:
+  commit:
+    description: 'The commit SHA to check.'
+    required: true
+    type: string
+  unshallow-checkout:
+    description: 'If true, perform a full (unshallow) checkout with fetch-depth: 0. If false, assumes code is already checked out.'
+    required: false
+    default: 'false'
+    type: boolean
+
 runs:
   using: 'composite'
   steps:
     - name: Checkout code
+      if: ${{ inputs.unshallow-checkout == 'true' }}
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
@@ -13,9 +25,8 @@ runs:
       shell: bash
       run: |
         SCRIPT="${GITHUB_ACTION_PATH:-.}/detect-changeset-release.sh"
-        
         chmod +x "$SCRIPT"
-        bash "$SCRIPT"
+        bash "$SCRIPT" "${{ inputs.commit }}"
 
 outputs:
   changesets-is-release-merge:

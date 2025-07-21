@@ -34,10 +34,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-        
-      - name: Detect changeset-release merge
+
+      - name: Detect changeset-release ancestor
         id: changesets_is_release_merge
         uses: ./.github/actions/changesets-is-release-merge
+        with:
+          commit: ${{ github.event.pull_request.head.sha || github.sha }}
 
   snapshot:
     name: Snapshot Preview Release
