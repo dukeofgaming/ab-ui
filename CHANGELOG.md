@@ -1,5 +1,53 @@
 ## 0.1.3-dev.0
 
+## 0.2.0
+
+### Minor Changes
+
+- b3a6ad5: Loaded themes dynamically into Storybook from tokens.json
+
+### Patch Changes
+
+- eeb2cfd: Forcing non-shallow clone from job to test if that is affecting the step summary output
+- 24cf0bc: Ensure full fetch in Github composite action context for changesets-is-release-merge
+- e3d1d8c: Improving summary output, refactored to create an action for branch-docs avoiding a separate workflow
+- 1c0ae5e: Paralelizing test jobs
+- aeb77e0: Externalizing changesets-is-release-merge into portable script to test locally
+- f32ccd6: Fixing forgotten checkout while action is referred to locally
+- c27d67f: Adding tokens & themes to build script and package.
+
+  For CSS:
+
+  ```css
+  @import "@dukeofgaming/ab-ui/css/themes";
+  @import "@dukeofgaming/ab-ui/css/tokens";
+  ```
+
+  For JS (ESM) / TS:
+
+  ```ts
+  import "@dukeofgaming/ab-ui/css/themes";
+  import "@dukeofgaming/ab-ui/css/tokens";
+  ```
+
+- c733fb4: Limiting devcontainer builds to develop and main, adding concurrency blocking to workflow
+- 8e68877: Setting tests as initial step for pr and regular pipeline
+- b475697: Adding ESLint configuration with Vitest plugin
+- eb6a329: Fixing issues with ESLint
+- fd44471: Configuring Style Dictionary, Tailwind, and Storybook with Tailwind
+- 85b4b0f: Fixing missing commit step for github-branch-md action
+- 8c00995: Refactoring changeset snapshot into composite action
+- c733fb4: Tee-ing echoes in action/changesets-is-release-merge instead of redirecting to GITHUB_OUTPUT and GITHUB_STEP_SUMMARY for easier debugging
+- 70f3f7a: Fixing to push to the source PR branch, not the hidden PR branch provided by the GitHub Action context
+- a04a56c: Adding style dictionary formats / filters for Figma theme token sets
+- 57e9953: Adding branch issue number validation and figma link validation to the template and issue check for github-branch-md composite action
+- ae5bd8f: Refactoring Storybook publishing to reusable Workflow + Github Action
+- 9896e6a: Updated ESLint to not complain about Storybook
+- 334ff6b: Created workflow for publishing devcontainer image
+- f4311fc: Refactoring to reusable test workflow
+- 4b826fb: Adding ESLint to reccomended VSCode extensions
+- ceef6a7: Refactoring changesets merge detection job into action
+
 ### Patch Changes
 
 - e3d1d8c: Improving summary output, refactored to create an action for branch-docs avoiding a separate workflow
