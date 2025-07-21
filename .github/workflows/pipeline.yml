@@ -21,8 +21,8 @@ jobs:
   release:
     name: Changeset Release
     runs-on: ubuntu-latest
-    needs: 
-      - test
+    # needs: 
+    #   - test
     outputs:
       changesets-is-release-merge: ${{ steps.changesets_is_release_merge.outputs.changesets-is-release-merge }}
     steps:
@@ -55,15 +55,15 @@ jobs:
                 echo "tag=dev" | tee -a $GITHUB_OUTPUT
                 echo "branch=develop" | tee -a $GITHUB_OUTPUT
               else
-                # Regular push to develop - try to create version PR or do snapshot
-                echo "🚧 **Develop push** - will check for pending changesets" | tee -a $GITHUB_STEP_SUMMARY
-                echo "- Will create version PR if changesets pending" | tee -a $GITHUB_STEP_SUMMARY
-                echo "- Will do snapshot if no changesets pending" | tee -a $GITHUB_STEP_SUMMARY
+                # Regular push to develop - do snapshot
+                echo "📸 **Snapshot release** for push to develop" | tee -a $GITHUB_STEP_SUMMARY
+                echo "- Will create snapshot with tag 'develop'" | tee -a $GITHUB_STEP_SUMMARY
+                echo "- This allows testing changes after merge" | tee -a $GITHUB_STEP_SUMMARY
                 echo "" | tee -a $GITHUB_STEP_SUMMARY
                 
-                echo "release_type=pre" | tee -a $GITHUB_OUTPUT
-                echo "tag=dev" | tee -a $GITHUB_OUTPUT
-                echo "branch=develop" | tee -a $GITHUB_OUTPUT
+                echo "release_type=snapshot" | tee -a $GITHUB_OUTPUT
+                echo "tag=develop" | tee -a $GITHUB_OUTPUT
+                echo "branch=" | tee -a $GITHUB_OUTPUT
               fi
               ;;
             "main")
@@ -78,15 +78,15 @@ jobs:
                 echo "tag=" | tee -a $GITHUB_OUTPUT
                 echo "branch=main" | tee -a $GITHUB_OUTPUT
               else
-                # Regular push to main - try to create version PR or do snapshot
-                echo "🚀 **Main push** - will check for pending changesets" | tee -a $GITHUB_STEP_SUMMARY
-                echo "- Will create version PR if changesets pending" | tee -a $GITHUB_STEP_SUMMARY
-                echo "- Will do snapshot if no changesets pending" | tee -a $GITHUB_STEP_SUMMARY
+                # Regular push to main - do snapshot
+                echo "📸 **Snapshot release** for push to main" | tee -a $GITHUB_STEP_SUMMARY
+                echo "- Will create snapshot with tag 'main'" | tee -a $GITHUB_STEP_SUMMARY
+                echo "- This allows testing changes after merge" | tee -a $GITHUB_STEP_SUMMARY
                 echo "" | tee -a $GITHUB_STEP_SUMMARY
 
-                echo "release_type=" | tee -a $GITHUB_OUTPUT
-                echo "tag=" | tee -a $GITHUB_OUTPUT
-                echo "branch=main" | tee -a $GITHUB_OUTPUT
+                echo "release_type=snapshot" | tee -a $GITHUB_OUTPUT
+                echo "tag=main" | tee -a $GITHUB_OUTPUT
+                echo "branch=" | tee -a $GITHUB_OUTPUT
               fi
               ;;
             *)

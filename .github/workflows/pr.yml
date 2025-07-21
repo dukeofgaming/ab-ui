@@ -43,5 +43,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         with:
-          release_type: "pre"
+          release_type: "snapshot"
           tag: ${{ github.head_ref }}
