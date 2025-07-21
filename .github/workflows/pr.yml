@@ -29,11 +29,14 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Changeset Snapshot
-        uses: ./.github/actions/changesets-snapshot
+      - name: Execute Changeset Release
+        uses: ./.github/actions/changeset-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         with:
-          npm_tag: ${{ github.head_ref }}
+          release_type: "snapshot"
+          tag: ${{ github.head_ref }}
