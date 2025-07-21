@@ -8,13 +8,7 @@ on:
 jobs:
   test:
     name: Run Tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Run Tests
-        uses: ./.github/actions/node-test
+    uses: ./.github/workflows/test.yml
 
   branch-doc:
     name: Create branch doc / update issue
