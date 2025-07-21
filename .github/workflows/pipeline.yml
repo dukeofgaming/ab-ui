@@ -197,18 +197,13 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        
+      - name: Publish Storybook
+        uses: ./.github/actions/storybook-publish
+        env:
+          CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
         with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-      - name: Install dependencies
-        run: npm ci
-      - name: Run Chromatic
-        uses: chromaui/action@v1
-        with:
-          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
-
+          target: chromatic
 
   storybook_release:
     if: github.ref == 'refs/heads/main' && needs.changesets_is_release_merge.outputs.changesets-is-release-merge == 'true'
@@ -218,21 +213,13 @@ jobs:
       - changesets_is_release_merge
       - release_main
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Publish Storybook
+        uses: ./.github/actions/storybook-publish
         with:
-          node-version: 24
-
-      - name: Publish Storybook to GitHub Pages
-        uses: bitovi/github-actions-storybook-to-github-pages@v1.0.3
-        with:
-          install_command: npm ci
-          build_command: npm run build-storybook
-          path: storybook-static
-          checkout: false
+          target: github-pages
 
   promote_dev_to_main:
     name: Promote dev to main
