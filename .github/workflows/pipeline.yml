@@ -18,13 +18,15 @@ jobs:
     uses: ./.github/workflows/test.yml
 
 
-  changesets_is_release_merge:
-    name: Changesets-release merge-commit detection
+  release:
+    name: Changeset Release
     runs-on: ubuntu-latest
+    needs: 
+      - test
     outputs:
       changesets-is-release-merge: ${{ steps.changesets_is_release_merge.outputs.changesets-is-release-merge }}
     steps:
-      - name: Checkout code
+      - name: Checkout Repo
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -35,165 +37,48 @@ jobs:
         with:
           commit: ${{ github.event.pull_request.head.sha || github.sha }}
 
-  snapshot:
-    name: Snapshot Preview Release
-    runs-on: ubuntu-latest
-    needs: 
-      - test
-      - changesets_is_release_merge
-    if: needs.changesets_is_release_merge.outputs.changesets-is-release-merge == 'false'
-    steps:
-
-      - name: Checkout Repo
-        uses: actions/checkout@v4
-
-
-      - name: Changesets Snapshot
-        uses: ./.github/actions/changesets-snapshot
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        with:
-          npm_tag: ${{ github.head_ref }}
-
-        
-
-  release_dev:
-    name: Pre-release (develop)
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/develop'
-    needs: 
-      - test
-      - changesets_is_release_merge
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js 24
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24
-
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Build
-        run: npm run build
-      - name: Enter Pre-release Mode (dev)
-        run: |
-          if [ ! -f .changeset/pre.json ]; then
-            npx changeset pre enter dev
-          else
-            echo "Already in pre mode, skipping changeset pre enter dev"
-          fi
-
-      - name: Create Release Pull Request or Publish Pre-release to npm
-        id: changesets
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        uses: changesets/action@v1
-        with:
-          branch: develop
-          publish: npx changeset publish
-          createGithubReleases: true
-          setupGitUser: true
-        
-      - name: 📦 Summarize Published Packages
+      - name: Determine release parameters
+        id: params
         shell: bash
-        if: steps.changesets.outputs.published == 'true' || steps.changesets.outputs.pullRequestNumber != ''
         run: |
-
-          ls dist
-
-          echo "### 📦 Published Packages" >> $GITHUB_STEP_SUMMARY
-
-          if [ "${{ steps.changesets.outputs.published }}" = 'true' ]; then
-            pkgs=$(echo '${{ steps.changesets.outputs.publishedPackages }}' | jq -r '.[] | "- 📦 [\(.name)@\(.version)](https://www.npmjs.com/package/\(.name)/v/\(.version))"')
-            echo "$pkgs" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.changesets_is_release_merge.outputs.changesets-is-release-merge }}" = "false" ]; then
+            # Snapshot release
+            echo "release_type=snapshot" >> $GITHUB_OUTPUT
+            echo "tag=${{ github.head_ref }}" >> $GITHUB_OUTPUT
+            echo "branch=" >> $GITHUB_OUTPUT
+          elif [ "${{ github.ref }}" = "refs/heads/develop" ]; then
+            # Pre-release
+            echo "release_type=pre" >> $GITHUB_OUTPUT
+            echo "tag=dev" >> $GITHUB_OUTPUT
+            echo "branch=develop" >> $GITHUB_OUTPUT
+          elif [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            # Stable release
+            echo "release_type=" >> $GITHUB_OUTPUT
+            echo "tag=" >> $GITHUB_OUTPUT
+            echo "branch=main" >> $GITHUB_OUTPUT
           else
-            echo "No packages were published." >> $GITHUB_STEP_SUMMARY
+            # Skip release for other branches/conditions
+            echo "release_type=skip" >> $GITHUB_OUTPUT
+            echo "tag=" >> $GITHUB_OUTPUT
+            echo "branch=" >> $GITHUB_OUTPUT
           fi
 
-          echo "" >> $GITHUB_STEP_SUMMARY
-
-          if [ -n "${{ steps.changesets.outputs.pullRequestNumber }}" ]; then
-            pr_url="https://github.com/${{ github.repository }}/pull/${{ steps.changesets.outputs.pullRequestNumber }}"
-            echo "- 🦋 [View Changesets Pre-release PR (develop) #${{ steps.changesets.outputs.pullRequestNumber }}]($pr_url)" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "- 🦋 No Changesets release PR was created or updated." >> $GITHUB_STEP_SUMMARY
-          fi
-
-          echo "" >> $GITHUB_STEP_SUMMARY
-        
-
-
-  release_main:
-    name: Stable Release (main)
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    needs: 
-      - test
-      - changesets_is_release_merge
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v4
-      - name: Setup Node.js 24
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Build
-        run: npm run build
-
-      - name: Create Release Pull Request or Publish Stable to npm
-        id: changesets
-        uses: changesets/action@v1
-        with:
-          branch: main
-          publish: npx changeset publish
-          setupGitUser: true
-          commitMode: git-cli
-          createGithubReleases: true
+      - name: Execute Changeset Release
+        uses: ./.github/actions/changeset-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - name: 📦 Summarize Published Packages
-        if: steps.changesets.outputs.published == 'true' || steps.changesets.outputs.pullRequestNumber != ''
-        run: |
+        with:
+          release_type: ${{ steps.params.outputs.release_type }}
+          tag: ${{ steps.params.outputs.tag }}
+          branch: ${{ steps.params.outputs.branch }}
 
-          ls dist
-
-          echo "### 📦 Published Packages" >> $GITHUB_STEP_SUMMARY
-
-          if [ "${{ steps.changesets.outputs.published }}" = 'true' ]; then
-            pkgs=$(echo '${{ steps.changesets.outputs.publishedPackages }}' | jq -r '.[] | "- 📦 [\(.name)@\(.version)](https://www.npmjs.com/package/\(.name)/v/\(.version))"')
-            echo "$pkgs" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "No packages were published." >> $GITHUB_STEP_SUMMARY
-          fi
-
-          echo "" >> $GITHUB_STEP_SUMMARY 
-
-          if [ -n "${{ steps.changesets.outputs.pullRequestNumber }}" ]; then
-            pr_url="https://github.com/${{ github.repository }}/pull/${{ steps.changesets.outputs.pullRequestNumber }}"
-            echo "- 🦋 View Changesets Stable release PR (main) #${{ steps.changesets.outputs.pullRequestNumber }}]($pr_url)" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "- 🦋 No Changesets Release PR was created or updated." >> $GITHUB_STEP_SUMMARY
-          fi
-
-
-        shell: bash
-
-  storybook_dev:
-    needs: 
-      - release_dev
-      - changesets_is_release_merge
-    if: github.ref == 'refs/heads/develop' && needs.changesets_is_release_merge.outputs.changesets-is-release-merge == 'true'
-    name: Publish Storybook (develop:Chromatic)
+  storybook:
+    name: Publish Storybook
     runs-on: ubuntu-latest
+    needs: 
+      - release
+    if: needs.release.outputs.changesets-is-release-merge == 'true' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main')
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -205,31 +90,14 @@ jobs:
         env:
           CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
         with:
-          target: chromatic
-
-  storybook_release:
-    if: github.ref == 'refs/heads/main' && needs.changesets_is_release_merge.outputs.changesets-is-release-merge == 'true'
-    name: Publish Storybook (main:Github Pages)
-    runs-on: ubuntu-latest
-    needs: 
-      - changesets_is_release_merge
-      - release_main
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Publish Storybook
-        uses: ./.github/actions/storybook-publish
-        with:
-          target: github-pages
+          target: ${{ github.ref == 'refs/heads/main' && 'chromatic' || 'github-pages' }}
 
   promote_dev_to_main:
     name: Promote dev to main
     runs-on: ubuntu-latest
     needs:
-      - changesets_is_release_merge
-      - release_dev
-    if: needs.changesets_is_release_merge.outputs.changesets-is-release-merge == 'true' && github.ref == 'refs/heads/develop'
+      - release
+    if: needs.release.outputs.changesets-is-release-merge == 'true' && github.ref == 'refs/heads/develop'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
