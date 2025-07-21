@@ -5,15 +5,15 @@ on:
     branches-ignore:
       - changeset-release/*
 
+
+concurrency:
+  group: pr-${{ github.head_ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     name: Run Tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Run Tests
-        uses: ./.github/actions/node-test
+    uses: ./.github/workflows/test.yml
 
   branch-doc:
     name: Create branch doc / update issue
@@ -28,52 +28,21 @@ jobs:
 
   snapshot:
     name: Snapshot Preview Release
+    # needs:
+    #   - test
     runs-on: ubuntu-latest
-    needs:
-      - test
     steps:
-      - name: Checkout Repo
+      - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Setup Node.js 24
-        uses: actions/setup-node@v4
         with:
-          node-version: 24
+          fetch-depth: 0
 
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Build
-        run: npm run build
-
-      - name: Ensure Changesets is not in "pre" mode
-        run: |
-          if [ -f .changeset/pre.json ]; then
-            echo "- 🦋 Changesets is in pre mode for target branch \`${{ github.base_ref }}\`" >> $GITHUB_STEP_SUMMARY
-            echo "  |- exiting pre mode without committing..." >> $GITHUB_STEP_SUMMARY
-
-            npx changeset pre exit
-          fi
-
-
-      - name: Changeset Snapshot (PR or push)
-        run: |
-          npx changeset version --snapshot ${{ github.head_ref || github.ref_name }}
-
-          # Set NPM_TOKEN for changeset publish
-          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
-          npx changeset publish --tag ${{ github.head_ref || github.ref_name }}
-
-          # Summarize Snapshot Package Version
-          version=$(jq -r '.version' package.json)
-          name=$(jq -r '.name' package.json)
-          pr_number=${{ github.event.pull_request.number }}
-
-          echo "- 📦 Published Snapshot Package: [${name}@${version}](https://www.npmjs.com/package/${name}/v/${version})" >> $GITHUB_STEP_SUMMARY
-          echo "- Built from PR #${pr_number}: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/pull/${pr_number}" >> $GITHUB_STEP_SUMMARY
-
+      - name: Execute Changeset Release
+        uses: ./.github/actions/changeset-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-  
+        with:
+          release_type: skip
+          branch: ${{ github.head_ref }}
+          snapshot: true

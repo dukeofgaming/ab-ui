@@ -1,0 +1,48 @@
+name: "Changeset Snapshot"
+description: "Builds, versions, and publishes a snapshot package using Changesets."
+author: "@dukeofgaming"
+inputs:
+  npm_tag:
+    description: "NPM tag to use for snapshot publish (usually branch name)"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+
+    - name: Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: 24
+
+    - name: Install dependencies
+      shell: bash
+      run: npm ci
+
+    - name: Build
+      shell: bash
+      run: npm run build
+
+    - name: Changeset Snapshot
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
+        NPM_TOKEN: ${{ env.NPM_TOKEN }}
+      run: |
+        if [ -f .changeset/pre.json ]; then
+          echo "- 🦋 Changesets is in pre mode for current branch '${{ inputs.npm_tag }}'" >> $GITHUB_STEP_SUMMARY
+          echo "  |- exiting pre mode without committing..." >> $GITHUB_STEP_SUMMARY
+          npx changeset pre exit
+        fi
+
+        npx changeset version --snapshot ${{ inputs.npm_tag }}
+
+        # Set NPM_TOKEN for changeset publish
+        echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+        npx changeset publish --tag ${{ inputs.npm_tag }}
+
+        # Summarize Snapshot Package Version
+        version=$(jq -r '.version' package.json)
+        name=$(jq -r '.name' package.json)
+
+        echo "- 📦 Published Snapshot Package: [${name}@${version}](https://www.npmjs.com/package/${name}/v/${version})" >> $GITHUB_STEP_SUMMARY
