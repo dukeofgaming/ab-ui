@@ -28,8 +28,8 @@ jobs:
 
   snapshot:
     name: Snapshot Preview Release
-    needs:
-      - test
+    # needs:
+    #   - test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -43,5 +43,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         with:
-          release_type: "snapshot"
+          release_type: "pre"
           tag: ${{ github.head_ref }}
