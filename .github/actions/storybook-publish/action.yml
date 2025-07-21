@@ -1,0 +1,51 @@
+name: 'Storybook Publish'
+description: 'Publishes Storybook to either GitHub Pages or Chromatic'
+
+inputs:
+  target:
+    description: 'Target platform for publishing (github-pages or chromatic)'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Validate target input
+      shell: bash
+      run: |
+        if [[ "${{ inputs.target }}" != "github-pages" && "${{ inputs.target }}" != "chromatic" ]]; then
+          echo "Error: target must be either 'github-pages' or 'chromatic'"
+          exit 1
+        fi
+
+    - name: Validate Chromatic token
+      if: inputs.target == 'chromatic'
+      shell: bash
+      run: |
+        if [[ -z "${{ env.CHROMATIC_PROJECT_TOKEN }}" ]]; then
+          echo "Error: CHROMATIC_PROJECT_TOKEN environment variable is required when target is 'chromatic'"
+          exit 1
+        fi
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 24
+
+    - name: Install dependencies
+      shell: bash
+      run: npm ci
+
+    - name: Publish to Chromatic
+      if: inputs.target == 'chromatic'
+      uses: chromaui/action@v1
+      with:
+        projectToken: ${{ env.CHROMATIC_PROJECT_TOKEN }}
+
+    - name: Publish to GitHub Pages
+      if: inputs.target == 'github-pages'
+      uses: bitovi/github-actions-storybook-to-github-pages@v1.0.3
+      with:
+        install_command: npm ci
+        build_command: npm run build-storybook
+        path: storybook-static
+        checkout: false
