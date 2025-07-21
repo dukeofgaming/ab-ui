@@ -29,7 +29,20 @@ export function ThemeSwitcher({ onChange }: ThemeSwitcherProps) {
     <select
       value={theme}
       onChange={handleThemeChange}
-      className="p-2 rounded border bg-[var(--color-bg)] text-[var(--color-text)]"
+      className="
+        bg-[var(--global-color-bg)]
+        text-[var(--global-color-text)]
+        font-sans
+        text-lg
+        font-semibold
+        px-2
+        py-2
+        rounded
+        shadow
+        transition-colors
+        border
+        border-[var(--global-color-border)]
+      "
       aria-label="Switch theme"
     >
       {THEMES.map(({ value, label }) => (

@@ -11,16 +11,24 @@ export type FieldDefinition<T> = {
   placeholder?: string;
 };
 
-export interface DataManagerProps<T extends Record<string, unknown>> {
+export type DataManagerApi<
+  T extends Record<string, unknown>,
+  IdType extends React.Key = React.Key
+> = {
+  fetch: () => Promise<T[]>;
+  create: (item: Partial<T>) => Promise<T>;
+  update: (id: IdType, item: Partial<T>) => Promise<T>;
+  delete: (id: IdType) => Promise<void>;
+};
+
+export interface DataManagerProps<
+  T extends Record<string, unknown>,
+  IdType extends React.Key = React.Key
+> {
   readonly entityName: string;
   readonly fields: readonly FieldDefinition<T>[];
-  readonly api: {
-    fetch: () => Promise<T[]>;
-    create: (item: Partial<T>) => Promise<T>;
-    update: (id: React.Key, item: Partial<T>) => Promise<T>;
-    delete: (id: React.Key) => Promise<void>;
-  };
-  readonly getRowId: (item: T) => React.Key;
+  readonly api: DataManagerApi<T, IdType>;
+  readonly getRowId: (item: T) => IdType;
   readonly initialForm: () => Partial<T>;
 }
 
@@ -30,7 +38,7 @@ export function DataManager<T extends Record<string, unknown>>({
   api,
   getRowId,
   initialForm,
-}: DataManagerProps<T>) {
+}: DataManagerProps<T, React.Key>) {
   const [items, setItems] = useState<T[]>([]);
   const [form, setForm] = useState<Partial<T>>(initialForm());
   const [editingId, setEditingId] = useState<React.Key | null>(null);

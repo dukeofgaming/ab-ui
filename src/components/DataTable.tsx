@@ -1,5 +1,5 @@
 "use client";
-import Image from "next/image";
+
 
 export interface DataTableProps<T extends Record<string, unknown>> {
   readonly items: T[];
@@ -53,7 +53,7 @@ export function DataTable<T extends Record<string, unknown>>({ items, loading, d
                     let cellContent: React.ReactNode;
                     if (key === "logoUrl") {
                       cellContent = (
-                        <Image src={typeof item[key] === "string" ? item[key] : ""} alt={typeof item["name"] === "string" ? item["name"] : ""} width={32} height={32} className="h-8 w-8 object-contain rounded" />
+                        <img src={typeof item[key] === "string" ? item[key] : ""} alt={typeof item["name"] === "string" ? item["name"] : ""} width={32} height={32} className="h-8 w-8 object-contain rounded" />
                       );
                     } else if (typeof item[key] === "string" || typeof item[key] === "number") {
                       cellContent = String(item[key]);

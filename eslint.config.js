@@ -27,13 +27,14 @@ export default [
       '.obsidian'
     ] 
   },
-  // TypeScript config for .storybook
+  // TypeScript config for all .ts/.tsx files
   {
-    files: ['.storybook/**/*.ts'],
+    files: ['**/*.{ts,tsx}'],
     languageOptions: {
       parser: tsparser,
       parserOptions: {
         sourceType: 'module',
+        ecmaFeatures: { jsx: true },
       },
     },
     plugins: {
