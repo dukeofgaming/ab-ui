@@ -41,26 +41,67 @@ jobs:
         id: params
         shell: bash
         run: |
-          if [ "${{ steps.changesets_is_release_merge.outputs.changesets-is-release-merge }}" = "false" ]; then
-            # Snapshot release
-            echo "release_type=snapshot" >> $GITHUB_OUTPUT
-            echo "tag=${{ github.head_ref }}" >> $GITHUB_OUTPUT
-            echo "branch=" >> $GITHUB_OUTPUT
-          elif [ "${{ github.ref }}" = "refs/heads/develop" ]; then
-            # Pre-release
-            echo "release_type=pre" >> $GITHUB_OUTPUT
-            echo "tag=dev" >> $GITHUB_OUTPUT
-            echo "branch=develop" >> $GITHUB_OUTPUT
-          elif [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            # Stable release
-            echo "release_type=" >> $GITHUB_OUTPUT
-            echo "tag=" >> $GITHUB_OUTPUT
-            echo "branch=main" >> $GITHUB_OUTPUT
+          # Check if this is a release merge first
+          if [ "${{ steps.changesets_is_release_merge.outputs.changesets-is-release-merge }}" = "true" ]; then
+            # This is a changeset release merge - determine type by branch
+            case "${{ github.ref_name }}" in
+              "develop")
+                # Pre-release
+                echo "🚧 **Pre-release detected** on develop branch" | tee -a $GITHUB_STEP_SUMMARY
+                echo "- Will create pre-release with tag 'dev'" | tee -a $GITHUB_STEP_SUMMARY
+                echo "- This is a changeset release merge commit" | tee -a $GITHUB_STEP_SUMMARY
+                echo "" | tee -a $GITHUB_STEP_SUMMARY
+                
+                echo "release_type=pre" | tee -a $GITHUB_OUTPUT
+                echo "tag=dev" | tee -a $GITHUB_OUTPUT
+                echo "branch=develop" | tee -a $GITHUB_OUTPUT
+                ;;
+              "main")
+                # Stable release
+                echo "🚀 **Stable release detected** on main branch" | tee -a $GITHUB_STEP_SUMMARY
+                echo "- Will create stable release" | tee -a $GITHUB_STEP_SUMMARY
+                echo "- This is a changeset release merge commit" | tee -a $GITHUB_STEP_SUMMARY
+                echo "" | tee -a $GITHUB_STEP_SUMMARY
+
+                echo "release_type=" | tee -a $GITHUB_OUTPUT
+                echo "tag=" | tee -a $GITHUB_OUTPUT
+                echo "branch=main" | tee -a $GITHUB_OUTPUT
+                ;;
+              *)
+                # Snapshot for other branches (testing)
+                echo "📸 **Snapshot release** for changeset merge on ${{ github.ref_name }}" | tee -a $GITHUB_STEP_SUMMARY
+                echo "- Will create snapshot with tag '${{ github.ref_name }}'" | tee -a $GITHUB_STEP_SUMMARY
+                echo "- This is a changeset release merge on non-standard branch" | tee -a $GITHUB_STEP_SUMMARY
+                echo "" | tee -a $GITHUB_STEP_SUMMARY
+
+                echo "release_type=snapshot" | tee -a $GITHUB_OUTPUT
+                echo "tag=${{ github.ref_name }}" | tee -a $GITHUB_OUTPUT
+                echo "branch=" | tee -a $GITHUB_OUTPUT
+                ;;
+            esac
           else
-            # Skip release for other branches/conditions
-            echo "release_type=skip" >> $GITHUB_OUTPUT
-            echo "tag=" >> $GITHUB_OUTPUT
-            echo "branch=" >> $GITHUB_OUTPUT
+            # Not a release merge - always do snapshot for testing
+            if [ "${{ github.event_name }}" = "pull_request" ]; then
+              # Use head_ref for PR context
+              echo "📸 **Snapshot release** for pull request testing" | tee -a $GITHUB_STEP_SUMMARY
+              echo "- Will create snapshot with tag '${{ github.head_ref }}'" | tee -a $GITHUB_STEP_SUMMARY
+              echo "- This allows testing changes before merging" | tee -a $GITHUB_STEP_SUMMARY
+              echo "" | tee -a $GITHUB_STEP_SUMMARY
+
+              echo "release_type=snapshot" | tee -a $GITHUB_OUTPUT
+              echo "tag=${{ github.head_ref }}" | tee -a $GITHUB_OUTPUT
+              echo "branch=" | tee -a $GITHUB_OUTPUT
+            else
+              # Use branch name for push context
+              echo "📸 **Snapshot release** for push to ${{ github.ref_name }}" | tee -a $GITHUB_STEP_SUMMARY
+              echo "- Will create snapshot with tag '${{ github.ref_name }}'" | tee -a $GITHUB_STEP_SUMMARY
+              echo "- This allows testing changes after merge" | tee -a $GITHUB_STEP_SUMMARY
+              echo "" | tee -a $GITHUB_STEP_SUMMARY
+
+              echo "release_type=snapshot" | tee -a $GITHUB_OUTPUT
+              echo "tag=${{ github.ref_name }}" | tee -a $GITHUB_OUTPUT
+              echo "branch=" | tee -a $GITHUB_OUTPUT
+            fi
           fi
 
       - name: Execute Changeset Release

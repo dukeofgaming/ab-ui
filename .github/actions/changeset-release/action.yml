@@ -35,14 +35,14 @@ runs:
             TYPE_NAME="Pre-release"
             ;;
           "skip")
-            echo "## ⏭️ Changeset Release Skipped" >> $GITHUB_STEP_SUMMARY
-            echo "No release needed for current branch/conditions." >> $GITHUB_STEP_SUMMARY
+            echo "## ⏭️ Changeset Release Skipped" | tee -a $GITHUB_STEP_SUMMARY
+            echo "No release needed for current branch/conditions." | tee -a $GITHUB_STEP_SUMMARY
             exit 0
             ;;
           *)
-            echo "## ❌ Changeset Release Failed" >> $GITHUB_STEP_SUMMARY
-            echo "Release type '${{ inputs.release_type }}' is not supported." >> $GITHUB_STEP_SUMMARY
-            echo "Supported types: '' (empty for stable), 'snapshot', 'pre', 'skip'" >> $GITHUB_STEP_SUMMARY
+            echo "## ❌ Changeset Release Failed" | tee -a $GITHUB_STEP_SUMMARY
+            echo "Release type '${{ inputs.release_type }}' is not supported." | tee -a $GITHUB_STEP_SUMMARY
+            echo "Supported types: '' (empty for stable), 'snapshot', 'pre', 'skip'" | tee -a $GITHUB_STEP_SUMMARY
             exit 1
             ;;
         esac
@@ -50,18 +50,18 @@ runs:
         # Validate tag for snapshot and pre releases
         if [[ "${{ inputs.release_type }}" == "snapshot" || "${{ inputs.release_type }}" == "pre" ]]; then
           if [[ -z "${{ inputs.tag }}" ]]; then
-            echo "## ❌ Changeset Release Failed" >> $GITHUB_STEP_SUMMARY
-            echo "Tag is required when release_type is '${{ inputs.release_type }}'" >> $GITHUB_STEP_SUMMARY
+            echo "## ❌ Changeset Release Failed" | tee -a $GITHUB_STEP_SUMMARY
+            echo "Tag is required when release_type is '${{ inputs.release_type }}'" | tee -a $GITHUB_STEP_SUMMARY
             exit 1
           fi
         fi
         
-        echo "- ${ICON} Starting ${TYPE_NAME}" >> $GITHUB_STEP_SUMMARY
+        echo "- ${ICON} Starting ${TYPE_NAME}" | tee -a $GITHUB_STEP_SUMMARY
         if [[ -n "${{ inputs.tag }}" ]]; then
-          echo "  |- Tag: ${{ inputs.tag }}" >> $GITHUB_STEP_SUMMARY
+          echo "  |- Tag: ${{ inputs.tag }}" | tee -a $GITHUB_STEP_SUMMARY
         fi
         if [[ -n "${{ inputs.branch }}" ]]; then
-          echo "  |- Branch: ${{ inputs.branch }}" >> $GITHUB_STEP_SUMMARY
+          echo "  |- Branch: ${{ inputs.branch }}" | tee -a $GITHUB_STEP_SUMMARY
         fi
 
     - name: Setup Node.js 24
@@ -83,9 +83,9 @@ runs:
       run: |
         if [ ! -f .changeset/pre.json ]; then
           npx changeset pre enter ${{ inputs.tag }}
-          echo "- 🚧 Entered pre-release mode with tag '${{ inputs.tag }}'" >> $GITHUB_STEP_SUMMARY
+          echo "- 🚧 Entered pre-release mode with tag '${{ inputs.tag }}'" | tee -a $GITHUB_STEP_SUMMARY
         else
-          echo "- 🚧 Already in pre-release mode, skipping changeset pre enter" >> $GITHUB_STEP_SUMMARY
+          echo "- 🚧 Already in pre-release mode, skipping changeset pre enter" | tee -a $GITHUB_STEP_SUMMARY
         fi
 
     - name: Handle Snapshot Release
@@ -96,8 +96,8 @@ runs:
         NPM_TOKEN: ${{ env.NPM_TOKEN }}
       run: |
         if [ -f .changeset/pre.json ]; then
-          echo "- 🦋 Changesets is in pre mode for current branch '${{ inputs.tag }}'" >> $GITHUB_STEP_SUMMARY
-          echo "  |- exiting pre mode without committing..." >> $GITHUB_STEP_SUMMARY
+          echo "- 🦋 Changesets is in pre mode for current branch '${{ inputs.tag }}'" | tee -a $GITHUB_STEP_SUMMARY
+          echo "  |- exiting pre mode without committing..." | tee -a $GITHUB_STEP_SUMMARY
           npx changeset pre exit
         fi
 
@@ -111,7 +111,7 @@ runs:
         version=$(jq -r '.version' package.json)
         name=$(jq -r '.name' package.json)
 
-        echo "- 📦 Published Snapshot Package: [${name}@${version}](https://www.npmjs.com/package/${name}/v/${version})" >> $GITHUB_STEP_SUMMARY
+        echo "- 📦 Published Snapshot Package: [${name}@${version}](https://www.npmjs.com/package/${name}/v/${version})" | tee -a $GITHUB_STEP_SUMMARY
 
     - name: Handle Pre-release or Stable Release
       if: inputs.release_type == 'pre' || inputs.release_type == ''
@@ -133,24 +133,24 @@ runs:
       run: |
         ls dist
 
-        echo "### 📦 Published Packages" >> $GITHUB_STEP_SUMMARY
+        echo "### 📦 Published Packages" | tee -a $GITHUB_STEP_SUMMARY
 
         if [ "${{ steps.changesets.outputs.published }}" = 'true' ]; then
           pkgs=$(echo '${{ steps.changesets.outputs.publishedPackages }}' | jq -r '.[] | "- 📦 [\(.name)@\(.version)](https://www.npmjs.com/package/\(.name)/v/\(.version))"')
-          echo "$pkgs" >> $GITHUB_STEP_SUMMARY
+          echo "$pkgs" | tee -a $GITHUB_STEP_SUMMARY
         else
-          echo "No packages were published." >> $GITHUB_STEP_SUMMARY
+          echo "No packages were published." | tee -a $GITHUB_STEP_SUMMARY
         fi
 
-        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "" | tee -a $GITHUB_STEP_SUMMARY
 
         if [ -n "${{ steps.changesets.outputs.pullRequestNumber }}" ]; then
           pr_url="https://github.com/${{ github.repository }}/pull/${{ steps.changesets.outputs.pullRequestNumber }}"
           release_type_display="${{ inputs.release_type == 'pre' && 'Pre-release' || 'Stable release' }}"
           branch_display="${{ inputs.release_type == 'pre' && '(develop)' || '(main)' }}"
-          echo "- 🦋 [View Changesets ${release_type_display} PR ${branch_display} #${{ steps.changesets.outputs.pullRequestNumber }}](${pr_url})" >> $GITHUB_STEP_SUMMARY
+          echo "- 🦋 [View Changesets ${release_type_display} PR ${branch_display} #${{ steps.changesets.outputs.pullRequestNumber }}](${pr_url})" | tee -a $GITHUB_STEP_SUMMARY
         else
-          echo "- 🦋 No Changesets release PR was created or updated." >> $GITHUB_STEP_SUMMARY
+          echo "- 🦋 No Changesets release PR was created or updated." | tee -a $GITHUB_STEP_SUMMARY
         fi
 
-        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "" | tee -a $GITHUB_STEP_SUMMARY
