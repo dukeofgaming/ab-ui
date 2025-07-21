@@ -1,5 +1,6 @@
 ---
 type: Feature
+figma-link: https://www.figma.com/design/lwNVL3ceJV5Ih2l1QnODI1/AB-UI-Design-System?version-id=2242711302686097385&node-id=0-1&p=f&t=ncB5Vk30uYBeOIpv-0
 ---
 
 # Feature #6: Streamline collaboration and contributions
@@ -15,12 +16,12 @@ type: Feature
     - [x] Test upgrading app repos from upstream base app repo
 
 
-- [ ] **"Streamline contributions from a large developer community through local dev setups, peer-review workflows, and automated checks"** (see [[requirements#6.1]])
+- [x] **"Streamline contributions from a large developer community through local dev setups, peer-review workflows, and automated checks"** (see [[requirements#6.1]])
 
     - [x] Publish DevContainer image to GitHub Container Registry for quicker local setup with VSCode as a baseline experience
     - [x] Setup base app repository to use devcontainer image
-    - [ ] Make PR promotion mechanism reusable for peer review workflow
-    - [ ] Add ESLint to test pipeline
+    - [x] Make PR promotion mechanism reusable for peer review workflow
+    - [x] Add ESLint to test pipeline
 
 - [x] **"Minimize the total number of repos while avoiding a monolithic structure"** (see [[requirements#5.1]])
 
@@ -34,10 +35,10 @@ type: Feature
     - [x] Integrate Storybook with Tailwind themes and tokens
     - [x] Publish design tokens as part of NPM package
 
-- [ ] **"Provide clear lineage between design revisions, code commits, and semantic releases"** (see [[requirements#2.2]])
+- [x] **"Provide clear lineage between design revisions, code commits, and semantic releases"** (see [[requirements#2.2]])
 
     - [x] Integrate Figma Tokens Studio with GitHub
-    - [ ] Integrate Figma with Storybook
+    - [x] Integrate Figma with Storybook Connect
 
 - [x] **"Tie feature branches and releases directly to specific design documents"** (see [[requirements#3.2]])
 
