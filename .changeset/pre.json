@@ -1,5 +1,5 @@
 {
-  "mode": "pre",
+  "mode": "exit",
   "tag": "dev",
   "initialVersions": {
     "@dukeofgaming/ab-ui": "0.1.3-dev.0"
