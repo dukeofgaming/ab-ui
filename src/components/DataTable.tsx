@@ -10,6 +10,8 @@ export interface DataTableProps<T extends Record<string, unknown>> {
   readonly getRowId: (item: T) => React.Key;
 }
 
+import Button from "./Button";
+
 export function DataTable<T extends Record<string, unknown>>({ items, loading, deletingIds, onEdit, onDelete, getRowId }: DataTableProps<T>) {
   const keys: (keyof T)[] = items.length > 0 ? Object.keys(items[0]) as (keyof T)[] : [];
 
@@ -68,19 +70,20 @@ export function DataTable<T extends Record<string, unknown>>({ items, loading, d
                   }
                 )}
                 <td className="p-3 border-b border-[var(--global-color-border)] flex gap-3">
-                  <button
+                  <Button
                     type="button"
-                    className="px-4 py-2 bg-[var(--global-color-border)] hover:brightness-90 text-[var(--global-color-accent)] font-semibold rounded shadow-sm transition-colors focus:ring-[var(--global-color-accent)]"
+                    variant="action"
                     onClick={() => onEdit(getRowId(item))}
                     disabled={deletingIds.includes(getRowId(item))}
                   >
                     Edit
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     type="button"
-                    className="px-4 py-2 bg-red-400 hover:bg-red-500 text-white font-semibold rounded shadow-sm transition-colors"
+                    variant="danger"
                     onClick={() => onDelete(getRowId(item))}
                     disabled={deletingIds.includes(getRowId(item))}
+                    style={{ position: 'relative' }}
                   >
                     {deletingIds.includes(getRowId(item)) ? (
                       <span className="absolute inset-0 flex items-center justify-center bg-[var(--global-color-bg)] bg-opacity-60 z-10 rounded-full">
@@ -89,7 +92,7 @@ export function DataTable<T extends Record<string, unknown>>({ items, loading, d
                     ) : (
                       "Delete"
                     )}
-                  </button>
+                  </Button>
                 </td>
               </tr>
             ))

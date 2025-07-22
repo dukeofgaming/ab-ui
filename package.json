@@ -18,9 +18,9 @@
   "module": "dist/ab-ui.es.js",
   "exports": {
     ".": {
+      "types": "./dist/src/index.d.ts",
       "import": "./dist/ab-ui.es.js",
-      "require": "./dist/ab-ui.cjs.js",
-      "types": "./dist/src/index.d.ts"
+      "require": "./dist/ab-ui.cjs.js"
     },
     "./css/themes": {
       "default": "./src/themes.css"

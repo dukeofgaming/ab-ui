@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import NumberInput from "./NumberInput";
+import Input from "./Input";
 import Button from "./Button";
 
 const MIN_AGE = 18;
@@ -33,9 +33,30 @@ export default function AgeVerification({ minAge = 18 }: { readonly minAge?: num
 
   return (
     <div>
-      <NumberInput value={month} onChange={setMonth} placeholder="MM" min={1} max={12} />
-      <NumberInput value={day} onChange={setDay} placeholder="DD" min={1} max={31} />
-      <NumberInput value={year} onChange={setYear} placeholder="YYYY" min={1900} max={2100} />
+      <Input
+        mode="number"
+        value={month}
+        onChange={e => setMonth(e.target.value === "" ? "" : Number(e.target.value))}
+        placeholder="MM"
+        min={1}
+        max={12}
+      />
+      <Input
+        mode="number"
+        value={day}
+        onChange={e => setDay(e.target.value === "" ? "" : Number(e.target.value))}
+        placeholder="DD"
+        min={1}
+        max={31}
+      />
+      <Input
+        mode="number"
+        value={year}
+        onChange={e => setYear(e.target.value === "" ? "" : Number(e.target.value))}
+        placeholder="YYYY"
+        min={1900}
+        max={2100}
+      />
       <Button onClick={handleVerify}>Verify Age</Button>
       {verified && <div>Access granted!</div>}
       {error && <div style={{ color: "red" }}>{error}</div>}

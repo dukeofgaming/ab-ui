@@ -13,6 +13,9 @@ interface DataFormProps<T> {
   readonly onCancel: () => void;
 }
 
+import Button from "./Button";
+import Input from "./Input";
+
 export function DataForm<T>({ form, fields, editingId, error, onChange, onSubmit, onCancel }: DataFormProps<T>) {
   return (
     <form
@@ -23,36 +26,25 @@ export function DataForm<T>({ form, fields, editingId, error, onChange, onSubmit
       {fields.map((field) => (
         <label key={String(field.name)} className="flex flex-col gap-1 text-[var(--global-color-text)]">
           {field.label}
-          {field.type === "textarea" ? (
-            <textarea
-              name={String(field.name)}
-              value={String(form[field.name] ?? "")}
-              onChange={onChange}
-              required={field.required}
-              placeholder={field.placeholder}
-              className="border border-[var(--global-color-border)] bg-white px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--global-color-accent)] text-base shadow-sm text-[var(--global-color-text)] placeholder-gray-400"
-            />
-          ) : (
-            <input
-              name={String(field.name)}
-              type={field.type}
-              value={String(form[field.name] ?? "")}
-              onChange={onChange}
-              required={field.required}
-              placeholder={field.placeholder}
-              className="border border-[var(--global-color-border)] bg-white px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--global-color-accent)] text-base shadow-sm text-[var(--global-color-text)] placeholder-gray-400"
-            />
-          )}
+          <Input
+            name={String(field.name)}
+            value={String(form[field.name] ?? "")}
+            onChange={onChange}
+            required={field.required}
+            placeholder={field.placeholder}
+            mode={field.type === "textarea" ? "multiline" : field.type === "number" ? "number" : undefined}
+            rows={field.type === "textarea" ? 3 : undefined}
+          />
         </label>
       ))}
       {error && <div className="text-red-600 font-medium">{error}</div>}
       <div className="flex gap-2 mt-2">
-        <button type="submit" className="bg-[var(--global-color-accent)] hover:brightness-90 text-[var(--global-color-bg)] font-semibold px-4 py-2 rounded-xl shadow">
+        <Button type="submit" variant="primary">
           {editingId ? "Save" : "Add"}
-        </button>
-        <button type="button" onClick={onCancel} className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold px-4 py-2 rounded-xl shadow">
+        </Button>
+        <Button type="button" onClick={onCancel} variant="secondary">
           Cancel
-        </button>
+        </Button>
       </div>
     </form>
   );
