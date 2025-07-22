@@ -9,9 +9,6 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 function Button({ children, variant = 'primary', className = '', ...props }: ButtonProps) {
   let variantClass = '';
   switch (variant) {
-    case 'primary':
-      variantClass = 'bg-[var(--global-color-accent)] hover:brightness-90 text-[var(--global-color-bg)] font-semibold px-4 py-2 rounded-xl shadow';
-      break;
     case 'secondary':
       variantClass = 'bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold px-4 py-2 rounded-xl shadow';
       break;
@@ -21,8 +18,10 @@ function Button({ children, variant = 'primary', className = '', ...props }: But
     case 'danger':
       variantClass = 'px-4 py-2 bg-red-400 hover:bg-red-500 text-white font-semibold rounded shadow-sm transition-colors';
       break;
+    case 'primary':
     default:
-      variantClass = '';
+      variantClass = 'bg-[var(--global-color-accent)] hover:brightness-90 text-[var(--global-color-bg)] font-semibold px-4 py-2 rounded-xl shadow';
+      break;
   }
   return (
     <button className={`${variantClass} ${className}`.trim()} {...props}>
