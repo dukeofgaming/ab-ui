@@ -8,6 +8,5 @@ export {
   type DataManagerProps
 } from './components/DataManager';
 export * from './components/DataTable';
-export * from './components/NumberInput';
 export * from './components/ThemeSwitcher';
 // Do not export *.stories files
