@@ -4,7 +4,7 @@ import { within, userEvent } from '@storybook/testing-library';
 import { expect } from 'storybook/test';
 
 export default {
-  title: "Components/AgeVerification",
+  title: "Components/Modules/AgeVerification",
   component: AgeVerification,
   argTypes: {
     minAge: { control: 'number', defaultValue: 18 },

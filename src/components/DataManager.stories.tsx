@@ -16,7 +16,7 @@ const fields: FieldDefinition<User>[] = [
 ];
 
 const meta: Meta<DataManagerProps<User, React.Key>> = {
-  title: 'Components/DataManager',
+  title: 'Components/Modules/Data/DataManager',
   component: DataManager,
   tags: ['autodocs'],
   parameters: {

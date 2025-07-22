@@ -3,7 +3,7 @@ import React from 'react';
 import Input from './Input';
 
 const meta: Meta<typeof Input> = {
-  title: 'Components/Input',
+  title: 'Components/Elements/Input',
   component: Input,
   tags: ['autodocs'],
   argTypes: {
@@ -29,6 +29,7 @@ export const Default: Story = {
     value: "Hello",
     placeholder: "Type here...",
     mode: "text",
+    onChange: () => {}, // prevent controlled warning
   },
 };
 
@@ -37,6 +38,7 @@ export const WithValue: Story = {
     value: "Some value",
     placeholder: "Enter value",
     mode: "text",
+    onChange: () => {}, // prevent controlled warning
   },
 };
 
@@ -46,6 +48,7 @@ export const MultilineMode: Story = {
     placeholder: "Type multiline...",
     mode: "multiline",
     rows: 3,
+    onChange: () => {}, // prevent controlled warning
   },
 };
 
@@ -54,5 +57,6 @@ export const NumberMode: Story = {
     value: 42,
     placeholder: "Enter a number",
     mode: "number",
+    onChange: () => {}, // prevent controlled warning
   },
 };

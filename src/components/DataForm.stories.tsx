@@ -16,7 +16,7 @@ const fields: FieldDefinition<User>[] = [
 ];
 
 const meta: Meta<typeof DataForm<User>> = {
-  title: 'Components/DataForm',
+  title: 'Components/Modules/Data/DataForm',
   component: DataForm,
   tags: ['autodocs'],
   parameters: {

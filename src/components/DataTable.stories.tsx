@@ -9,7 +9,7 @@ interface User {
 }
 
 const meta: Meta<typeof DataTable<User>> = {
-  title       : 'Components/DataTable',
+  title       : 'Components/Modules/Data/DataTable',
   component   : DataTable,
   tags        : ['autodocs'],
   parameters  : {
