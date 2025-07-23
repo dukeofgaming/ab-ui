@@ -4,12 +4,19 @@ import Button from "./Button";
 
 const MIN_AGE = 18;
 
-export default function AgeVerification({ minAge = 18 }: { readonly minAge?: number }) {
-  const [month, setMonth] = useState<number | "">("");
-  const [day, setDay] = useState<number | "">("");
-  const [year, setYear] = useState<number | "">("");
+export interface AgeVerificationProps {
+  readonly minAge?: number;
+}
+
+export default function AgeVerification({
+  minAge = MIN_AGE
+}: AgeVerificationProps) {
+
+  const [month, setMonth]       = useState<number | "">("");
+  const [day, setDay]           = useState<number | "">("");
+  const [year, setYear]         = useState<number | "">("");
   const [verified, setVerified] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError]       = useState("");
 
   const handleVerify = () => {
     if (month === "" || day === "" || year === "") {
