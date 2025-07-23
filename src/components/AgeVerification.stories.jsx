@@ -21,17 +21,25 @@ export const Default = {
 };
 
 export const MinAge18 = {
-  args: { minAge: 18 },
+  args: {
+    minAge: 18,
+  },
   name: 'Minimum Age 18',
 };
 
 export const MinAge21 = {
-  args: { minAge: 21 },
+  args: {
+    minAge: 21,
+  },
   name: 'Minimum Age 21',
 };
 
 export const UnderageInput = {
-  args: { minAge: 18 },
+  args: {
+    minAge: 18,
+    onPass: () => { document.body.dataset.success = 'true'; },
+    onFail: () => { document.body.dataset.success = 'false'; },
+  },
   name: 'Underage Input Error',
   play: async ({ canvasElement, args }) => {
     // Arrange
@@ -60,6 +68,42 @@ export const UnderageInput = {
     // Assert
     const errorRegex = new RegExp(`must be at least ${minAge}`, 'i');
     await expect(canvas.findByText(errorRegex)).resolves.toBeInTheDocument();
+    await expect(document.body.dataset.success).toEqual('false');
   },
+};
 
+export const CallbackFail = {
+  args: {
+    minAge: 18,
+    onPass: () => { document.body.dataset.success = 'true'; },
+    onFail: () => { document.body.dataset.success = 'false'; },
+  },
+  name: 'Callback Fail (onFail)',
+  play: async ({ canvasElement, args }) => {
+    // Arrange
+    const canvas = within(canvasElement);
+    const minAge = args.minAge || 18;
+    const now = new Date();
+    const underageDate = new Date(now.getFullYear() - minAge + 1, now.getMonth(), now.getDate());
+    const yyyy = underageDate.getFullYear().toString();
+    const mm = (underageDate.getMonth() + 1).toString();
+    const dd = underageDate.getDate().toString();
+
+    const monthInput = canvas.getByPlaceholderText('MM');
+    const dayInput = canvas.getByPlaceholderText('DD');
+    const yearInput = canvas.getByPlaceholderText('YYYY');
+
+    // Act
+    await userEvent.clear(monthInput);
+    await userEvent.type(monthInput, mm);
+    await userEvent.clear(dayInput);
+    await userEvent.type(dayInput, dd);
+    await userEvent.clear(yearInput);
+    await userEvent.type(yearInput, yyyy);
+    const submit = canvas.getByRole('button', { name: /verify age/i });
+    await userEvent.click(submit);
+
+    // Assert
+    await expect(document.body.dataset.success).toEqual('false');
+  },
 };

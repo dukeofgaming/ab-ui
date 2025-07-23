@@ -20,12 +20,14 @@ function fillDate(month, day, year) {
 
 describe("AgeVerification", () => {
   describe("Given the AgeVerification is rendered", () => {
+    let onPass, onFail;
     
     beforeEach(() => {
-      // Arrange
-      render(<AgeVerification />);
+      onPass = vi.fn();
+      onFail = vi.fn();
+      render(<AgeVerification onPass={onPass} onFail={onFail} />);
     });
-    
+
     describe("When the user does not fill any fields and clicks verify", () => {
       it("Then should show an error for missing date of birth", () => {
         // Act
@@ -37,7 +39,7 @@ describe("AgeVerification", () => {
     });
 
     describe("When the user enters a date under 18 years ago and clicks verify", () => {
-      it("Then should deny access and show the correct error", () => {
+      it("Then should deny access and show the correct error, and call onFail", () => {
         const { month, day, year } = getYearsAgo(10);
 
         // Act
@@ -46,11 +48,12 @@ describe("AgeVerification", () => {
 
         // Assert
         expect(screen.getByText(/must be at least 18 years old/i)).toBeInTheDocument();
+        expect(onFail).toHaveBeenCalled();
       });
     });
 
     describe("When the user enters a date at least 18 years ago and clicks verify", () => {
-      it("Then should grant access", () => {
+      it("Then should grant access and call onPass", () => {
         const { month, day, year } = getYearsAgo(20);
 
         // Act
@@ -59,20 +62,21 @@ describe("AgeVerification", () => {
 
         // Assert
         expect(screen.getByText(/access granted/i)).toBeInTheDocument();
+        expect(onPass).toHaveBeenCalled();
       });
     });
   });
 
   describe("Given the AgeVerification is rendered with minAge=21", () => {
-
+    let onPass, onFail;
     beforeEach(() => {
-      // Arrange
-      render(<AgeVerification minAge={21} />);
+      onPass = vi.fn();
+      onFail = vi.fn();
+      render(<AgeVerification minAge={21} onPass={onPass} onFail={onFail} />);
     });
 
     describe("When the user enters a date under 21 years ago and clicks verify", () => {
       it("Then should deny access and show the correct error for 21", () => {
-        // Arrange
         const { month, day, year } = getYearsAgo(20);
 
         // Act
@@ -85,7 +89,6 @@ describe("AgeVerification", () => {
     });
     describe("When the user enters a date at least 21 years ago and clicks verify", () => {
       it("Then should grant access for 21", () => {
-        // Arrange
         const { month, day, year } = getYearsAgo(22);
 
         // Act

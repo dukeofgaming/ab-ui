@@ -6,10 +6,14 @@ const MIN_AGE = 18;
 
 export interface AgeVerificationProps {
   readonly minAge?: number;
+  readonly onPass?: () => void;
+  readonly onFail?: () => void;
 }
 
 export function AgeVerification({
-  minAge = MIN_AGE
+  minAge = MIN_AGE,
+  onPass,
+  onFail
 }: AgeVerificationProps) {
 
   const [month    , setMonth]       = useState<number | "">("");
@@ -37,11 +41,19 @@ export function AgeVerification({
     ) ? 1 : 0);
     
     if (age >= minAge) {
+
       setVerified(true);
       setError("");
+      
+      if (onPass) onPass();
+
     } else {
+
       setVerified(false);
       setError(`You must be at least ${minAge} years old.`);
+      
+      if (onFail) onFail();
+      
     }
 
   };
