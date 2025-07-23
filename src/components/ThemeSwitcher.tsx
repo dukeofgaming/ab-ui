@@ -16,7 +16,9 @@ interface ThemeSwitcherProps {
   readonly onChange?: (theme: string) => void;
 }
 
-export function ThemeSwitcher({ onChange }: ThemeSwitcherProps) {
+export function ThemeSwitcher({ 
+  onChange
+}: ThemeSwitcherProps) {
   const [theme, setTheme] = useState("");
 
   function handleThemeChange(e: React.ChangeEvent<HTMLSelectElement>) {

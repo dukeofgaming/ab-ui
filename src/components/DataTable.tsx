@@ -1,31 +1,43 @@
 "use client";
 
+import { Button } from "./Button";
 
 export interface DataTableProps<T extends Record<string, unknown>> {
-  readonly items: T[];
-  readonly loading: boolean;
+  readonly items      : T[];
+  readonly loading    : boolean;
   readonly deletingIds: readonly React.Key[];
-  readonly onEdit: (id: React.Key) => void;
-  readonly onDelete: (id: React.Key) => void;
-  readonly getRowId: (item: T) => React.Key;
+  readonly onEdit     : (id: React.Key) => void;
+  readonly onDelete   : (id: React.Key) => void;
+  readonly getRowId   : (item: T) => React.Key;
 }
 
-import Button from "./Button";
+export function DataTable<T extends Record<string, unknown>>({
+  items,
+  loading,
+  deletingIds,
+  onEdit,
+  onDelete,
+  getRowId
+}: DataTableProps<T>) {
 
-export function DataTable<T extends Record<string, unknown>>({ items, loading, deletingIds, onEdit, onDelete, getRowId }: DataTableProps<T>) {
-  const keys: (keyof T)[] = items.length > 0 ? Object.keys(items[0]) as (keyof T)[] : [];
+  const keys: (keyof T)[] = items.length > 0 ? (
+    Object.keys(items[0]) as (keyof T)[]
+  ) : [];
 
   return (
     <div className="flex-1 relative bg-[var(--global-color-bg)] text-[var(--global-color-text)]">
+
       {/* Spinner overlay */}
       {loading && (
         <div className="absolute inset-0 flex items-center justify-center bg-[var(--global-color-bg)] bg-opacity-80 z-10 rounded-2xl">
           <div className="w-12 h-12 border-4 border-[var(--global-color-accent)] border-t-transparent rounded-full animate-spin" />
         </div>
       )}
-      {/** Dynamically generate table headings and cells from the first item in items */}
-      {/* keys definition moved above return */}
+
+      {/* Dynamically generate table headings and cells from the first item in items */}
+      
       <table className="w-full bg-[var(--global-color-bg)] shadow-lg rounded-2xl overflow-hidden border border-[var(--global-color-border)]">
+
         <thead>
           <tr className="bg-[var(--global-color-border)]">
             {keys.map((key: keyof T) => (
@@ -36,23 +48,33 @@ export function DataTable<T extends Record<string, unknown>>({ items, loading, d
             <th className="p-3 text-left font-semibold text-[var(--global-color-accent)]">Actions</th>
           </tr>
         </thead>
+
         <tbody>
           {items.length === 0 ? (
+
             <tr>
               <td colSpan={keys.length + 1} className="text-center p-6 text-yellow-700 font-medium">
                 No items yet.
               </td>
             </tr>
+
           ) : (
+
             items.map((item) => (
+
               <tr key={getRowId(item)} className="relative hover:bg-[var(--global-color-border)] transition-colors">
+                {/* Table Rows */}
                 {keys.map(
                   (key: keyof T) => {
                     let cellClass = "p-3 border-b border-[var(--global-color-border)] ";
+                    
                     if (key === "name") cellClass += "font-bold text-[var(--global-color-accent)] ";
                     else if (key === "description") cellClass += "text-[var(--global-color-text)] ";
                     else cellClass += "text-[var(--global-color-text)] ";
+
+                    // Table Cell Content
                     let cellContent: React.ReactNode;
+
                     if (key === "logoUrl") {
                       cellContent = (
                         <img src={typeof item[key] === "string" ? item[key] : ""} alt={typeof item["name"] === "string" ? item["name"] : ""} width={32} height={32} className="h-8 w-8 object-contain rounded" />
@@ -62,6 +84,8 @@ export function DataTable<T extends Record<string, unknown>>({ items, loading, d
                     } else {
                       cellContent = "";
                     }
+
+                    // Table Cells
                     return (
                       <td key={String(key)} className={cellClass}>
                         {cellContent}
@@ -69,6 +93,8 @@ export function DataTable<T extends Record<string, unknown>>({ items, loading, d
                     );
                   }
                 )}
+                
+                {/* Table Actions */}
                 <td className="p-3 border-b border-[var(--global-color-border)] flex gap-3">
                   <Button
                     type="button"

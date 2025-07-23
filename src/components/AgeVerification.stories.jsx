@@ -1,5 +1,4 @@
-import React from "react";
-import AgeVerification from "./AgeVerification";
+import { AgeVerification } from './AgeVerification';
 import { within, userEvent } from '@storybook/testing-library';
 import { expect } from 'storybook/test';
 

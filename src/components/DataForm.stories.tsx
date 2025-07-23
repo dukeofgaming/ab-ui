@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { DataForm } from './DataForm';
-import React from 'react';
 import type { FieldDefinition } from './DataManager';
 
 interface User {

@@ -1,7 +1,7 @@
 import React from "react";
 import { describe, it, expect } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
-import AgeVerification from "./AgeVerification";
+import { AgeVerification } from "./AgeVerification";
 
 function getYearsAgo(years) {
   const now = new Date();

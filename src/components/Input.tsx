@@ -7,10 +7,15 @@ export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElem
 }
 
 
-const baseClass =
-  "border border-[var(--global-color-border)] bg-white px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--global-color-accent)] text-base shadow-sm text-[var(--global-color-text)] placeholder-gray-400";
+const baseClass = "border border-[var(--global-color-border)] bg-white px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--global-color-accent)] text-base shadow-sm text-[var(--global-color-text)] placeholder-gray-400";
 
-export function Input({ className = "", mode = "text", rows = 3, ...props }: InputProps) {
+export function Input({ 
+  className   = "", 
+  mode        = "text", 
+  rows        = 3, 
+  ...props    
+}: InputProps) {
+
   if (mode === "multiline") {
     return (
       <textarea
@@ -32,4 +37,4 @@ export function Input({ className = "", mode = "text", rows = 3, ...props }: Inp
 
 Input.displayName = "Input";
 
-export default Input;
+
