@@ -41,51 +41,66 @@ jobs:
         id: params
         shell: bash
         run: |
-          # Determine release type based on branch and merge status
+          # Determine if this is a changeset release merge commit
+          is_release_merge=${{ steps.changesets_is_release_merge.outputs.changesets-is-release-merge }}
+          release_type=""
+          tag=""
+
+          
           case "${{ github.ref_name }}" in
             "develop")
-                # This is a changeset release merge - do pre-release
-                echo "🚧 **Pre-release detected** on develop branch" | tee -a $GITHUB_STEP_SUMMARY
-                echo "- Will create pre-release with tag 'dev'" | tee -a $GITHUB_STEP_SUMMARY
-                echo "- This is a changeset release merge commit" | tee -a $GITHUB_STEP_SUMMARY
-                echo "" | tee -a $GITHUB_STEP_SUMMARY
-                
-                echo "release_type=pre" | tee -a $GITHUB_OUTPUT
-                echo "tag=dev" | tee -a $GITHUB_OUTPUT
+                release_type="pre"
+                tag="dev"
+            
+                echo "## 🚧 **Pre-release branch detected** on ${{ github.ref_name }} branch" | tee -a $GITHUB_STEP_SUMMARY
+
+                if [ "$is_release_merge" = true ]; then
+                  echo "- 🚀 Will create pre-release" | tee -a $GITHUB_STEP_SUMMARY
+                else
+                  echo "- 🧑‍💻👩‍💻 Will create PR for pre-release" | tee -a $GITHUB_STEP_SUMMARY
+                fi      
               ;;
             "main")
-                # This is a changeset release merge - do stable release
-                echo "🚀 **Stable release detected** on main branch" | tee -a $GITHUB_STEP_SUMMARY
-                echo "- Will create stable release" | tee -a $GITHUB_STEP_SUMMARY
-                echo "- This is a changeset release merge commit" | tee -a $GITHUB_STEP_SUMMARY
-                echo "" | tee -a $GITHUB_STEP_SUMMARY
+                release_type="stable"
+                tag=""
 
-                echo "release_type=stable" | tee -a $GITHUB_OUTPUT
-                echo "tag=" | tee -a $GITHUB_OUTPUT
+                echo "## 🚀 **Stable release branch detected** on ${{ github.ref_name }} branch" | tee -a $GITHUB_STEP_SUMMARY
+                
+                if [ "$is_release_merge" = true ]; then
+                  echo "- 🚀 Will create stable release" | tee -a $GITHUB_STEP_SUMMARY
+                else
+                  echo "- 🧑‍💻👩‍💻 Will create PR for stable release" | tee -a $GITHUB_STEP_SUMMARY
+                fi
+
               ;;
             *)
-              # Other branches - always snapshot
-              echo "📸 **Snapshot release** for push to ${{ github.ref_name }}" | tee -a $GITHUB_STEP_SUMMARY
-              echo "- Will create snapshot with tag '${{ github.ref_name }}'" | tee -a $GITHUB_STEP_SUMMARY
-              echo "- This allows testing changes after merge" | tee -a $GITHUB_STEP_SUMMARY
-              echo "" | tee -a $GITHUB_STEP_SUMMARY
+              # Other branches - skip and mention the current branch is not configured for any type of release
 
+              echo "- 🚫 No release configured for branch ${{ github.ref_name }}" | tee -a $GITHUB_STEP_SUMMARY
+              
+              
               echo "release_type=skip" | tee -a $GITHUB_OUTPUT
-              echo "snapshot=true" | tee -a $GITHUB_OUTPUT
-              echo "tag=${{ github.ref_name }}" | tee -a $GITHUB_OUTPUT
+              echo "tag=" | tee -a $GITHUB_OUTPUT
               ;;
           esac
 
-      - name: Execute Changeset Release
+          echo "release_type=$release_type" | tee -a $GITHUB_OUTPUT
+          echo "tag=$tag" | tee -a $GITHUB_OUTPUT
+
+          echo "- 🏗️ **Release type**: $release_type" | tee -a $GITHUB_STEP_SUMMARY
+          echo "- 🏷️ **Tag**: $tag" | tee -a $GITHUB_STEP_SUMMARY
+
+      - name: Changeset Release / PR
         uses: ./.github/actions/changeset-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         with:
-          snapshot: ${{ steps.changesets_is_release_merge.outputs.changesets-is-release-merge == 'false' && 'true' || 'false' }}
           release_type: ${{ steps.params.outputs.release_type }}
           tag: ${{ steps.params.outputs.tag }}
           branch: ${{ github.ref_name }}
+
+      
 
   storybook:
     name: Publish Storybook

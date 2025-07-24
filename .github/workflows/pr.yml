@@ -27,7 +27,7 @@ jobs:
           docs_dir: docs/
 
   snapshot:
-    name: Snapshot Preview Release
+    name: Snapshot Preview Release for PR
     # needs:
     #   - test
     runs-on: ubuntu-latest
@@ -43,6 +43,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         with:
-          release_type: skip
+          release_type: snapshot
           branch: ${{ github.head_ref }}
-          snapshot: true

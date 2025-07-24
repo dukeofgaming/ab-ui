@@ -1,5 +1,21 @@
 ## 0.3.0-dev.0
 
+## 0.3.0-dev.1
+
+### Minor Changes
+
+- 09dd92d: Simplifying changeset-release action to handle snapshot logic as release
+
+### Patch Changes
+
+- aa788bd: Adding pre-exit mode for edge case when in dev and snapshot
+- 46ee9b1: Correcting logic to handle only releases / PRs for dev and main (no 📸)
+- 16d9b97: Fixing missing check for stable keyword in custom changeset action
+- ac7ccec: Adding branch to snapshot input param validation
+- ff1c632: Fixing bad substitution in GH action
+- d5eeeda: Avoiding dev / main snapshot for temporary debugging (may revert)
+- 6a4bee3: Entering pre-release only when not in snapshot mode
+
 ### Minor Changes
 
 - 643b05b: Adding missing age verification callbacks
