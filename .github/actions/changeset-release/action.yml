@@ -110,6 +110,19 @@ runs:
           
           npx changeset pre exit
           echo "- 🚀 Exited pre-release mode" | tee -a $GITHUB_STEP_SUMMARY
+
+          # Chore commit to change to exit mode
+          if [ "${{ inputs.release_type }}" = 'stable' ]; then
+            
+            git config --global user.name "github-actions[bot]"
+            git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            
+            git add .changeset
+            git commit -m "chore: exit pre mode" --no-verify
+            git push origin ${{ inputs.branch }} \
+              || echo "Failed to push changes to ${{ inputs.branch }}" | tee -a $GITHUB_STEP_SUMMARY
+          fi
+
         else
           echo "- 🦋 Not in pre mode or already in exit mode, skipping changeset pre exit" | tee -a $GITHUB_STEP_SUMMARY
         fi
