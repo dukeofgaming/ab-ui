@@ -1,5 +1,19 @@
 ## 0.3.0-dev.0
 
+## 0.4.0-dev.0
+
+### Minor Changes
+
+- e5743f3: Updated project, contribution and strategy documentation
+
+### Patch Changes
+
+- d6b5458: Updating component stories, layout, documentation and Figma links
+- 1e099ec: Adding recommendation for NextJS, NestJS
+- 177b138: Updating Readme with links to further documentation, live demo sites and examples
+- db0ac4b: Enforcing test workflow as requirement for pipeline
+- Delivery release
+
 ## 0.3.0
 
 ### Minor Changes
