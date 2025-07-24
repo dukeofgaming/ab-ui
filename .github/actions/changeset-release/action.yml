@@ -124,7 +124,7 @@ runs:
 
 
     - name: Handle Pre-release or Stable Release
-      if: inputs.release_type == '' || inputs.release_type == 'pre'
+      if: inputs.release_type == 'stable' || inputs.release_type == 'pre'
       id: changesets
       uses: changesets/action@v1
       with:
