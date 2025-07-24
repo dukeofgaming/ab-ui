@@ -5,12 +5,20 @@
     "@dukeofgaming/ab-ui": "0.2.0"
   },
   "changesets": [
+    "angry-vans-vanish",
     "clean-cases-worry",
+    "clear-turkeys-dance",
     "cold-islands-jump",
     "early-hats-bet",
+    "flat-houses-know",
+    "floppy-ears-cheer",
     "four-snakes-push",
+    "free-places-argue",
     "great-impalas-hide",
     "honest-maps-sip",
-    "silly-points-give"
+    "moody-boats-trade",
+    "pretty-swans-chew",
+    "silly-points-give",
+    "young-women-shine"
   ]
 }
