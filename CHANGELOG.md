@@ -1,5 +1,11 @@
 ## 0.3.0-dev.0
 
+## 0.3.0-dev.3
+
+### Patch Changes
+
+- 93407fc: Adding fetch --all and hard reset to ensure Changesets gets new commit
+
 ## 0.3.0-dev.2
 
 ### Patch Changes
