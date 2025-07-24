@@ -48,9 +48,9 @@ runs:
         
         # Validate tag for snapshot and pre releases
         if [[ "${{ inputs.release_type }}" == "snapshot" || "${{ inputs.release_type }}" == "pre" ]]; then
-          if [[ -z "${{ inputs.tag }}" ]]; then
+          if [[ -z "${{ inputs.tag }}" && -z "${{ inputs.branch }}" ]]; then
             echo "## ❌ Changeset Release Failed" | tee -a $GITHUB_STEP_SUMMARY
-            echo "Tag is required when release_type is '${{ inputs.release_type }}'" | tee -a $GITHUB_STEP_SUMMARY
+            echo "Tag or branch is required when release_type is '${{ inputs.release_type }}'" | tee -a $GITHUB_STEP_SUMMARY
             exit 1
           fi
         fi
