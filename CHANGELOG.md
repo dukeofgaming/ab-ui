@@ -1,4 +1,17 @@
+## 0.3.0-dev.0
 
+### Minor Changes
+
+- 643b05b: Adding missing age verification callbacks
+- f24cd82: Added Typescript components from Brands app with Storybook stories, fixed eslint for typescript, and ensured design tokens were included in example app
+- d1dfcec: Refactoring to not use default exports and improving legibility
+
+### Patch Changes
+
+- 4515557: Added DataTable, DataForm and DataManager components from other project
+- 59790ac: Removing unnecessary types from composite action
+- e109abc: Refactored old components to TypeScript
+- a848937: Configuring typescript to emit types as part of the build script
 
 ## 0.2.0
 
@@ -60,9 +73,8 @@
 - ceef6a7: Refactoring changesets merge detection job into action
 - ca3118a: Fixing missing build step that takes care of the tokens with Storybook
 
-
-
 ## 0.1.3
+
 ### Patch Changes
 
 - e3d1d8c: Improving summary output, refactored to create an action for branch-docs avoiding a separate workflow
