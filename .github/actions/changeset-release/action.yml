@@ -97,10 +97,16 @@ runs:
 
         git reset --hard
 
-    - name: Handle Pre-release
-      if: inputs.release_type == 'pre' && inputs.snapshot == 'false'
+    - name: Handle Pre-release enter
+      # if: inputs.release_type == 'pre' && inputs.snapshot == 'false'
       shell: bash
       run: |
+        echo "## 🚧 Handling pre-release enter" | tee -a $GITHUB_STEP_SUMMARY
+        echo "- Release type: ${inputs.release_type}" | tee -a $GITHUB_STEP_SUMMARY
+        echo "- Snapshot: ${inputs.snapshot}" | tee -a $GITHUB_STEP_SUMMARY
+
+        ls .changeset
+
         # Check if already in pre-release mode
         if [ -f .changeset/pre.json ] && [ "$(jq -r '.mode' .changeset/pre.json 2>/dev/null)" = "pre" ]; then
           echo "- 🚧 Already in pre-release mode, skipping changeset pre enter" | tee -a $GITHUB_STEP_SUMMARY
@@ -109,10 +115,16 @@ runs:
           echo "- 🚧 Entered pre-release mode with tag '${{ inputs.tag }}'" | tee -a $GITHUB_STEP_SUMMARY
         fi
 
-    - name: Handle Pre Exit
-      if: inputs.release_type == 'stable' || inputs.snapshot == 'true'
+    - name: Handle Pre-release Exit
+      # if: inputs.release_type == 'stable' || inputs.snapshot == 'true'
       shell: bash
       run: |
+        echo "## 🦋 Handling pre-release exit" | tee -a $GITHUB_STEP_SUMMARY
+        echo "- Release type: ${inputs.release_type}" | tee -a $GITHUB_STEP_SUMMARY
+        echo "- Snapshot: ${inputs.snapshot}" | tee -a $GITHUB_STEP_SUMMARY
+
+        ls .changeset
+
         if [ -f .changeset/pre.json ] && [ "$(jq -r '.mode' .changeset/pre.json 2>/dev/null)" = "pre" ]; then
           echo "- 🦋 Exiting pre mode..." | tee -a $GITHUB_STEP_SUMMARY
           
