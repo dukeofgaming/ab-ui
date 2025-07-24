@@ -1,5 +1,30 @@
 ## 0.3.0-dev.0
 
+## 0.3.0
+
+### Minor Changes
+
+- 09dd92d: Simplifying changeset-release action to handle snapshot logic as release
+- 643b05b: Adding missing age verification callbacks
+- f24cd82: Added Typescript components from Brands app with Storybook stories, fixed eslint for typescript, and ensured design tokens were included in example app
+- d1dfcec: Refactoring to not use default exports and improving legibility
+
+### Patch Changes
+
+- aa788bd: Adding pre-exit mode for edge case when in dev and snapshot
+- 4515557: Added DataTable, DataForm and DataManager components from other project
+- 93407fc: Adding fetch --all and hard reset to ensure Changesets gets new commit
+- 46ee9b1: Correcting logic to handle only releases / PRs for dev and main (no 📸)
+- 16d9b97: Fixing missing check for stable keyword in custom changeset action
+- 59790ac: Removing unnecessary types from composite action
+- ac7ccec: Adding branch to snapshot input param validation
+- e109abc: Refactored old components to TypeScript
+- ff2036d: Committing pre exit if in stable release
+- ff1c632: Fixing bad substitution in GH action
+- d5eeeda: Avoiding dev / main snapshot for temporary debugging (may revert)
+- a848937: Configuring typescript to emit types as part of the build script
+- 6a4bee3: Entering pre-release only when not in snapshot mode
+
 ## 0.3.0-dev.3
 
 ### Patch Changes
