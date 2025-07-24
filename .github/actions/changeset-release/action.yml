@@ -110,7 +110,7 @@ runs:
         fi
 
     - name: Handle Pre Exit
-      if: inputs.release_type == 'stable'
+      if: inputs.release_type == 'stable' || inputs.snapshot == 'true'
       shell: bash
       run: |
         if [ -f .changeset/pre.json ] && [ "$(jq -r '.mode' .changeset/pre.json 2>/dev/null)" = "pre" ]; then
