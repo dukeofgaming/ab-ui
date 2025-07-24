@@ -98,7 +98,7 @@ runs:
         git reset --hard
 
     - name: Handle Pre-release
-      if: inputs.release_type == 'pre'
+      if: inputs.release_type == 'pre' && inputs.snapshot == 'false'
       shell: bash
       run: |
         # Check if already in pre-release mode
