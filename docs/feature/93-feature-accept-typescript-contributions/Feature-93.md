@@ -9,15 +9,24 @@ As a package developer I want to be able to accept contributions from the commun
 
 ## Acceptance Criteria
 
-- [ ] Refactor the codebase to use TypeScript
-- [ ] Export types for the components to avoid having to handle missing types warnings in NextJS
-- [ ] Add a contribution guide to the repository
-- [ ] Reorganize Storybook
-- [ ] 
+- [x] Refactor the codebase to use TypeScript
+- [x] Export types for the components to avoid having to handle missing types warnings in NextJS
+- [x] Add a contribution guide to the repository
+- [x] Reorganize Storybook
+- [x] Elaborate on legacy transition strategy to be able to include legacy developers into the modernization process
+- [ ] Algin Storybook with Figma components. 
 
 
 ## Notes
 
-<!-- Topics and details discovered throughout discussion, design and implementation -->
+1. Fixed some bugs in the pipeline to make a new production release.
 
-1. ...
+2. Found out about npm aliasing which allowed to fulfill requirement [[requirements#4.2]], so added installation / upgrade note to [[installation]], see: https://stackoverflow.com/questions/26414587/how-to-install-multiple-versions-of-package-using-npm
+
+3. Added contribution guide to [[contributing]].
+
+4. Elaborated on legacy transition strategy to be able to include legacy developers into the modernization process, see [[legacy-transition]].
+
+5. Updated [README](../../../README.md) to tie documentation and other resources together.
+
+

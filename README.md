@@ -1,56 +1,29 @@
-# ab-ui
+# AB-UI
 
 A set of reusable React UI components.
 
 ## Installation
 
+You can find the latest version of the package on [NPM (@dukeofgaming/ab-ui)](https://www.npmjs.com/package/@dukeofgaming/ab-ui).
+
 ```sh
-npm install ab-ui
+npm install --save-dev @dukeofgaming/ab-ui
 ```
+
+For more details on installation and upgrading, see [installation](docs/installation.md) documentation.
 
 ## Usage
 
-```jsx
-import { AgeVerification, Button, NumberInput } from 'ab-ui';
+In order to use the components, consult our Storybook documentation:
 
-function App() {
-  return (
-    <div>
-      <AgeVerification />
-      <Button>Click me</Button>
-      <NumberInput />
-    </div>
-  );
-}
-```
+- [Stable (GH Pages) Storybook](https://dukeofgaming.github.io/ab-ui/)
+- [Development (Chromatic) Storybook](https://dukeofgaming.github.io/ab-ui/)
 
-## Local Development
+## Contributing
 
-- Run the dev server:
-  ```sh
-  npm run dev
-  ```
-- Run tests:
-  ```sh
-  npm test
-  ```
+For more details on contributing, see [contributing](docs/contributing) documentation.
 
-## Build for Publishing
-
-To build the component library for npm:
-
-```sh
-npm run build
-```
-
-This will output the distributable files to the `dist/` directory.
-
-## Publishing
-
-- Changesets
-- Github Actions
-
-
+To adopt the new architecture, see [legacy transition](docs/legacy-transition) documentation.
 
 ## License
 
