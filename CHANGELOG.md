@@ -1,4 +1,70 @@
+## 0.3.0-dev.0
 
+## 0.3.0
+
+### Minor Changes
+
+- 09dd92d: Simplifying changeset-release action to handle snapshot logic as release
+- 643b05b: Adding missing age verification callbacks
+- f24cd82: Added Typescript components from Brands app with Storybook stories, fixed eslint for typescript, and ensured design tokens were included in example app
+- d1dfcec: Refactoring to not use default exports and improving legibility
+
+### Patch Changes
+
+- aa788bd: Adding pre-exit mode for edge case when in dev and snapshot
+- 4515557: Added DataTable, DataForm and DataManager components from other project
+- 93407fc: Adding fetch --all and hard reset to ensure Changesets gets new commit
+- 46ee9b1: Correcting logic to handle only releases / PRs for dev and main (no 📸)
+- 16d9b97: Fixing missing check for stable keyword in custom changeset action
+- 59790ac: Removing unnecessary types from composite action
+- ac7ccec: Adding branch to snapshot input param validation
+- e109abc: Refactored old components to TypeScript
+- ff2036d: Committing pre exit if in stable release
+- ff1c632: Fixing bad substitution in GH action
+- d5eeeda: Avoiding dev / main snapshot for temporary debugging (may revert)
+- a848937: Configuring typescript to emit types as part of the build script
+- 6a4bee3: Entering pre-release only when not in snapshot mode
+
+## 0.3.0-dev.3
+
+### Patch Changes
+
+- 93407fc: Adding fetch --all and hard reset to ensure Changesets gets new commit
+
+## 0.3.0-dev.2
+
+### Patch Changes
+
+- ff2036d: Committing pre exit if in stable release
+
+## 0.3.0-dev.1
+
+### Minor Changes
+
+- 09dd92d: Simplifying changeset-release action to handle snapshot logic as release
+
+### Patch Changes
+
+- aa788bd: Adding pre-exit mode for edge case when in dev and snapshot
+- 46ee9b1: Correcting logic to handle only releases / PRs for dev and main (no 📸)
+- 16d9b97: Fixing missing check for stable keyword in custom changeset action
+- ac7ccec: Adding branch to snapshot input param validation
+- ff1c632: Fixing bad substitution in GH action
+- d5eeeda: Avoiding dev / main snapshot for temporary debugging (may revert)
+- 6a4bee3: Entering pre-release only when not in snapshot mode
+
+### Minor Changes
+
+- 643b05b: Adding missing age verification callbacks
+- f24cd82: Added Typescript components from Brands app with Storybook stories, fixed eslint for typescript, and ensured design tokens were included in example app
+- d1dfcec: Refactoring to not use default exports and improving legibility
+
+### Patch Changes
+
+- 4515557: Added DataTable, DataForm and DataManager components from other project
+- 59790ac: Removing unnecessary types from composite action
+- e109abc: Refactored old components to TypeScript
+- a848937: Configuring typescript to emit types as part of the build script
 
 ## 0.2.0
 
@@ -60,9 +126,8 @@
 - ceef6a7: Refactoring changesets merge detection job into action
 - ca3118a: Fixing missing build step that takes care of the tokens with Storybook
 
-
-
 ## 0.1.3
+
 ### Patch Changes
 
 - e3d1d8c: Improving summary output, refactored to create an action for branch-docs avoiding a separate workflow
