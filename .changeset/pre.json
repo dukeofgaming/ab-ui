@@ -1,0 +1,16 @@
+{
+  "mode": "pre",
+  "tag": "dev",
+  "initialVersions": {
+    "@dukeofgaming/ab-ui": "0.2.0"
+  },
+  "changesets": [
+    "clean-cases-worry",
+    "cold-islands-jump",
+    "early-hats-bet",
+    "four-snakes-push",
+    "great-impalas-hide",
+    "honest-maps-sip",
+    "silly-points-give"
+  ]
+}
