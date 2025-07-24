@@ -4,7 +4,7 @@ A set of reusable React UI components.
 
 ## Examples
 
-You can find two example apps here
+You can find two example apps here:
 
   - **Brand Portal**: A mock website with individual brand landing pages.
     - **Live demo**: https://dukeofgaming.github.io/ab-app-brand-site/
