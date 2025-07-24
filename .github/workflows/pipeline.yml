@@ -58,11 +58,11 @@ jobs:
                   echo "tag=dev" | tee -a $GITHUB_OUTPUT
                 else
                   echo "- This is *not* a changeset release merge commit" | tee -a $GITHUB_STEP_SUMMARY
-                  echo "- Will create snapshot with tag '${{ github.ref_name }}'" | tee -a $GITHUB_STEP_SUMMARY
-                  echo "" | tee -a $GITHUB_STEP_SUMMARY
+                #   echo "- Will create snapshot with tag '${{ github.ref_name }}'" | tee -a $GITHUB_STEP_SUMMARY
+                #   echo "" | tee -a $GITHUB_STEP_SUMMARY
                   
-                  echo "release_type=snapshot" | tee -a $GITHUB_OUTPUT
-                  echo "tag=${{ github.ref_name }}" | tee -a $GITHUB_OUTPUT
+                #   echo "release_type=snapshot" | tee -a $GITHUB_OUTPUT
+                #   echo "tag=${{ github.ref_name }}" | tee -a $GITHUB_OUTPUT
                 fi
               ;;
             "main")
@@ -78,11 +78,11 @@ jobs:
                   echo "tag=" | tee -a $GITHUB_OUTPUT
                 else
                   echo "- This is *not* a changeset release merge commit" | tee -a $GITHUB_STEP_SUMMARY
-                  echo "- Will create snapshot release with tag '${{ github.ref_name }}'" | tee -a $GITHUB_STEP_SUMMARY
-                  echo "" | tee -a $GITHUB_STEP_SUMMARY
+                  # echo "- Will create snapshot release with tag '${{ github.ref_name }}'" | tee -a $GITHUB_STEP_SUMMARY
+                  # echo "" | tee -a $GITHUB_STEP_SUMMARY
                   
-                  echo "release_type=snapshot" | tee -a $GITHUB_OUTPUT
-                  echo "tag=${{ github.ref_name }}" | tee -a $GITHUB_OUTPUT
+                  # echo "release_type=snapshot" | tee -a $GITHUB_OUTPUT
+                  # echo "tag=${{ github.ref_name }}" | tee -a $GITHUB_OUTPUT
                 fi
               ;;
             *)
@@ -94,7 +94,7 @@ jobs:
               echo "tag=" | tee -a $GITHUB_OUTPUT
               ;;
           esac
-      - name: Execute Changeset Release
+      - name: Changeset Release / PR
         uses: ./.github/actions/changeset-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -104,6 +104,8 @@ jobs:
           release_type: ${{ steps.params.outputs.release_type }}
           tag: ${{ steps.params.outputs.tag }}
           branch: ${{ github.ref_name }}
+
+      
 
   storybook:
     name: Publish Storybook
