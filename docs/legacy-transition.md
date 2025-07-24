@@ -4,19 +4,19 @@ In order to help transition from the current fragmented setup towards a new arch
 
 ## Strategy
 
-1. **Step #1: Adopt Vertical Slicing**: this architectural pattern translates to isolating end-to-end, testable and end-user facing functionality across all the layers of the tech-stack / business. 
+1. **Step #1: Adopt Vertical Slicing**: this architectural pattern translates to isolating end-to-end, testable and end-user facing functionality across all the layers of the tech-stack & business. 
 
-2. **Step #2: Use Playwright for E2E & API testing**: Using Playwright's test recorder is recommended, since this allows to:
+2. **Step #2: Use Playwright for E2E & API testing**: Using Playwright's test recorder allows us to:
 
     1) Write tests first and without the learning curve of knowing how to write tests in Playwright.
 
-    2) Not worry about the new technology stack upfront, since there may be conflicting dependencies.
+    2) Not worry about the new technology stack or conflicting dependencies upfront.
 
     3) Identify a **vertical slice** of an application from the rest of the codebase.
 
-        > **Note**: It is of **vital** importance that testing doesn't become a distraction for developers or management. Testing is not the goal.
+        > **Note**: It is of ***vital*** importance that testing doesn't become a distraction for developers or management. Testing is not the goal.
         >
-        > The goal is to create ONE and only ONE E2E test to identify the smallest possible vertical slice to isolate.
+        > The goal is to create ***only one*** E2E test to identify the smallest possible vertical slice to isolate.
     
     4) Focus on testing behaviors as opposed to implementation details.
 
@@ -24,23 +24,27 @@ In order to help transition from the current fragmented setup towards a new arch
 
     1. Identify and select the smallest testable **vertical slice**. 
 
-        > **Note**: It is very important one vertical slice is selected at a time. Each feature flag will create a branching codebase to maintain.
+        > **Note**: ***Only one*** vertical slice should be selected at a time. Each feature flag will create a branching codebase to maintain.
+
+        > **Recommendation**: Use NextJS micro-repos for frontend & basic back-end, and NestJS as a backend microframework for more complex & shared APIs.
     
     2. Implement a feature flag for the new implementations; this is important to allow current users to continue undisrupted.
 
         > **Note**: The first vertical slice will carry the most complexity, as the underlying technology and dependencies will need to be aligned. This is why we should start with the smallest possible.
 
-        > **Note**: It is perfectly OK to create duplicated code as a starting point for a feature flag. 
+        > **Note**: It is OK to create duplicated code as a starting point for a feature flag. 
 
     2. Use canary releases to enable the new flag to a pilot user group (which can be developers, or internal QA).
 
-    3. Monitor the implementation, preferably using telemetry to understand what portion of users are using the new implementation.
+    3. Monitor the implementation with OpenTelemetry to understand what portion of users are using the new implementation.
 
     4. Once there is full confidence on the new feature / slice, retire the the feature flag along with the legacy implementation.
 
         > **Note**: Progress should only be measured once the feature flag is removed along with the legacy implementation.
 
-5. **Step #4: Contribute back to reusable packages & services (e.g. the design system, back-end libraries, etc.)**: To maximize reusability and code quality, once the new implementation is ready these should be made reusable. For new reusable code, Test-Driven Development is highly-encouraged.
+5. **Reusable packages & services**: To maximize reusability and code quality, once the new implementation is ready these should be made reusable in design system, libraries, microservices, etc. 
+
+    For new reusable code, Test-Driven Development is highly-encouraged.
 
 ## Validation of Requirements
 
@@ -64,6 +68,10 @@ In order to keep existing operations stable throughout each migration phase:
 - Vertical slicing can lead to microfrontends (e.g. using iframes, web components or module federation) and/or microservices (e.g. API-only, different scaling requirements, reusable services, etc). 
 
     > **Note**: Microfrontends and microservices should be approached with caution and tested progressively and organically, and only if the vertical slice is large enough to justify the complexity, maintained by different dedicated teams, etc.
+
+- While frameworks which may impose limitations, opinions or learning curves, NextJS and NestJS are good options since they focus on Developer Experience and having a simple starting point. NextJS is turnkey and can export static websites, and NestJS can start as a microframework and grow organically with minimal dependencies.
+
+    Frameworks do provide a set of common (sometimes best) practices for more junior developers.
 
 ### Consistent Releases
 
