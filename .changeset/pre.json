@@ -1,0 +1,15 @@
+{
+  "mode": "pre",
+  "tag": "dev",
+  "initialVersions": {
+    "@dukeofgaming/ab-ui": "0.3.0"
+  },
+  "changesets": [
+    "cute-jeans-tie",
+    "fruity-garlics-carry",
+    "little-emus-pump",
+    "rotten-pumas-serve",
+    "spicy-parrots-strive",
+    "sweet-bananas-raise"
+  ]
+}

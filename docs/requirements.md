@@ -63,7 +63,7 @@ Tie feature branches and releases directly to specific design documents (see [[A
 Use a mechanism (e.g., semantic versioning) to facilitate controlled, incremental upgrades of shared components (see [[ADR-1]],[[ADR-2]]).
 
 #### 4.2
-Allow multiple component library versions to coexist without breaking existing applications (see [[ADR-1#Consequences]]).
+Allow multiple component library versions to coexist without breaking existing applications (see [[ADR-1#Consequences]], [[Feature-93]]).
 
 ### 5. **Repository Strategy**
 

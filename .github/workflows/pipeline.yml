@@ -21,8 +21,8 @@ jobs:
   release:
     name: Changeset Release
     runs-on: ubuntu-latest
-    # needs: 
-    #   - test
+    needs: 
+      - test
     outputs:
       changesets-is-release-merge: ${{ steps.changesets_is_release_merge.outputs.changesets-is-release-merge }}
     steps:
