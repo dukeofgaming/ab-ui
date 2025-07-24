@@ -13,10 +13,6 @@ inputs:
   branch:
     description: 'Branch name for changeset action'
     required: true
-  snapshot:
-    description: 'Snapshot release'
-    required: false
-    default: 'true'
 
 runs:
   using: 'composite'
@@ -33,6 +29,10 @@ runs:
             ICON="🚧"
             TYPE_NAME="Pre-release"
             ;;
+          "snapshot")
+            ICON="📸"
+            TYPE_NAME="Snapshot Release"
+            ;;
           "skip")
             echo "## ⏭️ Changeset Release Skipped" | tee -a $GITHUB_STEP_SUMMARY
             echo "No release needed for current branch/conditions." | tee -a $GITHUB_STEP_SUMMARY
@@ -41,7 +41,7 @@ runs:
           *)
             echo "## ❌ Changeset Release Failed" | tee -a $GITHUB_STEP_SUMMARY
             echo "Release type '${{ inputs.release_type }}' is not supported." | tee -a $GITHUB_STEP_SUMMARY
-            echo "Supported types: '' (empty for stable), 'snapshot', 'pre', 'skip'" | tee -a $GITHUB_STEP_SUMMARY
+            echo "Supported types: 'stable', 'snapshot', 'pre', 'skip'" | tee -a $GITHUB_STEP_SUMMARY
             exit 1
             ;;
         esac
@@ -64,20 +64,58 @@ runs:
         fi
 
     - name: Setup Node.js 24
+      if: inputs.release_type != 'skip'
       uses: actions/setup-node@v4
       with:
         node-version: 24
 
     - name: Install Dependencies
+      if: inputs.release_type != 'skip'
       shell: bash
       run: npm ci
 
     - name: Build
+      if: inputs.release_type != 'skip'
       shell: bash
       run: npm run build
 
+    - name: Handle Pre-release enter
+      if: inputs.release_type == 'pre'
+      shell: bash
+      run: |
+        echo "## 🦋 Handling pre-release enter" | tee -a $GITHUB_STEP_SUMMARY
+        echo "- Release type: ${inputs.release_type}" | tee -a $GITHUB_STEP_SUMMARY
+
+        ls .changeset
+
+        # Check if already in pre-release mode
+        if [ -f .changeset/pre.json ] && [ "$(jq -r '.mode' .changeset/pre.json 2>/dev/null)" = "pre" ]; then
+          echo "- 🚧 Already in pre-release mode, skipping changeset pre enter" | tee -a $GITHUB_STEP_SUMMARY
+        else
+          npx changeset pre enter ${{ inputs.tag }}
+          echo "- 🚧 Entered pre-release mode with tag '${{ inputs.tag }}'" | tee -a $GITHUB_STEP_SUMMARY
+        fi
+
+    - name: Handle Pre-release Exit
+      if: inputs.release_type == 'stable' || inputs.release_type == 'snapshot'
+      shell: bash
+      run: |
+        echo "## 🦋 Handling pre-release exit" | tee -a $GITHUB_STEP_SUMMARY
+        echo "- Release type: ${inputs.release_type}" | tee -a $GITHUB_STEP_SUMMARY
+
+        ls .changeset
+
+        if [ -f .changeset/pre.json ] && [ "$(jq -r '.mode' .changeset/pre.json 2>/dev/null)" = "pre" ]; then
+          echo "- 🦋 Exiting pre mode..." | tee -a $GITHUB_STEP_SUMMARY
+          
+          npx changeset pre exit
+          echo "- 🚀 Exited pre-release mode" | tee -a $GITHUB_STEP_SUMMARY
+        else
+          echo "- 🦋 Not in pre mode or already in exit mode, skipping changeset pre exit" | tee -a $GITHUB_STEP_SUMMARY
+        fi
+
     - name: Handle Snapshot Release
-      if: inputs.snapshot == 'true'
+      if: inputs.release_type == 'snapshot'
       shell: bash
       env:
         GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
@@ -97,44 +135,6 @@ runs:
 
         git reset --hard
 
-    - name: Handle Pre-release enter
-      # if: inputs.release_type == 'pre' && inputs.snapshot == 'false'
-      shell: bash
-      run: |
-        echo "## 🚧 Handling pre-release enter" | tee -a $GITHUB_STEP_SUMMARY
-        echo "- Release type: ${inputs.release_type}" | tee -a $GITHUB_STEP_SUMMARY
-        echo "- Snapshot: ${inputs.snapshot}" | tee -a $GITHUB_STEP_SUMMARY
-
-        ls .changeset
-
-        # Check if already in pre-release mode
-        if [ -f .changeset/pre.json ] && [ "$(jq -r '.mode' .changeset/pre.json 2>/dev/null)" = "pre" ]; then
-          echo "- 🚧 Already in pre-release mode, skipping changeset pre enter" | tee -a $GITHUB_STEP_SUMMARY
-        else
-          npx changeset pre enter ${{ inputs.tag }}
-          echo "- 🚧 Entered pre-release mode with tag '${{ inputs.tag }}'" | tee -a $GITHUB_STEP_SUMMARY
-        fi
-
-    - name: Handle Pre-release Exit
-      # if: inputs.release_type == 'stable' || inputs.snapshot == 'true'
-      shell: bash
-      run: |
-        echo "## 🦋 Handling pre-release exit" | tee -a $GITHUB_STEP_SUMMARY
-        echo "- Release type: ${inputs.release_type}" | tee -a $GITHUB_STEP_SUMMARY
-        echo "- Snapshot: ${inputs.snapshot}" | tee -a $GITHUB_STEP_SUMMARY
-
-        ls .changeset
-
-        if [ -f .changeset/pre.json ] && [ "$(jq -r '.mode' .changeset/pre.json 2>/dev/null)" = "pre" ]; then
-          echo "- 🦋 Exiting pre mode..." | tee -a $GITHUB_STEP_SUMMARY
-          
-          npx changeset pre exit
-          echo "- 🚀 Exited pre-release mode" | tee -a $GITHUB_STEP_SUMMARY
-        else
-          echo "- 🦋 Not in pre mode or already in exit mode, skipping changeset pre exit" | tee -a $GITHUB_STEP_SUMMARY
-        fi
-
-
     - name: Handle Pre-release or Stable Release
       if: inputs.release_type == 'stable' || inputs.release_type == 'pre'
       id: changesets
@@ -150,7 +150,7 @@ runs:
         NPM_TOKEN: ${{ env.NPM_TOKEN }}
 
     - name: Summarize Published Packages
-      if: (inputs.release_type == 'pre' || inputs.release_type == '') && (steps.changesets.outputs.published == 'true' || steps.changesets.outputs.pullRequestNumber != '')
+      if: (inputs.release_type == 'pre' || inputs.release_type == 'stable') && (steps.changesets.outputs.published == 'true' || steps.changesets.outputs.pullRequestNumber != '')
       shell: bash
       run: |
         ls dist
