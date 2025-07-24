@@ -84,7 +84,7 @@ runs:
       shell: bash
       run: |
         echo "## 🦋 Handling pre-release enter" | tee -a $GITHUB_STEP_SUMMARY
-        echo "- Release type: ${inputs.release_type}" | tee -a $GITHUB_STEP_SUMMARY
+        echo "- Release type: ${{ inputs.release_type }}" | tee -a $GITHUB_STEP_SUMMARY
 
         ls .changeset
 
