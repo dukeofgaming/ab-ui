@@ -1,7 +1,7 @@
 {
   "name": "@dukeofgaming/ab-ui",
   "private": false,
-  "version": "0.3.0-dev.3",
+  "version": "0.3.0",
   "description": "A set of reusable React UI components.",
   "publishConfig": {
     "access": "public"
