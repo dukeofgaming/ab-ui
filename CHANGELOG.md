@@ -1,5 +1,11 @@
 ## 0.3.0-dev.0
 
+## 0.3.0-dev.2
+
+### Patch Changes
+
+- ff2036d: Committing pre exit if in stable release
+
 ## 0.3.0-dev.1
 
 ### Minor Changes
