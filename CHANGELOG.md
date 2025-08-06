@@ -1,5 +1,11 @@
 ## 0.3.0-dev.0
 
+## 0.4.0-dev.1
+
+### Patch Changes
+
+- 9ac6a81: Making pre-exit commit on changeset-release/main branch
+
 ## 0.4.0-dev.0
 
 ### Minor Changes
