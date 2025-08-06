@@ -100,6 +100,29 @@ jobs:
           tag: ${{ steps.params.outputs.tag }}
           branch: ${{ github.ref_name }}
 
+      - name: Commit pre-exit in changeset-release/main branch
+        if: steps.changesets_is_release_merge.outputs.changesets-is-release-merge == 'false' && github.ref == 'refs/heads/main'
+        run: |
+          echo "- 🤖 Committing changes to exit pre mode" | tee -a $GITHUB_STEP_SUMMARY
+          echo "    - Current workflow commit: ${{ github.sha }}" | tee -a $GITHUB_STEP_SUMMARY
+          
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            
+          git fetch origin changeset-release/main
+
+          git checkout changeset-release/main
+            
+          git add .
+          git commit -m "chore: pre-exit" --no-verify
+
+          current_commit=$(git rev-parse HEAD)
+          git push origin HEAD:changeset-release/main
+
+          echo "- 🤖 Committed and pushed changes to exit pre mode: $current_commit" | tee -a $GITHUB_STEP_SUMMARY
+
+          git push origin HEAD:changeset-release/main
+
       
 
   storybook:
