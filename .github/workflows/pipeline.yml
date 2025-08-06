@@ -113,6 +113,7 @@ jobs:
 
           git checkout changeset-release/main
             
+          git stash pop
           git add .
           git commit -m "chore: pre-exit" --no-verify
 
