@@ -1,11 +1,13 @@
 {
-  "mode": "pre",
+  "mode": "exit",
   "tag": "dev",
   "initialVersions": {
     "@dukeofgaming/ab-ui": "0.4.0"
   },
   "changesets": [
     "blue-garlics-marry",
-    "loud-dingos-judge"
+    "light-pans-scream",
+    "loud-dingos-judge",
+    "major-facts-cough"
   ]
 }
