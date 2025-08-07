@@ -1,5 +1,11 @@
 ## 0.4.0
 
+## 0.4.1-dev.2
+
+### Patch Changes
+
+- 7a8cbf4: Corrected branch ref
+
 ## 0.4.1-dev.1
 
 ### Patch Changes
