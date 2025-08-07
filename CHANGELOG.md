@@ -1,5 +1,12 @@
 ## 0.4.0
 
+## 0.4.3
+
+### Patch Changes
+
+- 60316a7: Adding backmerge job once a release is made on main
+- fc41a07: Removing old Commit pre-exit in changeset-release/main branch step from release job
+
 ## 0.4.3-dev.0
 
 ### Patch Changes
