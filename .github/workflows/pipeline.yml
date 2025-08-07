@@ -159,7 +159,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 24
-          
+
       - name: Install Dependencies
         run: npm ci
 
@@ -178,7 +178,7 @@ jobs:
             git add .changeset
             git commit -m "chore: pre-exit" --no-verify
             git push origin develop
-            echo "- 🏗️ Committed and pushed changes to exit pre mode: $current_commit" | tee -a $GITHUB_STEP_SUMMARY
+            echo "- 🦋 Committed and pushed changes to exit pre mode: $current_commit" | tee -a $GITHUB_STEP_SUMMARY
           else
             echo "- 🦋 Not in pre mode or already in exit mode, skipping changeset pre exit" | tee -a $GITHUB_STEP_SUMMARY
           fi
@@ -192,5 +192,3 @@ jobs:
           target_branch: main
           pr_title: "Promote dev to main"
           pr_body: "Automated promotion PR from dev to main"
-          pr_labels: "promotion"
-          draft: false
