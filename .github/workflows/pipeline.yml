@@ -122,8 +122,6 @@ jobs:
 
           echo "- 🤖 Committed and pushed changes to exit pre mode: $current_commit" | tee -a $GITHUB_STEP_SUMMARY
 
-          git push origin HEAD:changeset-release/main
-
       
 
   storybook:
