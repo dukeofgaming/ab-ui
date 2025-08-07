@@ -1,5 +1,11 @@
 ## 0.3.0-dev.0
 
+## 0.4.0-dev.2
+
+### Patch Changes
+
+- 6ec39cb: Adding git stash to action for later commit
+
 ## 0.4.0-dev.1
 
 ### Patch Changes
