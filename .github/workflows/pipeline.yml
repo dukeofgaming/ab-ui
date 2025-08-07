@@ -154,20 +154,18 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
       - name: Setup Node.js 24
         uses: actions/setup-node@v4
         with:
           node-version: 24
+
       - name: Install Dependencies
         run: npm ci
-      
-      - name: Create PR from dev to main
-        shell: bash
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          ACTION_RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
+      - name: Exit pre-release mode
+        shell: bash
+        run: |
           if [ -f .changeset/pre.json ] && [ "$(jq -r '.mode' .changeset/pre.json 2>/dev/null)" = "pre" ]; then
             echo "- 🦋 Pre-release mode detected, creating chore pre exit commit" | tee -a $GITHUB_STEP_SUMMARY
             
@@ -180,41 +178,17 @@ jobs:
             git add .changeset
             git commit -m "chore: pre-exit" --no-verify
             git push origin develop
-            echo "- 🏗️ Committed and pushed changes to exit pre mode: $current_commit" | tee -a $GITHUB_STEP_SUMMARY
-          fi
-          
-          PR_JSON=$(gh pr \
-            list \
-            --base main \
-            --head develop \
-            --state open \
-            --json number,url
-          )
-
-          if [ "$(echo "$PR_JSON" | jq 'length')" -eq 0 ]; then
-            ACTION="Created"
-
-            PR_URL=$(gh pr \
-              create \
-              --base main \
-              --head develop \
-              --title "Promote dev to main" \
-              --body "Automated promotion PR from dev to main" \
-              --fill \
-              | tail -n1)
-
-            PR_NUMBER=$(basename "$PR_URL")
-            
+            echo "- 🦋 Committed and pushed changes to exit pre mode: $current_commit" | tee -a $GITHUB_STEP_SUMMARY
           else
-            ACTION="Updated"
-
-            PR_URL=$(echo "$PR_JSON" | jq -r '.[0].url')
-            PR_NUMBER=$(echo "$PR_JSON" | jq -r '.[0].number')
-
-            gh pr \
-              comment \
-                $PR_NUMBER \
-                --body "- 🚀 Updated PR from dev to main from action run ${ACTION_RUN_URL}"
+            echo "- 🦋 Not in pre mode or already in exit mode, skipping changeset pre exit" | tee -a $GITHUB_STEP_SUMMARY
           fi
 
-          echo "- 🚀 $ACTION PR from dev to main: $PR_URL" >> $GITHUB_STEP_SUMMARY
+      - name: Create PR from dev to main
+        uses: ./.github/actions/create-pr
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          source_branch: develop
+          target_branch: main
+          pr_title: "Promote dev to main"
+          pr_body: "Automated promotion PR from dev to main"
