@@ -1,5 +1,11 @@
 ## 0.4.0
 
+## 0.4.1-dev.1
+
+### Patch Changes
+
+- a35aa59: Handling chore commit in dev to main promotion PR
+
 ## 0.4.1-dev.0
 
 ### Patch Changes
