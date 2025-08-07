@@ -1,5 +1,12 @@
 ## 0.4.0
 
+## 0.4.1-dev.0
+
+### Patch Changes
+
+- 6ec39cb: Adding git stash to action for later commit
+- 39982c7: Cleaned up no longer used changesets-snapshot action
+
 ### Minor Changes
 
 - e5743f3: Updated project, contribution and strategy documentation
@@ -18,6 +25,7 @@
 ### Patch Changes
 
 - 6ec39cb: Adding git stash to action for later commit
+
 ## 0.4.0-dev.1
 
 ### Patch Changes
