@@ -178,7 +178,7 @@ jobs:
             git add .changeset
             git commit -m "chore: pre-exit" --no-verify
             git push origin develop
-            echo "- 🏗️ Committed and pushed changes to exit pre mode: $current_commit" | tee -a $GITHUB_STEP_SUMMARY
+            echo "- 🦋 Committed and pushed changes to exit pre mode: $current_commit" | tee -a $GITHUB_STEP_SUMMARY
           else
             echo "- 🦋 Not in pre mode or already in exit mode, skipping changeset pre exit" | tee -a $GITHUB_STEP_SUMMARY
           fi

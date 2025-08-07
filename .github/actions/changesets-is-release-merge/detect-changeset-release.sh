@@ -46,24 +46,26 @@ fi
 IS_CHANGESET_RELEASE=false
 for parent in "${PARENTS[@]}"; do
   short_parent=$(echo $parent | cut -c1-7)
-  out_summary "🔍 Checking parent commit: $short_parent"
+  out_summary "- 🔍 Checking parent commit: $short_parent"
 
   branches=( $(git branch -r --contains $parent | grep 'origin/changeset-release/' || true) )
   if [[ ${#branches[@]} -eq 0 ]]; then
-    out_summary "No changeset-release branches found for parent $short_parent."
+    out_summary "  - No changeset-release branches found for parent $short_parent."
   else
-    out_summary "Considering the following changeset-release branches for parent $short_parent: ${branches[*]}"
+    out_summary "  - Considering the following changeset-release branches for parent $short_parent: ${branches[*]}"
   fi
   
   for branch in "${branches[@]}"; do
-    out_summary "└─ Considering changeset-release branch: $branch (for parent $short_parent)"
+    out_summary "    - Considering changeset-release branch: $branch (for parent $short_parent)"
 
     TIP_SHA=$(git rev-parse "$branch")
     short_tip=$(echo $TIP_SHA | cut -c1-7)
 
     if [[ "$parent" == "$TIP_SHA" ]]; then
       IS_CHANGESET_RELEASE=true
-      out_summary "✔️ Parent $short_parent matches tip of $branch ($short_tip)"
+      out_summary "- ✔️ Parent $short_parent matches tip of $branch ($short_tip)"
+    else
+      out_summary "- ❌ Parent $short_parent does not match tip of $branch ($short_tip)"
     fi
   done
 
