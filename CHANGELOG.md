@@ -1,5 +1,14 @@
 ## 0.4.0
 
+## 0.4.1
+
+### Patch Changes
+
+- 6ec39cb: Adding git stash to action for later commit
+- 7a8cbf4: Corrected branch ref
+- 39982c7: Cleaned up no longer used changesets-snapshot action
+- a35aa59: Handling chore commit in dev to main promotion PR
+
 ## 0.4.1-dev.2
 
 ### Patch Changes
