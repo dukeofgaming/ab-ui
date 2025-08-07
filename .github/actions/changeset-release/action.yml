@@ -110,12 +110,6 @@ runs:
           
           npx changeset pre exit
           echo "- 🚀 Exited pre-release mode" | tee -a $GITHUB_STEP_SUMMARY
-
-          if [ "${{ inputs.release_type }}" = "stable" ]; then
-            git stash
-            echo "- 🏗️ Stashed changes (stable only)" | tee -a $GITHUB_STEP_SUMMARY
-          fi
-
         else
           echo "- 🦋 Not in pre mode or already in exit mode, skipping changeset pre exit" | tee -a $GITHUB_STEP_SUMMARY
         fi
