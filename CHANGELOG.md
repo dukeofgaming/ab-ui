@@ -1,5 +1,11 @@
 ## 0.4.0
 
+## 0.4.3
+
+### Patch Changes
+
+- 60316a7: Adding backmerge job once a release is made on main
+
 ## 0.4.3-dev.0
 
 ### Patch Changes
