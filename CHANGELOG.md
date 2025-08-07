@@ -1,5 +1,12 @@
 ## 0.4.0
 
+## 0.4.2
+
+### Patch Changes
+
+- 77a5c91: Refactoring promotion PR step into reusable composite action
+- 6add025: Improving output for changeset-is-release-merge action
+
 ## 0.4.2-dev.0
 
 ### Patch Changes
