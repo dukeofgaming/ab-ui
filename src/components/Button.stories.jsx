@@ -2,10 +2,10 @@ import React from "react";
 import { Button } from './Button';
 
 export default {
-  title: "Components/Elements/Button",
-  component: Button,
-  tags: ['autodocs'],
-  parameters: {
+  title       : "Components/Elements/Button",
+  component   : Button,
+  tags        : ['autodocs'],
+  parameters  : {
     layout: 'centered',
     design: {
       type: 'figma',
