@@ -3,19 +3,17 @@ type: Feature
 figma-link: 
 ---
 
-# Feature #<github_issue_id>: <title>
+# Feature #155: Align design for brands app components
 
-<!-- General requirement in user story form, e.g.: As a persona, I need a feature, so that I can accomplish something -->
+As a developer, I want to make sure my implementation matches the design in Figma, so that I can deliver a high-quality product with a maintainable design system.
 
 ## Acceptance Criteria
 
-- [ ] First requirement
-- [ ] Second requirement
-- [ ] Third requirement
-- [ ] ...
+- [x] Implement ESLint rules to enforce Storybook stories to have a Figma link
+- [ ] Ensure pipeline warns / blocks accordingly
+- [ ] Update tokens and styles with latest figma design
 
 ## Notes
 
-<!-- Topics and details discovered throughout discussion, design and implementation -->
 
 1. ...
