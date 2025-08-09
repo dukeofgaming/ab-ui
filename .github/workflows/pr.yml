@@ -11,9 +11,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # test:
-  #   name: Run Tests
-  #   uses: ./.github/workflows/test.yml
+  test:
+    name: Run Tests
+    uses: ./.github/workflows/test.yml
 
   branch-doc:
     name: Create branch doc / update issue
@@ -28,8 +28,8 @@ jobs:
 
   snapshot:
     name: Snapshot Preview Release for PR
-    # needs:
-    #   - test
+    needs:
+      - test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository

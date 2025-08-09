@@ -10,6 +10,8 @@ import vitest from 'eslint-plugin-vitest'
 import tseslint from '@typescript-eslint/eslint-plugin';
 import tsparser from '@typescript-eslint/parser';
 
+import requireFigmaDesignLinkInStories from './eslint-rules/require-figma-design-link-in-stories.js';
+
 export default [
   { 
     ignores: [
@@ -84,5 +86,19 @@ export default [
       ...vitest.configs.recommended.rules,
     },
   },
-  ...storybook.configs["flat/recommended"]
+  ...storybook.configs["flat/recommended"],
+  // Custom rule: require Figma design link in stories
+  {
+    files: ['**/*.stories.tsx'],
+    plugins: {
+      'require-figma-design-link-in-stories': {
+        rules: {
+          'require-figma-design-link-in-stories': requireFigmaDesignLinkInStories,
+        },
+      },
+    },
+    rules: {
+      'require-figma-design-link-in-stories/require-figma-design-link-in-stories': 'error',
+    },
+  }
 ];
