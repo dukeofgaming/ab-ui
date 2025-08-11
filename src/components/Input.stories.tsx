@@ -18,7 +18,7 @@ const meta: Meta<typeof Input> = {
     layout: 'centered',
     design: {
       type: 'figma',
-      url: 'https://www.figma.com/design/lwNVL3ceJV5Ih2l1QnODI1/AB-UI-Design-System?node-id=263-35&m=dev',
+      url: 'https://www.figma.com/design/lwNVL3ceJV5Ih2l1QnODI1/AB-UI-Design-System?node-id=769-158&m=dev',
     }
   },
 };
@@ -56,6 +56,12 @@ export const MultilineMode: Story = {
 };
 
 export const NumberMode: Story = {
+  parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/lwNVL3ceJV5Ih2l1QnODI1/AB-UI-Design-System?node-id=785-85&m=dev',
+    }
+  },
   args: {
     value: 42,
     placeholder: "Enter a number",

@@ -12,8 +12,8 @@ export default {
   parameters: {
     layout: 'centered',
     design: {
-      type: 'figma',
-      url: 'https://www.figma.com/design/lwNVL3ceJV5Ih2l1QnODI1/AB-UI-Design-System?node-id=65-30&t=nVFTBXrGcAbexbGa-4',
+      type  : 'figma',
+      url   : 'https://www.figma.com/design/lwNVL3ceJV5Ih2l1QnODI1/AB-UI-Design-System?node-id=785-80&m=dev',
     }
   }
 };
