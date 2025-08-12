@@ -2,14 +2,14 @@ import React from "react";
 import { Button } from './Button';
 
 export default {
-  title: "Components/Elements/Button",
-  component: Button,
-  tags: ['autodocs'],
-  parameters: {
+  title       : "Components/Elements/Button",
+  component   : Button,
+  tags        : ['autodocs'],
+  parameters  : {
     layout: 'centered',
     design: {
-      type: 'figma',
-      url: 'https://www.figma.com/design/lwNVL3ceJV5Ih2l1QnODI1/AB-UI-Design-System?node-id=310-62&m=dev',
+      type  : 'figma',
+      url   : 'https://www.figma.com/design/lwNVL3ceJV5Ih2l1QnODI1/AB-UI-Design-System?node-id=769-157&m=dev',
     }
   }
 };
