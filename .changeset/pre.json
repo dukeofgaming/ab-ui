@@ -1,0 +1,11 @@
+{
+  "mode": "pre",
+  "tag": "dev",
+  "initialVersions": {
+    "@dukeofgaming/ab-ui": "0.4.3"
+  },
+  "changesets": [
+    "red-ways-clean",
+    "ripe-islands-ring"
+  ]
+}
