@@ -7,6 +7,10 @@ const meta: Meta<typeof ThemeSwitcher> = {
   tags        : ['autodocs'],
   parameters  : {
     layout: 'centered',
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/lwNVL3ceJV5Ih2l1QnODI1/AB-UI-Design-System?node-id=665-49&m=devhttps://www.figma.com/design/lwNVL3ceJV5Ih2l1QnODI1/AB-UI-Design-System?node-id=785-47&m=dev',
+    }
   },
 };
 

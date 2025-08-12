@@ -15,11 +15,15 @@ const fields: FieldDefinition<User>[] = [
 ];
 
 const meta: Meta<typeof DataForm<User>> = {
-  title: 'Components/Modules/Data/DataForm',
-  component: DataForm,
-  tags: ['autodocs'],
-  parameters: {
+  title       : 'Components/Modules/Data/DataForm',
+  component   : DataForm,
+  tags        : ['autodocs'],
+  parameters  : {
     layout: 'centered',
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/lwNVL3ceJV5Ih2l1QnODI1/AB-UI-Design-System?node-id=769-50&m=dev',
+    }
   },
 };
 

@@ -14,6 +14,10 @@ const meta: Meta<typeof DataTable<User>> = {
   tags        : ['autodocs'],
   parameters  : {
     layout: 'centered',
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/lwNVL3ceJV5Ih2l1QnODI1/AB-UI-Design-System?node-id=769-156&m=dev',
+    }
   },
 };
 
