@@ -1,5 +1,12 @@
 ## 0.4.0
 
+## 0.4.4
+
+### Patch Changes
+
+- b82590d: Restoring tests to the pipeline
+- 0a500a7: Adding ESLint rules for Figma design links
+
 ## 0.4.4-dev.0
 
 ### Patch Changes
