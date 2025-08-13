@@ -159,7 +159,14 @@ export function DataManager<T extends Record<string, unknown>>({
   };
 
   return (
-    <div className="flex gap-8 items-start min-h-[500px]">
+    <div
+      className={[
+        "flex",
+        "gap-8",
+        "items-start",
+        "min-h-[500px]",
+      ].join(" ")}
+    >
       <div>
         <DataForm<T>
           form={form}
@@ -171,7 +178,7 @@ export function DataManager<T extends Record<string, unknown>>({
           error={error}
         />
       </div>
-      <div className="flex-1">
+      <div className={["flex-1"].join(" ")}>
         <DataTable<T>
           items={items}
           loading={loading}
