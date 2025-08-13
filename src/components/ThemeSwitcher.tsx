@@ -31,20 +31,20 @@ export function ThemeSwitcher({
     <select
       value={theme}
       onChange={handleThemeChange}
-      className="
-        bg-[var(--global-color-bg)]
-        text-[var(--global-color-text)]
-        font-sans
-        text-lg
-        font-semibold
-        px-2
-        py-2
-        rounded
-        shadow
-        transition-colors
-        border
-        border-[var(--global-color-border)]
-      "
+      className={[
+        "bg-[var(--global-color-bg)]",
+        "text-[var(--global-color-text)]",
+        "font-sans",
+        "text-lg",
+        "font-semibold",
+        "px-2",
+        "py-2",
+        "rounded",
+        "shadow",
+        "transition-colors",
+        "border",
+        "border-[var(--global-color-border)]",
+      ].join(" ")}
       aria-label="Switch theme"
     >
       {THEMES.map(({ value, label }) => (

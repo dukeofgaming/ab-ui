@@ -16,30 +16,67 @@ export function Button({
   ...props 
 }: ButtonProps) {
 
-  const baseClass = "font-semibold px-4 py-2 rounded-xl shadow transition-colors";
-  let variantClass = "";
+  const baseClass = [
+    "font-semibold",
+    "px-4",
+    "py-2",
+    "rounded-xl",
+    "shadow",
+    "transition-colors",
+  ];
+  let variantClasses: string[] = [];
 
   switch (variant) {
     case 'secondary':
-      variantClass = 'bg-gray-200 hover:bg-gray-300 text-gray-800';
+      variantClasses = [
+        'bg-gray-200',
+        'hover:bg-gray-300',
+        'text-gray-800',
+      ];
       break;
 
     case 'action':
-      variantClass = 'bg-[var(--global-color-border)] hover:brightness-90 text-[var(--global-color-accent)] focus:ring-[var(--global-color-accent)] shadow-sm rounded';
+      variantClasses = [
+        'bg-[var(--global-color-border)]',
+        'hover:brightness-90',
+        'text-[var(--global-color-accent)]',
+        'focus:ring-[var(--global-color-accent)]',
+        'shadow-sm',
+        'rounded',
+      ];
       break;
 
     case 'danger':
-      variantClass = 'bg-red-400 hover:bg-red-500 text-white shadow-sm rounded';
+      variantClasses = [
+        'bg-red-400',
+        'hover:bg-red-500',
+        'text-white',
+        'shadow-sm',
+        'rounded',
+      ];
       break;
 
     case 'primary':
     default:
-      variantClass = 'bg-[var(--global-color-accent)] hover:brightness-90 text-[var(--global-color-bg)]';
+      variantClasses = [
+        'bg-[var(--global-color-accent)]',
+        'hover:brightness-90',
+        'text-[var(--global-color-bg)]',
+      ];
       break;
   }
 
   return (
-    <button className={`${baseClass} ${variantClass} ${className}`.trim()} {...props}>
+    <button
+      className={
+        [
+          ...baseClass,
+          ...variantClasses,
+          className
+        ].filter(Boolean).join(" ")
+      }
+      {...props}
+    >
       {children}
     </button>
   );

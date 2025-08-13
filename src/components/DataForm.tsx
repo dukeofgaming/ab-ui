@@ -30,11 +30,30 @@ export function DataForm<T>({
   return (
     
     <form
-      className="flex flex-col gap-5 w-full max-w-xs bg-[var(--global-color-bg)] shadow-lg rounded-2xl p-8 border border-[var(--global-color-border)]"
+      className={[
+        "flex",
+        "flex-col",
+        "gap-5",
+        "w-full",
+        "max-w-xs",
+        "bg-[var(--global-color-bg)]",
+        "shadow-lg",
+        "rounded-2xl",
+        "p-8",
+        "border",
+        "border-[var(--global-color-border)]",
+      ].join(" ")}
       onSubmit={onSubmit}
     >
       <h2 
-        className="text-2xl font-bold mb-3 text-[var(--global-color-accent)] tracking-tight drop-shadow"
+        className={[
+          "text-2xl",
+          "font-bold",
+          "mb-3",
+          "text-[var(--global-color-accent)]",
+          "tracking-tight",
+          "drop-shadow",
+        ].join(" ")}
       >
         {editingId ? "Edit" : "Add"}
       </h2>
@@ -43,7 +62,12 @@ export function DataForm<T>({
         
         <label 
           key={String(field.name)} 
-          className="flex flex-col gap-1 text-[var(--global-color-text)]"
+          className={[
+            "flex",
+            "flex-col",
+            "gap-1",
+            "text-[var(--global-color-text)]",
+          ].join(" ")}
         >
           {field.label}
 
@@ -59,8 +83,8 @@ export function DataForm<T>({
           
         </label>
       ))}
-      {error && <div className="text-red-600 font-medium">{error}</div>}
-      <div className="flex gap-2 mt-2">
+      {error && <div className={["text-red-600", "font-medium"].join(" ")}>{error}</div>}
+      <div className={["flex", "gap-2", "mt-2"].join(" ")}>
         <Button type="submit" variant="primary">
           {editingId ? "Save" : "Add"}
         </Button>
