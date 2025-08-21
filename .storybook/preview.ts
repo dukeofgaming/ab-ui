@@ -12,8 +12,7 @@ function getThemeMap(tokens: any) {
   }
   // Always include light/dark
   const themes: Record<string, string> = {
-    light: '',
-    dark: 'dark',
+    default: ''
   };
   // Find theme keys like 'theme/orders', 'theme/logistics', etc.
   Object.keys(tokens)
@@ -37,7 +36,7 @@ const preview: Preview = {
 
   decorators: [withThemeByClassName({
       themes: getThemeMap(tokens),
-      defaultTheme: 'light',
+      defaultTheme: 'default',
   })]
 };
 

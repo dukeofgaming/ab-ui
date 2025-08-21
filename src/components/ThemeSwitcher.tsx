@@ -6,10 +6,6 @@ const THEMES = [
   { value: "theme-orders", label: "Orders" },
   { value: "theme-logistics", label: "Logistics" },
   { value: "theme-product", label: "Product" },
-  { value: "theme-master-data", label: "Master Data" },
-  { value: "theme-sales", label: "Sales" },
-  { value: "theme-billing", label: "Billing" },
-  { value: "theme-marketing", label: "Marketing" },
 ];
 
 interface ThemeSwitcherProps {
