@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 const THEMES = [
   { value: "", label: "Default" },
@@ -16,11 +16,27 @@ export function ThemeSwitcher({
   onChange
 }: ThemeSwitcherProps) {
   const [theme, setTheme] = useState("");
+  const prevThemeClass    = useRef<string | null>(null);
 
-  function handleThemeChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    setTheme(e.target.value);
-    document.documentElement.className = e.target.value;
-    if (onChange) onChange(e.target.value);
+  function handleThemeChange(event: React.ChangeEvent<HTMLSelectElement>) {
+    const theme = event.target.value;
+    setTheme(theme);
+
+    const root = document.documentElement;
+    
+    if (prevThemeClass.current){
+      root.classList.remove(prevThemeClass.current);
+    }
+    
+    if (theme){
+      root.classList.add(theme);
+    }
+    
+    prevThemeClass.current = theme || null;
+
+    if (onChange){
+      onChange(theme); 
+    }
   }
 
   return (
