@@ -4,64 +4,50 @@ import {
 } from "react";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  readonly children: ReactNode;
-  readonly variant?: 'primary' | 'secondary' | 'action' | 'danger';
-  readonly className?: string;
+  readonly children   : ReactNode;
+  readonly variant?   : 'action' | 'neutral' | 'destructive';
+  readonly className? : string;
 }
 
 export function Button({ 
   children, 
-  variant   = 'primary', 
+  variant   = 'action', 
   className = '', 
   ...props 
 }: ButtonProps) {
 
-  const baseClass = [
+  const baseClasses = [
     "font-semibold",
     "px-4",
     "py-2",
     "rounded-xl",
     "shadow",
     "transition-colors",
+    'hover:contrast-200',
   ];
+
   let variantClasses: string[] = [];
 
   switch (variant) {
-    case 'secondary':
+    case 'neutral':
       variantClasses = [
-        'bg-gray-200',
-        'hover:bg-gray-300',
-        'text-gray-800',
+        'bg-neutral-300',
+        'text-black/95'
+      ];
+      break;
+
+    case 'destructive':
+      variantClasses = [
+        'bg-destructive',
+        'text-white',
       ];
       break;
 
     case 'action':
-      variantClasses = [
-        'bg-[var(--global-color-border)]',
-        'hover:brightness-90',
-        'text-[var(--global-color-accent)]',
-        'focus:ring-[var(--global-color-accent)]',
-        'shadow-sm',
-        'rounded',
-      ];
-      break;
-
-    case 'danger':
-      variantClasses = [
-        'bg-red-400',
-        'hover:bg-red-500',
-        'text-white',
-        'shadow-sm',
-        'rounded',
-      ];
-      break;
-
-    case 'primary':
     default:
       variantClasses = [
-        'bg-[var(--global-color-accent)]',
-        'hover:brightness-90',
-        'text-[var(--global-color-bg)]',
+        'bg-accent',
+        'text-white',
       ];
       break;
   }
@@ -70,7 +56,7 @@ export function Button({
     <button
       className={
         [
-          ...baseClass,
+          ...baseClasses,
           ...variantClasses,
           className
         ].filter(Boolean).join(" ")

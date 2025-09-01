@@ -188,7 +188,7 @@ export function DataTable<T extends Record<string, unknown>>({
                   </Button>
                   <Button
                     type="button"
-                    variant="danger"
+                    variant="destructive"
                     onClick={() => onDelete(getRowId(item))}
                     disabled={deletingIds.includes(getRowId(item))}
                     style={{ position: 'relative' }}

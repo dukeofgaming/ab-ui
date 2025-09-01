@@ -2,3 +2,16 @@
 
 @import './tokens.css';
 @import './themes.css';
+
+@theme {
+  --color-accent      : var(--global-color-accent);
+  --color-canvas      : var(--global-color-canvas);
+  --color-content     : var(--global-color-content);
+  --color-destructive : var(--global-color-destructive);
+  /* --color-neutral     : var(--global-color-neutral); */
+  --color-outline     : var(--global-color-outline);
+  --color-surface     : var(--global-color-surface);
+
+  --font-sans       : var(--global-font-sans);
+  --font-mono       : var(--global-font-mono);
+}

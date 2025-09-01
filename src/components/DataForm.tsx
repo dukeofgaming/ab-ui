@@ -85,10 +85,10 @@ export function DataForm<T>({
       ))}
       {error && <div className={["text-red-600", "font-medium"].join(" ")}>{error}</div>}
       <div className={["flex", "gap-2", "mt-2"].join(" ")}>
-        <Button type="submit" variant="primary">
+        <Button type="submit" variant="action">
           {editingId ? "Save" : "Add"}
         </Button>
-        <Button type="button" onClick={onCancel} variant="secondary">
+        <Button type="button" onClick={onCancel} variant="neutral">
           Cancel
         </Button>
       </div>

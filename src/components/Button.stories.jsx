@@ -14,12 +14,29 @@ export default {
   }
 };
 
-export const Default = () => (
-  <Button onClick={() => alert("Button clicked!")}>Click Me</Button>
-);
-
-export const CustomStyle = () => (
-  <Button onClick={() => alert("Styled button clicked!")} style={{ background: "#28a745" }}>
-    Success
+export const Action = () => (
+  <Button 
+    onClick={() => alert("Button clicked!")}
+  >
+    Action
   </Button>
 );
+
+export const Neutral = () => (
+  <Button 
+    variant="neutral"
+    onClick={() => alert("Styled button clicked!")}
+  >
+    Neutral
+  </Button>
+);
+
+export const Destructive = () => (
+  <Button 
+    variant="destructive"
+    onClick={() => alert("Styled button clicked!")}
+  >
+    Destructive
+  </Button>
+);
+
