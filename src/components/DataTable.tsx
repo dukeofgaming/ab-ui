@@ -27,10 +27,10 @@ export function DataTable<T extends Record<string, unknown>>({
   return (
     <div
       className={[
+        "bg-surface",
         "flex-1",
         "relative",
-        "bg-[var(--global-color-bg)]",
-        "text-[var(--global-color-text)]",
+        "text-content",
       ].join(" ")}
     >
 
@@ -39,25 +39,24 @@ export function DataTable<T extends Record<string, unknown>>({
         <div
           className={[
             "absolute",
-            "inset-0",
+            "bg-accent/80",
             "flex",
+            "inset-0",
             "items-center",
             "justify-center",
-            "bg-[var(--global-color-bg)]",
-            "bg-opacity-80",
-            "z-10",
             "rounded-2xl",
+            "z-10",
           ].join(" ")}
         >
           <div
             className={[
-              "w-12",
-              "h-12",
-              "border-4",
-              "border-[var(--global-color-accent)]",
-              "border-t-transparent",
-              "rounded-full",
               "animate-spin",
+              "border-4",
+              "border-canvas",
+              "border-t-transparent",
+              "h-12",
+              "rounded-full",
+              "w-12",
             ].join(" ")}
           />
         </div>
@@ -68,40 +67,44 @@ export function DataTable<T extends Record<string, unknown>>({
       <table
         className={[
           "w-full",
-          "bg-[var(--global-color-bg)]",
-          "shadow-lg",
           "rounded-2xl",
+          "shadow-lg",
           "overflow-hidden",
-          "border",
-          "border-[var(--global-color-border)]",
+          "border-outline",
         ].join(" ")}
       >
-
         <thead>
-          <tr className={["bg-[var(--global-color-border)]"].join(" ")}>
+          <tr 
+            className={[
+              "bg-accent",
+            ].join(" ")}
+          >
             {keys.map((key: keyof T) => (
               <th
                 key={String(key)}
                 className={[
+                  "font-semibold",
                   "p-3",
                   "text-left",
-                  "font-semibold",
-                  "text-[var(--global-color-accent)]",
+                  "text-canvas",
                 ].join(" ")}
               >
-                {String(key).charAt(0).toUpperCase() + String(key).slice(1)}
+                {
+                  String(key).charAt(0).toUpperCase() 
+                  + String(key).slice(1)
+                }
               </th>
             ))}
-            <th
+            {keys.length > 0 && (<th
               className={[
                 "p-3",
                 "text-left",
                 "font-semibold",
-                "text-[var(--global-color-accent)]",
+                "text-canvas",
               ].join(" ")}
             >
               Actions
-            </th>
+            </th>)}
           </tr>
         </thead>
 
@@ -111,7 +114,12 @@ export function DataTable<T extends Record<string, unknown>>({
             <tr>
               <td
                 colSpan={keys.length + 1}
-                className={["text-center", "p-6", "text-yellow-700", "font-medium"].join(" ")}
+                className={[
+                  "font-medium",
+                  "p-6", 
+                  "text-accent", 
+                  "text-center", 
+                ].join(" ")}
               >
                 No items yet.
               </td>
@@ -120,31 +128,22 @@ export function DataTable<T extends Record<string, unknown>>({
           ) : (
 
             items.map((item) => (
-
               <tr
                 key={getRowId(item)}
                 className={[
                   "relative",
-                  "hover:bg-[var(--global-color-border)]",
+                  "hover:bg-outline",
                   "transition-colors",
                 ].join(" ")}
               >
                 {/* Table Rows */}
                 {keys.map(
                   (key: keyof T) => {
-                    const cellClassParts = [
+                    const cellClasses = [
                       "p-3",
                       "border-b",
-                      "border-[var(--global-color-border)]",
+                      "border-outline",
                     ];
-
-                    if (key === "name") {
-                      cellClassParts.push("font-bold", "text-[var(--global-color-accent)]");
-                    } else if (key === "description") {
-                      cellClassParts.push("text-[var(--global-color-text)]");
-                    } else {
-                      cellClassParts.push("text-[var(--global-color-text)]");
-                    }
 
                     // Table Cell Content
                     let cellContent: React.ReactNode;
@@ -161,7 +160,10 @@ export function DataTable<T extends Record<string, unknown>>({
 
                     // Table Cells
                     return (
-                      <td key={String(key)} className={cellClassParts.join(" ")}>
+                      <td 
+                        key={String(key)} 
+                        className={cellClasses.join(" ")}
+                      >
                         {cellContent}
                       </td>
                     );
@@ -171,18 +173,18 @@ export function DataTable<T extends Record<string, unknown>>({
                 {/* Table Actions */}
                 <td
                   className={[
-                    "p-3",
                     "border-b",
-                    "border-[var(--global-color-border)]",
+                    "border-outline",
                     "flex",
                     "gap-3",
+                    "p-3",
                   ].join(" ")}
                 >
                   <Button
+                    disabled={deletingIds.includes(getRowId(item))}
+                    onClick={() => onEdit(getRowId(item))}
                     type="button"
                     variant="action"
-                    onClick={() => onEdit(getRowId(item))}
-                    disabled={deletingIds.includes(getRowId(item))}
                   >
                     Edit
                   </Button>
@@ -197,25 +199,24 @@ export function DataTable<T extends Record<string, unknown>>({
                       <span
                         className={[
                           "absolute",
-                          "inset-0",
+                          "bg-opacity-60",
                           "flex",
+                          "inset-0",
                           "items-center",
                           "justify-center",
-                          "bg-[var(--global-color-bg)]",
-                          "bg-opacity-60",
-                          "z-10",
                           "rounded-full",
+                          "z-10",
                         ].join(" ")}
                       >
                         <span
                           className={[
-                            "w-5",
-                            "h-5",
-                            "border-2",
-                            "border-[var(--global-color-accent)]",
-                            "border-t-transparent",
-                            "rounded-full",
                             "animate-spin",
+                            "border-2",
+                            "border-canvas",
+                            "border-t-transparent",
+                            "h-5",
+                            "rounded-full",
+                            "w-5",
                           ].join(" ")}
                         />
                       </span>

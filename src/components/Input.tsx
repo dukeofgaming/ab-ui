@@ -1,26 +1,26 @@
 import React from "react";
 
 export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> {
-  readonly className?: string;
-  readonly mode?: 'text' | 'multiline' | 'number';
-  readonly rows?: number; // for textarea
+  readonly className? : string;
+  readonly mode?      : 'text' | 'multiline' | 'number';
+  readonly rows?      : number; // for textarea
 }
 
 
 const baseClass = [
+  "bg-canvas",
   "border",
-  "border-[var(--global-color-border)]",
-  "bg-white",
+  "border-outline",
+  "focus:ring-2",
+  "focus:ring-accent",
+  "focus:outline-none",
+  "placeholder:text-accent/80",
+  "placeholder:italic",
   "px-4",
   "py-2",
   "rounded-xl",
-  "focus:outline-none",
-  "focus:ring-2",
-  "focus:ring-[var(--global-color-accent)]",
-  "text-base",
   "shadow-sm",
-  "text-[var(--global-color-text)]",
-  "placeholder-gray-400",
+  "text-content",
 ];
 
 export function Input({ 
@@ -33,22 +33,30 @@ export function Input({
   if (mode === "multiline") {
     return (
       <textarea
-        className={[...baseClass, className].filter(Boolean).join(" ")}
+        className={[
+          ...baseClass,
+          className
+        ].filter(Boolean).join(" ")}
         rows={rows}
-        {...(props as React.TextareaHTMLAttributes<HTMLTextAreaElement>)}
+        {
+          ...(props as React.TextareaHTMLAttributes<HTMLTextAreaElement>)
+        }
       />
     );
   }
+
   const inputType = mode === "number" ? "number" : "text";
+
   return (
     <input
       type={inputType}
-      className={[...baseClass, className].filter(Boolean).join(" ")}
+      className={[
+        ...baseClass,
+        className
+      ].filter(Boolean).join(" ")}
       {...props}
     />
   );
 }
-
-Input.displayName = "Input";
 
 

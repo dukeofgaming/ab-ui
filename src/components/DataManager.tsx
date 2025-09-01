@@ -1,4 +1,5 @@
 "use client";
+
 import React, { 
   useEffect, 
   useState, 
@@ -10,11 +11,11 @@ import { DataForm } from "./DataForm";
 import { DataTable } from "./DataTable";
 
 export type FieldDefinition<T> = {
-  name: keyof T;
-  label: string;
-  type?: "number" | "text" | "textarea" | "password" | "email" | "url";
-  required?: boolean;
-  placeholder?: string;
+  name          : keyof T;
+  label         : string;
+  type?         : "number" | "text" | "textarea" | "password" | "email" | "url";
+  required?     : boolean;
+  placeholder?  : string;
 };
 
 export type DataManagerApi<

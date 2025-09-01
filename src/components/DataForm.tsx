@@ -7,13 +7,13 @@ import { Input } from "./Input";
 import { FieldDefinition } from "./DataManager";
 
 export interface DataFormProps<T> {
-  readonly form: Partial<T>;
-  readonly fields: readonly FieldDefinition<T>[];
-  readonly editingId: number | string | null;
-  readonly error: string;
-  readonly onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
-  readonly onSubmit: (e: React.FormEvent) => void;
-  readonly onCancel: () => void;
+  readonly form       : Partial<T>;
+  readonly fields     : readonly FieldDefinition<T>[];
+  readonly editingId  : number | string | null;
+  readonly error      : string;
+  readonly onChange   : (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  readonly onSubmit   : (e: React.FormEvent) => void;
+  readonly onCancel   : () => void;
 }
 
 
@@ -24,71 +24,99 @@ export function DataForm<T>({
   error,
   onChange,
   onSubmit,
-  onCancel 
+  onCancel,
 }: DataFormProps<T>) {
 
   return (
-    
+
     <form
       className={[
+        "bg-surface",
+        "border",
+        "border-outline",
         "flex",
         "flex-col",
         "gap-5",
-        "w-full",
-        "max-w-xs",
-        "bg-[var(--global-color-bg)]",
-        "shadow-lg",
         "rounded-2xl",
+        "shadow-lg",
         "p-8",
-        "border",
-        "border-[var(--global-color-border)]",
+        "w-full",
       ].join(" ")}
       onSubmit={onSubmit}
     >
-      <h2 
+      <h2
         className={[
-          "text-2xl",
+          "drop-shadow",
           "font-bold",
           "mb-3",
-          "text-[var(--global-color-accent)]",
+          "text-2xl",
+          "text-accent",
           "tracking-tight",
-          "drop-shadow",
         ].join(" ")}
       >
         {editingId ? "Edit" : "Add"}
       </h2>
-      
+
       {fields.map((field) => (
-        
-        <label 
-          key={String(field.name)} 
+
+        <label
+          key={String(field.name)}
           className={[
             "flex",
             "flex-col",
             "gap-1",
-            "text-[var(--global-color-text)]",
+            "text-content",
           ].join(" ")}
         >
           {field.label}
 
           <Input
+            mode={
+              field.type === "textarea" ? "multiline" : 
+              field.type === "number"   ? "number"    : 
+              undefined
+            }
             name={String(field.name)}
-            value={String(form[field.name] ?? "")}
             onChange={onChange}
-            required={field.required}
             placeholder={field.placeholder}
-            mode={field.type === "textarea" ? "multiline" : field.type === "number" ? "number" : undefined}
+            required={field.required}
             rows={field.type === "textarea" ? 3 : undefined}
+            value={String(form[field.name] ?? "")}
           />
-          
+
         </label>
       ))}
-      {error && <div className={["text-red-600", "font-medium"].join(" ")}>{error}</div>}
-      <div className={["flex", "gap-2", "mt-2"].join(" ")}>
-        <Button type="submit" variant="action">
+
+      {
+        error && <div 
+          className={[
+            "text-destructive",
+            "font-medium",
+          ].join(" ")}
+        >
+          {error}
+        </div>
+      }
+
+      <div 
+        className={[
+          "flex",
+          "gap-2",
+          "mt-2",
+        ].join(" ")}
+      >
+        <Button 
+          type="submit" 
+          variant="action"
+        >
           {editingId ? "Save" : "Add"}
         </Button>
-        <Button type="button" onClick={onCancel} variant="neutral">
+        
+        <Button 
+          type="button" 
+          onClick={onCancel} 
+          variant="neutral"
+        >
           Cancel
         </Button>
       </div>

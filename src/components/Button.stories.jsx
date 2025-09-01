@@ -9,7 +9,7 @@ export default {
     layout: 'centered',
     design: {
       type  : 'figma',
-      url   : 'https://www.figma.com/design/lwNVL3ceJV5Ih2l1QnODI1/AB-UI-Design-System?node-id=769-157&m=dev',
+      url   : 'https://www.figma.com/design/lwNVL3ceJV5Ih2l1QnODI1/AB-UI-Design-System?node-id=927-132&m=dev',
     }
   }
 };
