@@ -1,17 +1,42 @@
 import React from "react";
-import Button from "./Button";
+import { Button } from './Button';
 
 export default {
-  title: "Components/Button",
-  component: Button,
+  title       : "Components/Elements/Button",
+  component   : Button,
+  tags        : ['autodocs'],
+  parameters  : {
+    layout: 'centered',
+    design: {
+      type  : 'figma',
+      url   : 'https://www.figma.com/design/lwNVL3ceJV5Ih2l1QnODI1/AB-UI-Design-System?node-id=927-132&m=dev',
+    }
+  }
 };
 
-export const Default = () => (
-  <Button onClick={() => alert("Button clicked!")}>Click Me</Button>
-);
-
-export const CustomStyle = () => (
-  <Button onClick={() => alert("Styled button clicked!")} style={{ background: "#28a745" }}>
-    Success
+export const Action = () => (
+  <Button 
+    onClick={() => alert("Button clicked!")}
+  >
+    Action
   </Button>
 );
+
+export const Neutral = () => (
+  <Button 
+    variant="neutral"
+    onClick={() => alert("Styled button clicked!")}
+  >
+    Neutral
+  </Button>
+);
+
+export const Destructive = () => (
+  <Button 
+    variant="destructive"
+    onClick={() => alert("Styled button clicked!")}
+  >
+    Destructive
+  </Button>
+);
+

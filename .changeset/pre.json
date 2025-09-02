@@ -2,10 +2,13 @@
   "mode": "exit",
   "tag": "dev",
   "initialVersions": {
-    "@dukeofgaming/ab-ui": "0.1.2"
+    "@dukeofgaming/ab-ui": "0.4.4"
   },
   "changesets": [
-    "big-bikes-shake",
-    "free-sheep-relax"
+    "chubby-goats-change",
+    "curvy-paths-double",
+    "happy-sheep-film",
+    "odd-cougars-carry",
+    "real-zebras-wash"
   ]
 }

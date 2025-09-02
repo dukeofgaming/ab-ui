@@ -8,7 +8,7 @@ export default defineConfig({
   plugins: [react()],
   build: {
     lib: {
-      entry: 'src/components/index.js',
+      entry: 'src/index.ts',
       name: 'AbUI',
       fileName: (format) => `ab-ui.${format}.js`,
       formats: ['es', 'cjs']

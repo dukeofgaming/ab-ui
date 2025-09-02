@@ -30,6 +30,23 @@ runs:
         GH_TOKEN: ${{ github.token }}
       run: |
         ISSUE_NUMBER="${{ steps.vars.outputs.issue_number }}"
+
+        # Check if ISSUE_NUMBER is a number
+        if ! [[ "$ISSUE_NUMBER" =~ ^[0-9]+$ ]]; then
+          echo "is_issue=false" >> $GITHUB_OUTPUT
+          echo "$ISSUE_NUMBER is not an issue number." >> $GITHUB_STEP_SUMMARY
+          exit 0
+        fi
+
+        # Check if the issue exists using gh CLI
+        if ! gh issue view "$ISSUE_NUMBER" &>/dev/null; then
+          echo "is_issue=false" >> $GITHUB_OUTPUT
+          echo "$ISSUE_NUMBER is not an existing issue." >> $GITHUB_STEP_SUMMARY
+          exit 0
+        fi
+
+        echo "is_issue=true" >> $GITHUB_OUTPUT
+
         ISSUE_BODY=$(gh issue view "$ISSUE_NUMBER" --json body -q '.body')
         echo "ISSUE_BODY<<EOF"
         echo "$ISSUE_BODY"
@@ -52,12 +69,21 @@ runs:
         echo "yaml_frontmatter<<EOF" >> $GITHUB_OUTPUT
         echo "$YAML_FRONTMATTER" >> $GITHUB_OUTPUT
         echo "EOF" >> $GITHUB_OUTPUT
+
         ISSUE_TYPE=$(echo "$YAML_FRONTMATTER" | yq '.type')
+
+        # Check if figma-link is empty or not present
+        FIGMA_LINK=$(echo "$YAML_FRONTMATTER" | yq '."figma-link"')
+        if [ -z "$FIGMA_LINK" ] || [ "$FIGMA_LINK" = "null" ]; then
+          echo "⚠️ Warning: figma-link is not set or empty in issue front-matter." >> $GITHUB_STEP_SUMMARY
+        fi
+
         echo "issue_type=$ISSUE_TYPE" >> $GITHUB_OUTPUT
         echo "- 📋 Issue Type: $ISSUE_TYPE" >> $GITHUB_STEP_SUMMARY
 
     - name: Fetch GitHub issue and create feature doc
       id: feature_doc
+      if: steps.issue_details.outputs.is_issue == 'true'
       shell: bash
       env:
         GH_TOKEN: ${{ github.token }}
@@ -73,15 +99,53 @@ runs:
 
         echo "file_directory=$FILE_DIRECTORY" >> $GITHUB_OUTPUT
         echo "file_name=$FILE_NAME" >> $GITHUB_OUTPUT
+
         FILE_PATH=$(find . -type f -name $FILE_NAME)
+
         if [ -n "$FILE_PATH" ]; then
+
           echo "- 🔎 File \"$FILE_PATH\" already exists, updating issue body." >> $GITHUB_STEP_SUMMARY
+          
           gh issue edit $ISSUE_NUMBER --body-file "$FILE_PATH"
+
           echo "- ✅ Updated issue body" >> $GITHUB_STEP_SUMMARY
+
         else
+
           mkdir -p $FILE_DIRECTORY
+
           FILE_PATH=$FILE_DIRECTORY/$FILE_NAME
+
           echo "## 🆕 Creating Documentation" >> $GITHUB_STEP_SUMMARY
-          echo "Creating new branch doc at \\\\$FILE_PATH\\\\" >> $GITHUB_STEP_SUMMARY
-          # Optionally, create a starter doc file here if needed
+          echo "Creating new branch doc at \`$FILE_PATH\`" >> $GITHUB_STEP_SUMMARY
+
+          ISSUE_BODY=$(gh issue view $ISSUE_NUMBER --json body -q '.body')
+          
+          echo "$ISSUE_BODY" > "$FILE_PATH"
+          
         fi
+
+    - name: Commit and push doc changes
+      if: steps.issue_details.outputs.is_issue == 'true'
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+        FILE_PATH: ${{ steps.feature_doc.outputs.file_directory }}/${{ steps.feature_doc.outputs.file_name }}
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        
+        git add "$FILE_PATH" || { echo "❌ Could not stage $FILE_PATH for commit (file missing or git error)." >> $GITHUB_STEP_SUMMARY; exit 0; }
+
+        if git diff --cached --quiet; then
+          echo "No doc changes to commit for $FILE_PATH" >> $GITHUB_STEP_SUMMARY
+          exit 0
+        fi
+
+        git commit -m "docs: create or update $FILE_PATH [skip ci]"
+
+        git fetch origin "${{ steps.vars.outputs.branch }}"
+        git rebase "origin/${{ steps.vars.outputs.branch }}"
+        git push origin "HEAD:${{ steps.vars.outputs.branch }}"
+
+        echo "- 🚀 Committed and pushed $FILE_PATH to branch ${GITHUB_REF}" >> $GITHUB_STEP_SUMMARY
