@@ -10,7 +10,7 @@ interface User {
 
 const meta: Meta<typeof DataTable<User>> = {
   title       : 'Components/Modules/Data/DataTable',
-  component   : DataTable,
+  component   : DataTable<User>,
   tags        : ['autodocs'],
   parameters  : {
     layout: 'centered',
@@ -38,6 +38,13 @@ export const Default: Story = {
     onEdit: (id) => { alert(`Edit user ${id}`); },
     onDelete: (id) => { alert(`Delete user ${id}`); },
     getRowId: (item: User) => item.id,
+  },
+};
+
+export const Empty: Story = {
+  args: {
+    ...Default.args,
+    items: []
   },
 };
 

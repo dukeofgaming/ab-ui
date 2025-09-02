@@ -4,42 +4,65 @@ import {
 } from "react";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  readonly children: ReactNode;
-  readonly variant?: 'primary' | 'secondary' | 'action' | 'danger';
-  readonly className?: string;
+  readonly children   : ReactNode;
+  readonly variant?   : 'action' | 'neutral' | 'destructive';
+  readonly className? : string;
 }
 
 export function Button({ 
   children, 
-  variant   = 'primary', 
+  variant   = 'action', 
   className = '', 
   ...props 
 }: ButtonProps) {
 
-  const baseClass = "font-semibold px-4 py-2 rounded-xl shadow transition-colors";
-  let variantClass = "";
+  const baseClasses = [
+    "font-semibold",
+    "px-4",
+    "py-2",
+    "rounded-xl",
+    "shadow",
+    "transition-colors",
+    'hover:contrast-200',
+  ];
+
+  let variantClasses: string[] = [];
 
   switch (variant) {
-    case 'secondary':
-      variantClass = 'bg-gray-200 hover:bg-gray-300 text-gray-800';
+    case 'neutral':
+      variantClasses = [
+        'bg-neutral-300',
+        'text-black/95'
+      ];
+      break;
+
+    case 'destructive':
+      variantClasses = [
+        'bg-destructive',
+        'text-white',
+      ];
       break;
 
     case 'action':
-      variantClass = 'bg-[var(--global-color-border)] hover:brightness-90 text-[var(--global-color-accent)] focus:ring-[var(--global-color-accent)] shadow-sm rounded';
-      break;
-
-    case 'danger':
-      variantClass = 'bg-red-400 hover:bg-red-500 text-white shadow-sm rounded';
-      break;
-
-    case 'primary':
     default:
-      variantClass = 'bg-[var(--global-color-accent)] hover:brightness-90 text-[var(--global-color-bg)]';
+      variantClasses = [
+        'bg-accent',
+        'text-white',
+      ];
       break;
   }
 
   return (
-    <button className={`${baseClass} ${variantClass} ${className}`.trim()} {...props}>
+    <button
+      className={
+        [
+          ...baseClasses,
+          ...variantClasses,
+          className
+        ].filter(Boolean).join(" ")
+      }
+      {...props}
+    >
       {children}
     </button>
   );

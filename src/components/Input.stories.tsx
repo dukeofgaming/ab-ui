@@ -29,43 +29,35 @@ type Story = StoryObj<typeof Input>;
 
 export const Default: Story = {
   args: {
-    value: "Hello",
-    placeholder: "Type here...",
-    mode: "text",
-    onChange: () => {}, // prevent controlled warning
+    placeholder : "Placeholder text...",
+    mode        : "text"
   },
 };
 
 export const WithValue: Story = {
   args: {
     value: "Some value",
-    placeholder: "Enter value",
-    mode: "text",
-    onChange: () => {}, // prevent controlled warning
+    mode: "text"
   },
 };
 
 export const MultilineMode: Story = {
   args: {
-    value: "Multiline text",
-    placeholder: "Type multiline...",
-    mode: "multiline",
-    rows: 3,
-    onChange: () => {}, // prevent controlled warning
+    value   : "Multiline text",
+    mode    : "multiline",
+    rows    : 3
   },
 };
 
 export const NumberMode: Story = {
   parameters: {
     design: {
-      type: 'figma',
-      url: 'https://www.figma.com/design/lwNVL3ceJV5Ih2l1QnODI1/AB-UI-Design-System?node-id=785-85&m=dev',
+      type  : 'figma',
+      url   : 'https://www.figma.com/design/lwNVL3ceJV5Ih2l1QnODI1/AB-UI-Design-System?node-id=785-85&m=dev',
     }
   },
   args: {
-    value: 42,
-    placeholder: "Enter a number",
-    mode: "number",
-    onChange: () => {}, // prevent controlled warning
+    value     : "42",
+    mode      : "number"
   },
 };

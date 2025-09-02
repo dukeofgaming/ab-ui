@@ -1,4 +1,5 @@
 "use client";
+
 import React, { 
   useEffect, 
   useState, 
@@ -10,11 +11,11 @@ import { DataForm } from "./DataForm";
 import { DataTable } from "./DataTable";
 
 export type FieldDefinition<T> = {
-  name: keyof T;
-  label: string;
-  type?: "number" | "text" | "textarea" | "password" | "email" | "url";
-  required?: boolean;
-  placeholder?: string;
+  name          : keyof T;
+  label         : string;
+  type?         : "number" | "text" | "textarea" | "password" | "email" | "url";
+  required?     : boolean;
+  placeholder?  : string;
 };
 
 export type DataManagerApi<
@@ -159,7 +160,14 @@ export function DataManager<T extends Record<string, unknown>>({
   };
 
   return (
-    <div className="flex gap-8 items-start min-h-[500px]">
+    <div
+      className={[
+        "flex",
+        "gap-8",
+        "items-start",
+        "min-h-[500px]",
+      ].join(" ")}
+    >
       <div>
         <DataForm<T>
           form={form}
@@ -171,7 +179,7 @@ export function DataManager<T extends Record<string, unknown>>({
           error={error}
         />
       </div>
-      <div className="flex-1">
+      <div className={["flex-1"].join(" ")}>
         <DataTable<T>
           items={items}
           loading={loading}
