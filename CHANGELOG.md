@@ -1,5 +1,18 @@
 ## 0.4.0
 
+## 0.5.0-dev.0
+
+### Minor Changes
+
+- 0d17cb1: Aligning classes to new design tokens for other components
+- 6d1396d: Mapping Tailwind @theme vars to renamed design tokens, button variants
+
+### Patch Changes
+
+- acf0b66: Improved ThemeSwitcher to avoid clobbering classes
+- b1299d5: Swapping chromatic Storybook to happen on develop, github-pages on main
+- 6142bf6: Refactoring classes to be expressed as arrays for better legibility
+
 ## 0.4.4
 
 ### Patch Changes
