@@ -1,0 +1,83 @@
+grid-columns: 2
+
+Design: "🎨 Design" {
+    grid-columns: 1
+
+    Figma: {    
+        grid-columns: 1
+        TokensStudio
+        StoryBookConnect
+    }
+    
+    Storybook: {
+        grid-columns: 1
+    
+        GithubPages
+        Chromatic
+    }
+}
+
+Design.Figma.StoryBookConnect <- Design.Storybook.Chromatic: Designers link from
+
+Development:"👨‍💻Development"{
+    grid-columns: 2
+
+    git: {
+        grid-columns: 3
+        design
+
+        cicd: "🤖Github Actions" {
+            grid-columns: 1
+            feature-123
+            develop
+            main
+
+            changeset-release: "🦋Changesets" {
+                grid-columns: 1
+                
+                develop: changeset-release/develop
+                main: changeset-release/main
+            }
+        }
+
+
+
+        design -> cicd.feature-123: Merges from
+
+        cicd.develop -> cicd.changeset-release.develop: Automated PR
+        cicd.main -> cicd.changeset-release.main: Automated PR
+    }
+
+    NPM: {
+        grid-columns: 1
+
+        Snapshot
+        PreRelease
+        Release
+    }
+
+    git.cicd.feature-123 -> NPM.Snapshot: On each open PR commit
+    git.cicd.changeset-release.develop -> NPM.PreRelease: Publishing PR approved
+    git.cicd.changeset-release.main -> NPM.Release: Publishing PR approved
+
+}
+
+
+Design.Figma.TokensStudio -> Development.git.design: Push
+Development.git.design -> Design.Figma.TokensStudio: Pull
+
+
+
+
+
+
+
+
+
+Development.git.cicd.changeset-release.develop -> Design.Storybook.Chromatic: Publishes
+Development.git.cicd.changeset-release.main -> Design.Storybook.GithubPages: Publishes
+
+
+Development.git.cicd.feature-123 -> Development.git.cicd.develop: Pull Request
+Development.git.cicd.develop -> Development.git.cicd.main: PR promotion
+
