@@ -280,7 +280,7 @@ Good developer processes don't add cognitive effort nor require policing.
 
 ---
 
-...
+{changesets...}
 
 ---
 
@@ -289,7 +289,7 @@ Good developer processes don't add cognitive effort nor require policing.
 
 ---
 
-...
+{changesets in the template repo with the release package and the pre-release aliased package...}
 
 ---
 
@@ -302,7 +302,7 @@ Good developer processes don't add cognitive effort nor require policing.
 
 ---
 
-...
+[ab-ui, ab-app, ab-app-brands, ab-app-brand-site,...]
 
 ---
 
@@ -311,7 +311,7 @@ Good developer processes don't add cognitive effort nor require policing.
 
 ---
 
-...
+{repo hierarchy...}
 
 ---
 
@@ -324,7 +324,7 @@ Good developer processes don't add cognitive effort nor require policing.
 
 ---
 
-...
+{turnkey dev container, PR workflow and snapshots, reusable tests github composite action...}
 
 ---
 
@@ -333,7 +333,7 @@ Good developer processes don't add cognitive effort nor require policing.
 
 ---
 
-...
+{design tokens versioning & collaboration dynamic with designers, overall workflow}
 
 ---
 
@@ -346,7 +346,7 @@ Good developer processes don't add cognitive effort nor require policing.
 
 ---
 
-...
+{release notes fromg changesets...}
 
 ---
 
@@ -355,7 +355,7 @@ Good developer processes don't add cognitive effort nor require policing.
 
 ---
 
-...
+{storybook tests, controls, snapshot tests?}
 
 ---
 
@@ -368,7 +368,7 @@ Good developer processes don't add cognitive effort nor require policing.
 
 ---
 
-...
+[update mechanism from template repo...]
 
 ---
 
@@ -377,7 +377,7 @@ Good developer processes don't add cognitive effort nor require policing.
 
 ---
 
-...
+[design tokens as part of package...]
 
 ---
 
