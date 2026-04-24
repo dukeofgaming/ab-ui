@@ -25,27 +25,86 @@ export function DataTable<T extends Record<string, unknown>>({
   ) : [];
 
   return (
-    <div className="flex-1 relative bg-[var(--global-color-bg)] text-[var(--global-color-text)]">
+    <div
+      className={[
+        "bg-surface",
+        "flex-1",
+        "relative",
+        "text-content",
+      ].join(" ")}
+    >
 
       {/* Spinner overlay */}
       {loading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-[var(--global-color-bg)] bg-opacity-80 z-10 rounded-2xl">
-          <div className="w-12 h-12 border-4 border-[var(--global-color-accent)] border-t-transparent rounded-full animate-spin" />
+        <div
+          className={[
+            "absolute",
+            "bg-accent/80",
+            "flex",
+            "inset-0",
+            "items-center",
+            "justify-center",
+            "rounded-2xl",
+            "z-10",
+          ].join(" ")}
+        >
+          <div
+            className={[
+              "animate-spin",
+              "border-4",
+              "border-canvas",
+              "border-t-transparent",
+              "h-12",
+              "rounded-full",
+              "w-12",
+            ].join(" ")}
+          />
         </div>
       )}
 
       {/* Dynamically generate table headings and cells from the first item in items */}
       
-      <table className="w-full bg-[var(--global-color-bg)] shadow-lg rounded-2xl overflow-hidden border border-[var(--global-color-border)]">
-
+      <table
+        className={[
+          "w-full",
+          "rounded-2xl",
+          "shadow-lg",
+          "overflow-hidden",
+          "border-outline",
+        ].join(" ")}
+      >
         <thead>
-          <tr className="bg-[var(--global-color-border)]">
+          <tr 
+            className={[
+              "bg-accent",
+            ].join(" ")}
+          >
             {keys.map((key: keyof T) => (
-              <th key={String(key)} className="p-3 text-left font-semibold text-[var(--global-color-accent)]">
-                {String(key).charAt(0).toUpperCase() + String(key).slice(1)}
+              <th
+                key={String(key)}
+                className={[
+                  "font-semibold",
+                  "p-3",
+                  "text-left",
+                  "text-canvas",
+                ].join(" ")}
+              >
+                {
+                  String(key).charAt(0).toUpperCase() 
+                  + String(key).slice(1)
+                }
               </th>
             ))}
-            <th className="p-3 text-left font-semibold text-[var(--global-color-accent)]">Actions</th>
+            {keys.length > 0 && (<th
+              className={[
+                "p-3",
+                "text-left",
+                "font-semibold",
+                "text-canvas",
+              ].join(" ")}
+            >
+              Actions
+            </th>)}
           </tr>
         </thead>
 
@@ -53,7 +112,15 @@ export function DataTable<T extends Record<string, unknown>>({
           {items.length === 0 ? (
 
             <tr>
-              <td colSpan={keys.length + 1} className="text-center p-6 text-yellow-700 font-medium">
+              <td
+                colSpan={keys.length + 1}
+                className={[
+                  "font-medium",
+                  "p-6", 
+                  "text-accent", 
+                  "text-center", 
+                ].join(" ")}
+              >
                 No items yet.
               </td>
             </tr>
@@ -61,16 +128,22 @@ export function DataTable<T extends Record<string, unknown>>({
           ) : (
 
             items.map((item) => (
-
-              <tr key={getRowId(item)} className="relative hover:bg-[var(--global-color-border)] transition-colors">
+              <tr
+                key={getRowId(item)}
+                className={[
+                  "relative",
+                  "hover:bg-outline",
+                  "transition-colors",
+                ].join(" ")}
+              >
                 {/* Table Rows */}
                 {keys.map(
                   (key: keyof T) => {
-                    let cellClass = "p-3 border-b border-[var(--global-color-border)] ";
-                    
-                    if (key === "name") cellClass += "font-bold text-[var(--global-color-accent)] ";
-                    else if (key === "description") cellClass += "text-[var(--global-color-text)] ";
-                    else cellClass += "text-[var(--global-color-text)] ";
+                    const cellClasses = [
+                      "p-3",
+                      "border-b",
+                      "border-outline",
+                    ];
 
                     // Table Cell Content
                     let cellContent: React.ReactNode;
@@ -87,7 +160,10 @@ export function DataTable<T extends Record<string, unknown>>({
 
                     // Table Cells
                     return (
-                      <td key={String(key)} className={cellClass}>
+                      <td 
+                        key={String(key)} 
+                        className={cellClasses.join(" ")}
+                      >
                         {cellContent}
                       </td>
                     );
@@ -95,25 +171,54 @@ export function DataTable<T extends Record<string, unknown>>({
                 )}
                 
                 {/* Table Actions */}
-                <td className="p-3 border-b border-[var(--global-color-border)] flex gap-3">
+                <td
+                  className={[
+                    "border-b",
+                    "border-outline",
+                    "flex",
+                    "gap-3",
+                    "p-3",
+                  ].join(" ")}
+                >
                   <Button
+                    disabled={deletingIds.includes(getRowId(item))}
+                    onClick={() => onEdit(getRowId(item))}
                     type="button"
                     variant="action"
-                    onClick={() => onEdit(getRowId(item))}
-                    disabled={deletingIds.includes(getRowId(item))}
                   >
                     Edit
                   </Button>
                   <Button
                     type="button"
-                    variant="danger"
+                    variant="destructive"
                     onClick={() => onDelete(getRowId(item))}
                     disabled={deletingIds.includes(getRowId(item))}
                     style={{ position: 'relative' }}
                   >
                     {deletingIds.includes(getRowId(item)) ? (
-                      <span className="absolute inset-0 flex items-center justify-center bg-[var(--global-color-bg)] bg-opacity-60 z-10 rounded-full">
-                        <span className="w-5 h-5 border-2 border-[var(--global-color-accent)] border-t-transparent rounded-full animate-spin" />
+                      <span
+                        className={[
+                          "absolute",
+                          "bg-opacity-60",
+                          "flex",
+                          "inset-0",
+                          "items-center",
+                          "justify-center",
+                          "rounded-full",
+                          "z-10",
+                        ].join(" ")}
+                      >
+                        <span
+                          className={[
+                            "animate-spin",
+                            "border-2",
+                            "border-canvas",
+                            "border-t-transparent",
+                            "h-5",
+                            "rounded-full",
+                            "w-5",
+                          ].join(" ")}
+                        />
                       </span>
                     ) : (
                       "Delete"
